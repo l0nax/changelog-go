@@ -3,7 +3,7 @@ package entry
 // ChangeEntry is the basic Changelog Entry Type
 type ChangeEntry interface {
 	// Returns a new (initialized) Changelog Entry Struct
-	newChangeType()	*ChangeEntry
+	NewChangeType()	*ChangeEntry
 
 	// GetShortTypeName() returns the short Type Name
 	// For Example: "Added"
