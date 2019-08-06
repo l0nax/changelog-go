@@ -1,8 +1,14 @@
 package entries
 
-import "gitlab.com/l0nax/changelog-go/pkg/entry"
+import (
+	"gitlab.com/l0nax/changelog-go/pkg/entry"
+)
 
-// ++++++] Added [++++++
+/// ++++++] Added [++++++
+
+// register Type
+internal.EntryT.RegisterEntryType
+
 //noinspection ALL
 type Entry_Added struct {
 
@@ -41,7 +47,7 @@ func (e *Entry_Added) AddEntry(ent entry.Entry) {
 	e.entries = append(e.entries, ent)
 }
 
-// ++++++] Fixed [++++++
+/// ++++++] Fixed [++++++
 //noinspection ALL
 type Entry_Fixed struct {
 
@@ -80,7 +86,7 @@ func (e *Entry_Fixed) AddEntry(ent entry.Entry) {
 	e.entries = append(e.entries, ent)
 }
 
-// ++++++] Changed [++++++
+/// ++++++] Changed [++++++
 //noinspection ALL
 type Entry_Changed struct {
 
@@ -119,7 +125,7 @@ func (e *Entry_Changed) AddEntry(ent entry.Entry) {
 	e.entries = append(e.entries, ent)
 }
 
-// ++++++] Deprecated [++++++
+/// ++++++] Deprecated [++++++
 //noinspection ALL
 type Entry_Deprecated struct {
 
@@ -158,7 +164,7 @@ func (e *Entry_Deprecated) AddEntry(ent entry.Entry) {
 	e.entries = append(e.entries, ent)
 }
 
-// ++++++] Removed [++++++
+/// ++++++] Removed [++++++
 //noinspection ALL
 type Entry_Removed struct {
 
@@ -197,7 +203,7 @@ func (e *Entry_Removed) AddEntry(ent entry.Entry) {
 	e.entries = append(e.entries, ent)
 }
 
-// ++++++] Security [++++++
+/// ++++++] Security [++++++
 //noinspection ALL
 type Entry_Security struct {
 
@@ -237,7 +243,7 @@ func (e *Entry_Security) AddEntry(ent entry.Entry) {
 }
 
 
-// ++++++] Other [++++++
+/// ++++++] Other [++++++
 //noinspection ALL
 type Entry_Other struct {
 
