@@ -25,7 +25,7 @@ type ChangeEntry interface {
 	GetListEntries()	[]Entry
 
 	// Add a new Entry to the List of Changes
-	AddEntry(entry Entry)
+	AddEntry(ent Entry)
 }
 
 type Entry struct {
