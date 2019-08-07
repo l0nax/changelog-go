@@ -1,13 +1,11 @@
 package entries
 
-import (
-	"gitlab.com/l0nax/changelog-go/pkg/entry"
-)
+import "gitlab.com/l0nax/changelog-go/pkg/entry"
 
 /// ++++++] Added [++++++
 
-// register Type
-internal.EntryT.RegisterEntryType
+//// register Type
+//internal.EntryT.RegisterEntryType
 
 //noinspection ALL
 type Entry_Added struct {
