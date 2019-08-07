@@ -24,6 +24,7 @@ package cmd
 import (
 	"fmt"
 	"github.com/spf13/cobra"
+	"gitlab.com/l0nax/changelog-go/internal"
 	"os"
 
 	"github.com/mitchellh/go-homedir"
@@ -60,6 +61,9 @@ func init() {
 }
 
 func initConfig() {
+	// register all Entry Types
+	internal.RegisterAll()
+
 	// TODO: Change this to scan for a Git Directory
 
 	if cfgFile != "" {
