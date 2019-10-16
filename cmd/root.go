@@ -25,10 +25,14 @@ import (
 	"fmt"
 	"github.com/spf13/cobra"
 	"gitlab.com/l0nax/changelog-go/internal"
+	"log"
 	"os"
 
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/viper"
+
+	"gitlab.com/l0nax/changelog-go/pkg/gut"
+	"gopkg.in/src-d/go-git.v4"
 )
 
 var cfgFile string
@@ -48,6 +52,14 @@ File.`,
 }
 
 func Execute() {
+	__path, _ := gut.FindGitRoot("/home/l0nax/.go/src/github.com/l0nax/kubenab/cmd/kubenab")
+	log.Printf("--> %s", __path)
+
+	_, err := git.PlainOpen(__path)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
@@ -88,4 +100,14 @@ func initConfig() {
 	if err := viper.ReadInConfig(); err == nil {
 		fmt.Println("Using config file:", viper.ConfigFileUsed())
 	}
+}
+
+// CheckIfError should be used to naively panics if an error is not nil.
+func CheckIfError(err error) {
+	if err == nil {
+		return
+	}
+
+	fmt.Printf("\x1b[31;1m%s\x1b[0m\n", fmt.Sprintf("error: %s", err))
+	os.Exit(1)
 }
