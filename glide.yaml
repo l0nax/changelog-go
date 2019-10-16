@@ -6,3 +6,5 @@ import:
   version: ^0.0.5
 - package: github.com/spf13/viper
   version: ^1.4.0
+- package: github.com/src-d/go-git
+  version: ~4.13.1
