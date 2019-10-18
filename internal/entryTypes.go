@@ -11,15 +11,13 @@ var EntryT EntryTypes = EntryTypes{}
 
 // SEntryType is only used to search Entry Types
 type SEntryType struct {
-	ShortTypeName 	string
+	ShortTypeName   string
 	TypeDescription string
 	TypeID			int
 }
 
 // EntryTypes contains all available Entry Types
 type EntryTypes struct {
-
-
 	// internal struct Data
 	entryTypes	[]*entry.ChangeEntry
 }
