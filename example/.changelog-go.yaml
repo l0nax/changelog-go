@@ -22,3 +22,11 @@ preRelrease:
         # an non pre-release.
         # To get this Feature working changelog-go uses the HTML tag "<details>"
         foldPreReleases: true
+
+# entry defines the Changelog Entry which will be written down to disk (the
+# single Changelog Entry File).
+entry:
+        # 'author' enables if changelog-go should grab the author and write it
+        # down to the Changelog-Entry.
+        # This can be (later) used to generate statics.
+        author: false
