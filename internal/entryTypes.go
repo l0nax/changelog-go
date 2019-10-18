@@ -13,15 +13,14 @@ var EntryT EntryTypes = EntryTypes{}
 type SEntryType struct {
 	ShortTypeName   string
 	TypeDescription string
-	TypeID			int
+	TypeID          int
 }
 
 // EntryTypes contains all available Entry Types
 type EntryTypes struct {
 	// internal struct Data
-	entryTypes	[]*entry.ChangeEntry
+	entryTypes []*entry.ChangeEntry
 }
-
 
 func (e *EntryTypes) RegisterEntryType(et *entry.ChangeEntry) error {
 	// check if a Entry Type already exists
