@@ -33,7 +33,7 @@ entry:
         # 'author' enables if changelog-go should grab the author and write it
         # down to the Changelog-Entry.
         # This can be (later) used to generate statics.
-        author: ""
+        author: true
 
 
 # changelog represents the general Configuration about the resulting
