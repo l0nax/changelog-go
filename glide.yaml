@@ -16,3 +16,5 @@ import:
 - package: golang.org/x/text/transform
   version: ^0.3.2
 - package: golang.org/x/sys/unix
+- package: github.com/tcnksm/go-gitconfig
+  version: ^0.1.2
