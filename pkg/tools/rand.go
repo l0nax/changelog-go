@@ -1,5 +1,5 @@
 // Package tools implements some Functions which are needed to run this Application
-import tools
+package tools
 
 import (
 	"crypto/rand"
@@ -16,9 +16,8 @@ func RandomString(length int) string {
 	}
 
 	for i, rByte := range randData {
-		randData[i] = randStrLetters[randData[i] % byte(len(randStrLetters))]
+		randData[i] = randStrLetters[randData[i]%byte(len(randStrLetters))]
 	}
 
 	return string(randData)
 }
-
