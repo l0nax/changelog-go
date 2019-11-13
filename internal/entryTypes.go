@@ -12,8 +12,8 @@ var EntryT EntryTypes = EntryTypes{}
 // SEntryType is only used to search Entry Types
 type SEntryType struct {
 	ShortTypeName   string
-	TypeDescription string
-	TypeID          int
+	TypeDescription string // The Description is only to document the Type better
+	TypeID          int    // This Type ID must be unique
 }
 
 // EntryTypes contains all available Entry Types
