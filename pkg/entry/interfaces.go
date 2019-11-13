@@ -1,6 +1,7 @@
 package entry
 
-// ChangeEntry is the basic Changelog Entry Type
+// ChangeEntry is the basic Changelog Entry Type. This Type is used by other
+// Entry Types.
 type ChangeEntry interface {
 	// Returns a new (initialized) Changelog Entry Struct
 	NewChangeType()	*ChangeEntry
