@@ -2,6 +2,8 @@
 ### GPG template
 secring.*
 
+# Ignore Binary
+changelog-go
 
 ### Godot template
 
