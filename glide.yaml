@@ -18,3 +18,10 @@ import:
 - package: golang.org/x/sys/unix
 - package: github.com/tcnksm/go-gitconfig
   version: ^0.1.2
+- package: golang.org/x/crypto/ssh/knownhosts
+- package: golang.org/x/crypto/ssh
+- package: gopkg.in/src-d/go-git.v4
+  version: ^4.13.1
+  subpackages:
+  - plumbing
+  - plumbing/object
