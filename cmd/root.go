@@ -89,6 +89,8 @@ func initConfig() {
 			os.Exit(1)
 		}
 
+		viper.AddConfigPath(internal.GitPath)
+
 		// Search config in home directory with name ".changelog-go" (without extension).
 		viper.AddConfigPath(home)
 		viper.SetConfigName(".changelog-go")
@@ -99,5 +101,8 @@ func initConfig() {
 	// If a config file is found, read it in.
 	if err := viper.ReadInConfig(); err == nil {
 		fmt.Println("Using config file:", viper.ConfigFileUsed())
+	} else {
+		// panic("Can not read Config file")
+		panic(err)
 	}
 }
