@@ -5,7 +5,6 @@ import (
 	"gitlab.com/l0nax/changelog-go/pkg/entry/entries"
 )
 
-
 //// define base Pointer to Types
 //var basePointer []entry.ChangeEntry
 
@@ -20,10 +19,10 @@ func RegisterAll() {
 	var other entry.ChangeEntry = &entries.Entry_Other{}
 
 	// --- Register --- //
-	_ = EntryT.RegisterEntryType(&added)
-	_ = EntryT.RegisterEntryType(&changed)
-	_ = EntryT.RegisterEntryType(&deprecated)
-	_ = EntryT.RegisterEntryType(&removed)
-	_ = EntryT.RegisterEntryType(&security)
-	_ = EntryT.RegisterEntryType(&other)
+	_ = EntryT.RegisterEntryType(added.NewChangeType())
+	_ = EntryT.RegisterEntryType(changed.NewChangeType())
+	_ = EntryT.RegisterEntryType(deprecated.NewChangeType())
+	_ = EntryT.RegisterEntryType(removed.NewChangeType())
+	_ = EntryT.RegisterEntryType(security.NewChangeType())
+	_ = EntryT.RegisterEntryType(other.NewChangeType())
 }
