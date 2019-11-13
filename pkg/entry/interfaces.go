@@ -11,7 +11,7 @@ type ChangeEntry interface {
 	GetShortTypeName() string
 
 	// GetTypeDescription() returns the Description
-	// that will be shown when the user can choose
+	// which will be shown when the user can choose
 	// the Changelog Entry Type
 	// For Example: "New Feature"
 	GetTypeDescription() string
