@@ -27,11 +27,15 @@ import (
 
 // newCmd represents the new command
 var newCmd = &cobra.Command{
-	Use:   "new",
+	Use:   "new <title>",
 	Short: "Create a new Changelog-Entry",
 	Long: `"new" creates a new Changelog-Entry so you can easily commit
 your entry.`,
+	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
+		// check if first Argument is set
+		// title := args[0]
+
 		// get Author if enabled in Config
 
 	},
@@ -39,8 +43,4 @@ your entry.`,
 
 func init() {
 	rootCmd.AddCommand(newCmd)
-
-	newCmd.Flags().String("title", "", "Title of the Changelog Entry")
-
-	newCmd.MarkFlagRequired("title")
 }
