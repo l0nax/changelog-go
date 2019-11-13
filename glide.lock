@@ -1,5 +1,5 @@
-hash: f5bf2b43d8c2743d7b6294a3d8dd3b0735c42a7588374814196472a53c0404a9
-updated: 2019-11-13T16:31:27.72970205+01:00
+hash: 4f9537ff417ec30ddb0f2cf265a915f4826b2ba01cb6b12d9c0ec35fbb09049e
+updated: 2019-11-13T17:58:22.175343054+01:00
 imports:
 - name: github.com/fsnotify/fsnotify
   version: 4bf2d1fec78374803a39307bfb8d340688f4f28e
@@ -29,6 +29,10 @@ imports:
   version: c4efb7477c431a2c0eb18f6ef690a19f85065271
 - name: github.com/sirupsen/logrus
   version: 839c75faf7f98a33d445d181f3018b5c3409a45e
+- name: github.com/speedata/gogit
+  version: f25600b364f0bbdfa12abed6fa6fa2a1a89f0588
+- name: github.com/speedata/mmap-go
+  version: 6c75090c55983bef2e129e173681b20d24871ef8
 - name: github.com/spf13/afero
   version: 588a75ec4f32903aa5e39a2619ba6a4631e28424
   subpackages:
@@ -43,6 +47,8 @@ imports:
   version: 2e9d26c8c37aae03e3f9d4e90b7116f5accb7cab
 - name: github.com/spf13/viper
   version: 72b022eb357a56469725dcd03918449e2278d02e
+- name: github.com/src-d/go-git
+  version: 0d1a009cbb604db18be960db5f1525b99a55d727
 - name: github.com/subosito/gotenv
   version: de67a6614a4de71ad5e380b6946e56ab957d58c5
 - name: github.com/tcnksm/go-gitconfig
