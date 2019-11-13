@@ -22,6 +22,11 @@ type EntryTypes struct {
 	entryTypes []*entry.ChangeEntry
 }
 
+// ListAvailableTypes returns a list of all available Entry Types
+func (e *EntryTypes) ListAvailableTypes() []*entry.ChangeEntry {
+	return e.entryTypes
+}
+
 func (e *EntryTypes) RegisterEntryType(et *entry.ChangeEntry) error {
 	// check if a Entry Type already exists
 	for _, v := range e.entryTypes {
