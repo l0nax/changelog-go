@@ -18,4 +18,3 @@ import:
 - package: golang.org/x/sys/unix
 - package: github.com/tcnksm/go-gitconfig
   version: ^0.1.2
-- package: github.com/speedata/gogit
