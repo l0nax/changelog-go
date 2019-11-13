@@ -4,7 +4,7 @@ package entry
 // Entry Types.
 type ChangeEntry interface {
 	// Returns a new (initialized) Changelog Entry Struct
-	NewChangeType()	*ChangeEntry
+	NewChangeType() *ChangeEntry
 
 	// GetShortTypeName() returns the short Type Name
 	// For Example: "Added"
@@ -18,12 +18,11 @@ type ChangeEntry interface {
 
 	// Returns the Type ID
 	// !!Please choose the Type ID to be unique!!
-	GetTypeID()	int
-
+	GetTypeID() int
 
 	// Returns a List of all Entries
 	// of this Changelog Type
-	GetListEntries()	[]Entry
+	GetListEntries() []Entry
 
 	// Add a new Entry to the List of Changes
 	AddEntry(ent Entry)
@@ -32,15 +31,15 @@ type ChangeEntry interface {
 type Entry struct {
 	// ChangeTitle represents the Changelog Entry
 	// Title/ Description
-	ChangeTitle	string
+	ChangeTitle string
 
 	// Type represents Type of the Changelog
-	Type	*ChangeEntry
+	Type *ChangeEntry
 
 	// Author Contains the Name (+ Mail) of
 	// the Author from the Changelog Entry
 	// If the Author Name (or mail) could not
 	// be found from the Git Config, then this
 	// String will be contain nothing
-	Author	string
+	Author string
 }
