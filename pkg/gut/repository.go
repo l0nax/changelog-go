@@ -8,8 +8,8 @@ import (
 )
 
 // maxDepth describes how many levels of directories this application will
-// search for the Changelog Config.
-// This is needed because otherwise the application will search for the Config
+// search for the '.git' Directory.
+// This is needed because otherwise the application will search for the Git Root
 // forever.
 const maxDepth = 16
 
@@ -18,10 +18,12 @@ const maxDepth = 16
 // FuncGitRoot will return $PATH/
 // It will return an Error if the `.git/` Directory could not be found.
 func FindGitRoot(base string) (string, error) {
+	var i int = 0
 	var _path = base
 
 	for {
-		if _path == "/" {
+		// if we are at the Root Directory stop searching
+		if i >= maxDepth {
 			return "", os.ErrNotExist
 		}
 
@@ -32,5 +34,6 @@ func FindGitRoot(base string) (string, error) {
 		}
 
 		_path = path.Join(_path, "../")
+		i++
 	}
 }
