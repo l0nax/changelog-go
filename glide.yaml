@@ -25,3 +25,5 @@ import:
   subpackages:
   - plumbing
   - plumbing/object
+- package: gopkg.in/yaml.v2
+  version: ^2.2.5

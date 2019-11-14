@@ -1,5 +1,5 @@
-hash: 898845e543ac1c795bb409767ba9aed455ecf2dfad58a3a126ed7be238bc24ed
-updated: 2019-11-13T18:43:35.155299603+01:00
+hash: 5548b1a2c5f545ed8fa280530214d49c35584b4d693c5c630bfec61a4ac0fdf2
+updated: 2019-11-14T11:42:00.535944132+01:00
 imports:
 - name: github.com/emirpasic/gods
   version: 4e23915b9a82f35f320a68a395a7a5045c826932
@@ -48,10 +48,6 @@ imports:
   - diffmatchpatch
 - name: github.com/sirupsen/logrus
   version: 839c75faf7f98a33d445d181f3018b5c3409a45e
-- name: github.com/speedata/gogit
-  version: f25600b364f0bbdfa12abed6fa6fa2a1a89f0588
-- name: github.com/speedata/mmap-go
-  version: 6c75090c55983bef2e129e173681b20d24871ef8
 - name: github.com/spf13/afero
   version: 588a75ec4f32903aa5e39a2619ba6a4631e28424
   subpackages:
