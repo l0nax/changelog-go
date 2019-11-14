@@ -22,14 +22,7 @@ type V1 struct {
 		EntryPath string `yaml:"entryPath"`
 		Changelog string `yaml:"changelog"`
 	} `yaml:"changelog"`
-
-
-	// Check() will test if all required Paths and files are represent
-	// and if not it will TRY to create them. If an Error occurs while
-	// creating those Files/ Dirs Check() will return the Error.
-	Check() error
 }
-
 
 // ===== Internal Types =====
 var v1ChangelogFolderStruct = []string{"released", "unreleased"}

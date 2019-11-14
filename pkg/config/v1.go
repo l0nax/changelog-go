@@ -8,7 +8,9 @@ import (
 	"gitlab.com/l0nax/changelog-go/internal"
 )
 
-// This File implements all the Functions for the V1 Config
+// Check will test if all required Paths and files are represent
+// and if not it will TRY to create them. If an Error occurs while
+// creating those Files/ Dirs Check() will return the Error.
 func (c *V1) Check() error {
 	// try to Unmarshal the Config
 	err := viper.Unmarshal(c)
