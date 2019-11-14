@@ -30,8 +30,11 @@ func AddEntry(entry entry.Entry) {
 		log.Fatal(err)
 	}
 
+	_path := path.Join(internal.GitPath, viper.GetString("changelog.entryPath"))
+	_path = path.Join(_path, "unreleased")
+
 	// get random String
-	fileName := path.Join(internal.GitPath, fmt.Sprintf("%s-%s", branchName, tools.RandomString(8)))
+	fileName := path.Join(_path, fmt.Sprintf("%s-%s", branchName, tools.RandomString(8)))
 
 	// crete File and write Data down
 	file, err := os.Create(fileName)
