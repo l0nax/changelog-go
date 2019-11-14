@@ -43,12 +43,13 @@ func AddEntry(entry entry.Entry) {
 	}
 	defer file.Close()
 
-	_, err = file.WriteString(fmt.Sprintf("title: \"%s\"\n", entry.ChangeTitle))
+	// Marshal Changelog Type into byte slice
+	data, err := tools.YAMLMarshal(entry)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	_, err = file.WriteString(fmt.Sprintf("type: \"%d\"\n", (*entry.Type).GetTypeID()))
+	_, err = file.Write(data)
 	if err != nil {
 		log.Fatal(err)
 	}
