@@ -3,6 +3,7 @@ package changelog
 import (
 	"fmt"
 	log "github.com/sirupsen/logrus"
+	"github.com/spf13/viper"
 	"gitlab.com/l0nax/changelog-go/internal"
 	"gitlab.com/l0nax/changelog-go/pkg/entry"
 	"gitlab.com/l0nax/changelog-go/pkg/gut"
@@ -25,6 +26,9 @@ func AddEntry(entry entry.Entry) {
 
 	// get Branchname
 	branchName, err := gut.GetCurrentBranchFromRepository(repo)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	// get random String
 	fileName := path.Join(internal.GitPath, fmt.Sprintf("%s-%s", branchName, tools.RandomString(8)))
