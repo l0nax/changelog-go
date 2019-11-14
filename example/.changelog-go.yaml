@@ -47,3 +47,9 @@ changelog:
 
         # set the Path where the Changelog Output will be stored.
         changelog: "CHANGELOG.md"
+
+        # customScheme describes if 'changelog-go' should search for an custom
+        # CHANGELOG.md Output Scheme in `changelog.entryPath`.
+        # If this is set to 'false' (default) then 'changelog-go' will use the
+        # default one.
+        customScheme: false
