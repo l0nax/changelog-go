@@ -15,7 +15,7 @@ func RandomString(length int) string {
 		log.Fatal(err)
 	}
 
-	for i, rByte := range randData {
+	for i, _ := range randData {
 		randData[i] = randStrLetters[randData[i]%byte(len(randStrLetters))]
 	}
 
