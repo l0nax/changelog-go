@@ -10,7 +10,7 @@ import "gitlab.com/l0nax/changelog-go/pkg/entry"
 //noinspection ALL
 type Entry_Added struct {
 	// internal Struct Data
-	entries []entry.Entry
+	entries []*entry.Entry
 
 	// internal Struct Information
 	shortTypeName   string
@@ -35,11 +35,11 @@ func (e *Entry_Added) GetTypeDescription() string { return e.typeDescription }
 
 func (e *Entry_Added) GetTypeID() int { return e.typeID }
 
-func (e *Entry_Added) GetListEntries() []entry.Entry { return e.entries }
+func (e *Entry_Added) GetListEntries() []*entry.Entry { return e.entries }
 
-func (e *Entry_Added) AddEntry(ent entry.Entry) {
+func (e *Entry_Added) AddEntry(ent *entry.Entry) {
 	if len(e.entries) == 0 || e.entries == nil {
-		e.entries = []entry.Entry{}
+		e.entries = []*entry.Entry{}
 	}
 
 	// add Entry to Entries Slice
@@ -51,7 +51,7 @@ func (e *Entry_Added) AddEntry(ent entry.Entry) {
 type Entry_Fixed struct {
 
 	// internal Struct Data
-	entries []entry.Entry
+	entries []*entry.Entry
 
 	// internal Struct Information
 	shortTypeName   string
@@ -76,11 +76,11 @@ func (e *Entry_Fixed) GetTypeDescription() string { return e.typeDescription }
 
 func (e *Entry_Fixed) GetTypeID() int { return e.typeID }
 
-func (e *Entry_Fixed) GetListEntries() []entry.Entry { return e.entries }
+func (e *Entry_Fixed) GetListEntries() []*entry.Entry { return e.entries }
 
-func (e *Entry_Fixed) AddEntry(ent entry.Entry) {
+func (e *Entry_Fixed) AddEntry(ent *entry.Entry) {
 	if len(e.entries) == 0 || e.entries == nil {
-		e.entries = []entry.Entry{}
+		e.entries = []*entry.Entry{}
 	}
 
 	// add Entry to Entries Slice
@@ -92,7 +92,7 @@ func (e *Entry_Fixed) AddEntry(ent entry.Entry) {
 type Entry_Changed struct {
 
 	// internal Struct Data
-	entries []entry.Entry
+	entries []*entry.Entry
 
 	// internal Struct Information
 	shortTypeName   string
@@ -117,11 +117,11 @@ func (e *Entry_Changed) GetTypeDescription() string { return e.typeDescription }
 
 func (e *Entry_Changed) GetTypeID() int { return e.typeID }
 
-func (e *Entry_Changed) GetListEntries() []entry.Entry { return e.entries }
+func (e *Entry_Changed) GetListEntries() []*entry.Entry { return e.entries }
 
-func (e *Entry_Changed) AddEntry(ent entry.Entry) {
+func (e *Entry_Changed) AddEntry(ent *entry.Entry) {
 	if len(e.entries) == 0 || e.entries == nil {
-		e.entries = []entry.Entry{}
+		e.entries = []*entry.Entry{}
 	}
 
 	// add Entry to Entries Slice
@@ -133,7 +133,7 @@ func (e *Entry_Changed) AddEntry(ent entry.Entry) {
 type Entry_Deprecated struct {
 
 	// internal Struct Data
-	entries []entry.Entry
+	entries []*entry.Entry
 
 	// internal Struct Information
 	shortTypeName   string
@@ -158,11 +158,11 @@ func (e *Entry_Deprecated) GetTypeDescription() string { return e.typeDescriptio
 
 func (e *Entry_Deprecated) GetTypeID() int { return e.typeID }
 
-func (e *Entry_Deprecated) GetListEntries() []entry.Entry { return e.entries }
+func (e *Entry_Deprecated) GetListEntries() []*entry.Entry { return e.entries }
 
-func (e *Entry_Deprecated) AddEntry(ent entry.Entry) {
+func (e *Entry_Deprecated) AddEntry(ent *entry.Entry) {
 	if len(e.entries) == 0 || e.entries == nil {
-		e.entries = []entry.Entry{}
+		e.entries = []*entry.Entry{}
 	}
 
 	// add Entry to Entries Slice
@@ -174,7 +174,7 @@ func (e *Entry_Deprecated) AddEntry(ent entry.Entry) {
 type Entry_Removed struct {
 
 	// internal Struct Data
-	entries []entry.Entry
+	entries []*entry.Entry
 
 	// internal Struct Information
 	shortTypeName   string
@@ -199,11 +199,11 @@ func (e *Entry_Removed) GetTypeDescription() string { return e.typeDescription }
 
 func (e *Entry_Removed) GetTypeID() int { return e.typeID }
 
-func (e *Entry_Removed) GetListEntries() []entry.Entry { return e.entries }
+func (e *Entry_Removed) GetListEntries() []*entry.Entry { return e.entries }
 
-func (e *Entry_Removed) AddEntry(ent entry.Entry) {
+func (e *Entry_Removed) AddEntry(ent *entry.Entry) {
 	if len(e.entries) == 0 || e.entries == nil {
-		e.entries = []entry.Entry{}
+		e.entries = []*entry.Entry{}
 	}
 
 	// add Entry to Entries Slice
@@ -215,7 +215,7 @@ func (e *Entry_Removed) AddEntry(ent entry.Entry) {
 type Entry_Security struct {
 
 	// internal Struct Data
-	entries []entry.Entry
+	entries []*entry.Entry
 
 	// internal Struct Information
 	shortTypeName   string
@@ -240,11 +240,11 @@ func (e *Entry_Security) GetTypeDescription() string { return e.typeDescription 
 
 func (e *Entry_Security) GetTypeID() int { return e.typeID }
 
-func (e *Entry_Security) GetListEntries() []entry.Entry { return e.entries }
+func (e *Entry_Security) GetListEntries() []*entry.Entry { return e.entries }
 
-func (e *Entry_Security) AddEntry(ent entry.Entry) {
+func (e *Entry_Security) AddEntry(ent *entry.Entry) {
 	if len(e.entries) == 0 || e.entries == nil {
-		e.entries = []entry.Entry{}
+		e.entries = []*entry.Entry{}
 	}
 
 	// add Entry to Entries Slice
@@ -256,7 +256,7 @@ func (e *Entry_Security) AddEntry(ent entry.Entry) {
 type Entry_Other struct {
 
 	// internal Struct Data
-	entries []entry.Entry
+	entries []*entry.Entry
 
 	// internal Struct Information
 	shortTypeName   string
@@ -281,11 +281,11 @@ func (e *Entry_Other) GetTypeDescription() string { return e.typeDescription }
 
 func (e *Entry_Other) GetTypeID() int { return e.typeID }
 
-func (e *Entry_Other) GetListEntries() []entry.Entry { return e.entries }
+func (e *Entry_Other) GetListEntries() []*entry.Entry { return e.entries }
 
-func (e *Entry_Other) AddEntry(ent entry.Entry) {
+func (e *Entry_Other) AddEntry(ent *entry.Entry) {
 	if len(e.entries) == 0 || e.entries == nil {
-		e.entries = []entry.Entry{}
+		e.entries = []*entry.Entry{}
 	}
 
 	// add Entry to Entries Slice
