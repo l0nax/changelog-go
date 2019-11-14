@@ -14,6 +14,16 @@ type ReleaseInfo struct {
 type Release struct {
 	Info    *ReleaseInfo  // All Informations about the current Release
 	Entries []entry.Entry // Holds all NEW changelog entry Types
+
+	// == Fields used in the Changelog Template == //
+	Releases TplRelease // Holds all Releases
+}
+
+// TplRelease contains all Data of a Release
+type TplRelease struct {
+	Version string // Release Version
+	Colapse bool   // This Field indicates if this Release should be collapsed
+
 }
 
 // this Type is the default CHANGELOG.md Scheme
@@ -28,6 +38,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 {{ range . }}
 ## {{ .Version }} ({{ .ReleaseDate }})
 
+{{/* Colapse if PreRelease */}}
+{{- if .Colapse -}}<details>{{- end -}}
+{{- if .Colapse -}}<summary>This is a Pre-Release, Click to see details.</summary>{{- end -}}
+
 {{ with .Entries }}
 {{ range . }}
 ### {{ .ShortTypeName }} ({{ .NumString }})
@@ -38,6 +52,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 {{ end }}
 {{ end }}
 
+{{- if .Colapse -}}</details>{{- end -}}
 {{/* two empty lines so thath the Markdown Parser will put here '<br/>' */}}
 
 
