@@ -54,15 +54,5 @@ func AddEntry(entry entry.Entry) {
 		log.Fatal(err)
 	}
 
-	// _, err = file.WriteString(fmt.Sprintf("title: \"%s\"\n", entry.ChangeTitle))
-	// if err != nil {
-	//         log.Fatal(err)
-	// }
-
-	// _, err = file.WriteString(fmt.Sprintf("type: \"%d\"\n", (*entry.Type).GetTypeID()))
-	// if err != nil {
-	//         log.Fatal(err)
-	// }
-
 	// TODO: Implement 'author' Field
 }
