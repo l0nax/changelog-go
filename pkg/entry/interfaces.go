@@ -21,10 +21,10 @@ type ChangeEntry interface {
 
 	// Returns a List of all Entries
 	// of this Changelog Type
-	GetListEntries() []Entry
+	GetListEntries() []*Entry
 
 	// Add a new Entry to the List of Changes
-	AddEntry(ent Entry)
+	AddEntry(ent *Entry)
 }
 
 type Entry struct {
