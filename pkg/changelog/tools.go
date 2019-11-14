@@ -84,3 +84,36 @@ func GetEntries(r *Release) error {
 
 	return nil
 }
+
+// MoveEntries will move all unreleased Entries to 'released/{{ .Version }}'
+func MoveEntries(version string) error {
+	changelogPath := path.Join(internal.GitPath, viper.GetString("changelog.entryPath"))
+	unreleasedPath := path.Join(changelogPath, "unreleased")
+	releasedPath := path.Join(changelogPath, "released")
+	verPath := path.Join(releasedPath, version)
+
+	// check if a Directory already exists
+	if _, err := os.Stat(verPath); !os.IsNotExist(err) {
+		return os.ErrExist
+	}
+
+	// create new release directory
+	err := os.Mkdir(verPath, 0755)
+	if err != nil {
+		return err
+	}
+
+	// move all Files to the new release directory
+	err = filepath.Walk(unreleasedPath, func(_path string, info os.FileInfo, err error) error {
+		// move File
+		return os.Rename(_path, path.Join(verPath, info.Name()))
+	})
+
+	if err != nil {
+		return err
+	}
+
+	log.Debug("Moved all unreleased Files")
+
+	return nil
+}
