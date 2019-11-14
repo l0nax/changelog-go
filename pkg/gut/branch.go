@@ -20,8 +20,7 @@ func GetCurrentBranchFromRepository(repository *git.Repository) (string, error) 
 	var currentBranchName string
 	err = branchRefs.ForEach(func(branchRef *plumbing.Reference) error {
 		if branchRef.Hash() == headRef.Hash() {
-			currentBranchName = branchRef.Name().String()
-
+			currentBranchName = branchRef.Name().Short()
 			return nil
 		}
 
