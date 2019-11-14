@@ -29,14 +29,13 @@ import (
 
 // releaseCmd represents the release command
 var releaseCmd = &cobra.Command{
-	Use:   "release",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Use:   "release <version>",
+	Short: "This Command will generate the CHANGELOG.md file.",
+	Long: `The CHANGELOG.md will be generated and – depending on
+the configuration and flags – the Entry Fiels will be moved to the 'released'
+Folder.`,
+	Example: `  release v1.0.0`,
+	Args:    cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("release called")
 	},
