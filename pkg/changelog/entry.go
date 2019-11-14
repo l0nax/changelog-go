@@ -45,7 +45,7 @@ func AddEntry(entry entry.Entry) {
 		log.Fatal(err)
 	}
 
-	_, err = file.WriteString(fmt.Sprintf("type: \"%s\"\n", (*entry.Type).GetTypeID()))
+	_, err = file.WriteString(fmt.Sprintf("type: \"%d\"\n", (*entry.Type).GetTypeID()))
 	if err != nil {
 		log.Fatal(err)
 	}
