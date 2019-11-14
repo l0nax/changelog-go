@@ -22,8 +22,6 @@ THE SOFTWARE.
 package cmd
 
 import (
-	"fmt"
-
 	"github.com/spf13/cobra"
 )
 
@@ -37,12 +35,15 @@ Folder.`,
 	Example: `  release v1.0.0`,
 	Args:    cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("release called")
+
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(releaseCmd)
+
+	releaseCmd.Flags().BoolP("pre-relrease", "p", false, `Mark this Release as pre-release in the CHANGELOG.md.
+The Output and how the Application reacts depends on your Configuration.`)
 
 	// Here you will define your flags and configuration settings.
 
