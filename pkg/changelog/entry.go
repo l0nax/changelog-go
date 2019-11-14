@@ -53,6 +53,4 @@ func AddEntry(entry entry.Entry) {
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	// TODO: Implement 'author' Field
 }
