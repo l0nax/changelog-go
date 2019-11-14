@@ -33,13 +33,13 @@ type Entry struct {
 	ChangeTitle string `yaml:"title"`
 
 	// Type represents Type of the Changelog
-	Type   *ChangeEntry
-	typeID int `yaml:"type"`
+	Type   *ChangeEntry `yaml:"-"`
+	TypeID int          `yaml:"type"`
 
 	// Author Contains the Name (+ Mail) of
 	// the Author from the Changelog Entry
 	// If the Author Name (or mail) could not
 	// be found from the Git Config, then this
 	// String will be contain nothing
-	Author string `yaml:"author"`
+	Author string `yaml:"author,omitempty"`
 }
