@@ -16,14 +16,22 @@ type Release struct {
 	Entries []entry.Entry // Holds all NEW changelog entry Types
 
 	// == Fields used in the Changelog Template == //
-	Releases TplRelease // Holds all Releases
+	Releases []TplRelease // Holds all Releases
 }
 
 // TplRelease contains all Data of a Release
 type TplRelease struct {
-	Version string // Release Version
-	Colapse bool   // This Field indicates if this Release should be collapsed
+	Version string       // Release Version
+	Colapse bool         // This Field indicates if this Release should be collapsed
+	Entries []TplEntries // Contains a SORTED List of all Changes. Sorted by change Type.
+}
 
+// TplEntries is like a normal Entry, but it contains only Changes of a specific
+// Change Type.
+type TplEntries struct {
+	ShartTypeName string         // Short Type Name, eg. "Added"
+	NumString     string         // Contains the 'Number of Changes' String, eg: "1 change" OR "5 changes"
+	Changes       []*entry.Entry // Contains the raw Change-Entry struct
 }
 
 // this Type is the default CHANGELOG.md Scheme
