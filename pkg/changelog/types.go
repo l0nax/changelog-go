@@ -15,3 +15,37 @@ type Release struct {
 	Info    *ReleaseInfo  // All Informations about the current Release
 	Entries []entry.Entry // Holds all NEW changelog entry Types
 }
+
+// this Type is the default CHANGELOG.md Scheme
+const changelogScheme = `# Changelog
+
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
+
+
+{{ with .Releases }}
+{{ range . }}
+## {{ .Version }} ({{ .ReleaseDate }})
+
+{{ with .Entries }}
+{{ range . }}
+### {{ .ShortTypeName }} ({{ .NumString }})
+
+{{ with .Changes }}
+{{ range . }}
+- {{ .Title }}
+{{ end }}
+{{ end }}
+
+{{/* two empty lines so thath the Markdown Parser will put here '<br/>' */}}
+
+
+{{ end }}
+{{/* A empty line to provide a Consistent Layout */}}
+
+{{ end }}
+{{ end }}
+{{ end }}
+
+`
