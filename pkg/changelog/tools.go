@@ -3,9 +3,15 @@ package changelog
 // This File contains all basic Functions
 
 import (
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
+	"gitlab.com/l0nax/changelog-go/internal"
+	"gitlab.com/l0nax/changelog-go/pkg/entry"
+	"gitlab.com/l0nax/changelog-go/pkg/tools"
+	"io/ioutil"
 	"os"
 	"path"
+	"path/filepath"
 )
 
 // CheckDir will check if the changelog directory exists
@@ -29,4 +35,52 @@ func CheckDir() {
 			panic(err)
 		}
 	}
+}
+
+// GetEntries returns a List of all Entries found in the Changelog-Data directory.
+func GetEntries(r *Release) error {
+	// contains all found unreleased Files
+	var files map[string][]byte
+
+	// initialize r.Info if its not already initialized
+	if r.Info == nil {
+		r.Info = &ReleaseInfo{}
+	}
+
+	// First check if everything is ok
+	CheckDir()
+
+	changelogPath := path.Join(internal.GitPath, viper.GetString("changelog.entryPath"))
+	unreleasedPath := path.Join(changelogPath, "unreleased")
+
+	err := filepath.Walk(unreleasedPath, func(path string, info os.FileInfo, err error) error {
+		// read file content
+		data, err := ioutil.ReadFile(path)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		files[path] = data
+		return nil
+	})
+
+	if err != nil {
+		log.Panic(err)
+		return err
+	}
+
+	for _, fileData := range files {
+		// unmarshal Filecontent into Struct
+		changeEntry := entry.Entry{}
+		err = tools.YAMLUnmarshal(fileData, &changeEntry)
+		if err != nil {
+			log.Fatal(err)
+			return err
+		}
+
+		// append new Filecontent to Release Data
+		(*r).Entries = append(r.Entries, changeEntry)
+	}
+
+	return nil
 }
