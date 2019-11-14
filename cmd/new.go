@@ -80,6 +80,7 @@ your entry.`,
 		}
 
 		reader := bufio.NewReader(os.Stdin)
+		fmt.Print(">> ")
 
 		// ask User about Entry Type
 		text, err := reader.ReadString('\n')
