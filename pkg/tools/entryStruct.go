@@ -12,14 +12,14 @@ func YAMLMarshal(in entry.Entry) ([]byte, error) {
 	return yaml.Marshal(in)
 }
 
-func YAMLUnmarshal(in []byte, out entry.Entry) error {
+func YAMLUnmarshal(in []byte, out *entry.Entry) error {
 	typeSearch := internal.SEntryType{
-		TypeID: out.TypeID,
+		TypeID: (*out).TypeID,
 	}
 
 	var err error
 	// simply search for the Change Entry Type
-	out.Type, err = internal.EntryT.SearchEntryType(&typeSearch)
+	(*out).Type, err = internal.EntryT.SearchEntryType(&typeSearch)
 	if err != nil {
 		return err
 	}
