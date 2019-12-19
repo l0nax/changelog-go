@@ -77,8 +77,8 @@ func (e *EntryTypes) SearchEntryType(se *SEntryType) (*entry.ChangeEntry, error)
 			pretty.Formatter(*e.entryTypes[i]), pretty.Formatter(se))
 
 		// short Type Name
-		if ((*e.entryTypes[i]).GetShortTypeName() == se.ShortTypeName) &&
-			((*e.entryTypes[i]).GetTypeDescription() == se.TypeDescription) &&
+		if ((*e.entryTypes[i]).GetShortTypeName() == se.ShortTypeName) ||
+			((*e.entryTypes[i]).GetTypeDescription() == se.TypeDescription) ||
 			((*e.entryTypes[i]).GetTypeID() == se.TypeID) {
 			return e.entryTypes[i], nil
 		}
