@@ -3,6 +3,8 @@ package tools
 import (
 	// "fmt"
 
+	"github.com/kr/pretty"
+	log "github.com/sirupsen/logrus"
 	"gitlab.com/l0nax/changelog-go/internal"
 	"gitlab.com/l0nax/changelog-go/pkg/entry"
 	"gopkg.in/yaml.v2"
@@ -34,7 +36,9 @@ func YAMLUnmarshal(in []byte, out *entry.Entry) error {
 
 	// add the unmarshalled type to our internal change list to keep track
 	// of him
-	(*out.Type).AddEntry(out)
+	(*(*out).Type).AddEntry(out)
+
+	log.Debugf("Add new Changelog Entry to list of changes: %# v\n", pretty.Formatter(out))
 
 	return nil
 }
