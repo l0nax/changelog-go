@@ -1,6 +1,7 @@
 # `changelog-go`
 
-A Changelog Management Tool written in Go and compatible with Linux, Windows and Mac OS-X.
+A Changelog Management Tool written in Go which is compatible with Linux,
+Windows and Mac OS-X.
 
 ## Motivation
 
