@@ -8,6 +8,7 @@ import (
 	"gitlab.com/l0nax/changelog-go/internal"
 )
 
+
 // Check will test if all required Paths and files are represent
 // and if not it will TRY to create them. If an Error occurs while
 // creating those Files/ Dirs Check() will return the Error.
