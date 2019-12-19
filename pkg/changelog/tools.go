@@ -3,15 +3,16 @@ package changelog
 // This File contains all basic Functions
 
 import (
+	"io/ioutil"
+	"os"
+	"path"
+	"path/filepath"
+
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 	"gitlab.com/l0nax/changelog-go/internal"
 	"gitlab.com/l0nax/changelog-go/pkg/entry"
 	"gitlab.com/l0nax/changelog-go/pkg/tools"
-	"io/ioutil"
-	"os"
-	"path"
-	"path/filepath"
 )
 
 // CheckDir will check if the changelog directory exists
@@ -50,10 +51,19 @@ func GetEntries(r *Release) error {
 	// First check if everything is ok
 	CheckDir()
 
-	changelogPath := path.Join(internal.GitPath, viper.GetString("changelog.entryPath"))
-	unreleasedPath := path.Join(changelogPath, "unreleased")
+	unreleasedPath := path.Join(
+		path.Join(internal.GitPath,
+			viper.GetString("changelog.entryPath")),
+		"unreleased/")
 
 	err := filepath.Walk(unreleasedPath, func(path string, info os.FileInfo, err error) error {
+		// check if path is File
+		if info.IsDir() {
+			return nil
+		}
+
+		log.Debugf("Reading '%s'\n", path)
+
 		// read file content
 		data, err := ioutil.ReadFile(path)
 		if err != nil {
