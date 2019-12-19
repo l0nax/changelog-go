@@ -38,7 +38,7 @@ var cfgFile string
 var rootCmd = &cobra.Command{
 	Use:   "changelog-go",
 	Short: "Changelog Management Tool",
-	Long: `changelog-go  helps you to keep track of you
+	Long: `changelog-go helps you to keep track of your
 Changelog (and changes) and its fully compatible with (eg) the Git Flow.
 
 It extends your DevOps Workflow and gives other People
