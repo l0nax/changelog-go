@@ -22,12 +22,12 @@ func GenerateChangelog(r *Release) {
 	// TODO: Implement Feature (and Config variable) to allow the User
 	// to regenerate the complete CHANGELOG.md.
 
-	// initialize and add the current Relase to `r.Releases`
-	r.Releases[0] = TplRelease{
+	// prepend our NEW release (data) to the list of releases
+	r.Releases = append([]TplRelease{{
 		Version: strings.Join(r.Info.Version[:], ""),
 		Colapse: false,
 		Entries: []TplEntries{},
-	}
+	}}, r.Releases...)
 
 	// get Entries by Change Type
 	for _, cType := range internal.EntryT.ListAvailableTypes() {
