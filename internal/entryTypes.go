@@ -73,8 +73,8 @@ func (e *EntryTypes) DeRegisterEntryType(et *entry.ChangeEntry) error {
 func (e *EntryTypes) SearchEntryType(se *SEntryType) (*entry.ChangeEntry, error) {
 	// find Entry Type
 	for i, _ := range e.entryTypes {
-		log.Debugf("Searching (%# v) => Entry (%# v)\n",
-			pretty.Formatter(*e.entryTypes[i]), pretty.Formatter(se))
+		log.Debugf("Searching (%# v) in Entry (%# v)\n",
+			pretty.Formatter(se), pretty.Formatter(*e.entryTypes[i]))
 
 		// short Type Name
 		if ((*e.entryTypes[i]).GetShortTypeName() == se.ShortTypeName) ||
