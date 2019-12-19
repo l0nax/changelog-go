@@ -46,7 +46,17 @@ the possibility to read a beautiful formatted CHANGELOG.md
 File.`,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
-	//	Run: func(cmd *cobra.Command, args []string) { },
+	Run: func(cmd *cobra.Command, args []string) {
+		// print Version information if flag is set
+		if val, _ := cmd.Flags().GetBool("version"); val {
+			fmt.Printf("%-20v: %s\n", "Version", internal.Version)
+			fmt.Printf("%-20v: %s\n", "Build", internal.BuildTime)
+			fmt.Printf("%-20v: %s\n", "Git Hash", internal.Hash)
+		} else {
+			cmd.Help()
+			os.Exit(0)
+		}
+	},
 }
 
 func Execute() {
@@ -60,6 +70,7 @@ func init() {
 	cobra.OnInitialize(initConfig)
 
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.changelog-go.yaml)")
+	rootCmd.PersistentFlags().Bool("version", false, "prints the actual version and build information")
 }
 
 func initConfig() {
