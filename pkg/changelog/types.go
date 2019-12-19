@@ -23,13 +23,13 @@ type Release struct {
 type TplRelease struct {
 	Version string       // Release Version
 	Colapse bool         // This Field indicates if this Release should be collapsed
-	Entries []TplEntries // Contains a SORTED List of all Changes. Sorted by change Type.
+	Entries []TplEntries // Contains a list with all available Change-Entries
 }
 
 // TplEntries is like a normal Entry, but it contains only Changes of a specific
 // Change Type.
 type TplEntries struct {
-	ShartTypeName string         // Short Type Name, eg. "Added"
+	ShortTypeName string         // Short Type Name, eg. "Added"
 	NumString     string         // Contains the 'Number of Changes' String, eg: "1 change" OR "5 changes"
 	Changes       []*entry.Entry // Contains the raw Change-Entry struct
 }
