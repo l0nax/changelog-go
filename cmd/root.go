@@ -23,6 +23,7 @@ package cmd
 
 import (
 	"fmt"
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"gitlab.com/l0nax/changelog-go/internal"
 	"os"
@@ -46,7 +47,12 @@ the possibility to read a beautiful formatted CHANGELOG.md
 File.`,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
-	Run: func(cmd *cobra.Command, args []string) {
+	PersistentPreRun: func(cmd *cobra.Command, args []string) {
+		// check if debug flag has been set
+		if d, _ := cmd.Flags().GetBool("debug"); d {
+			log.SetLevel(log.DebugLevel)
+		}
+
 		// print Version information if flag is set
 		if val, _ := cmd.Flags().GetBool("version"); val {
 			fmt.Printf("%-20v: %s\n", "Version", internal.Version)
@@ -71,6 +77,7 @@ func init() {
 
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.changelog-go.yaml)")
 	rootCmd.PersistentFlags().Bool("version", false, "prints the actual version and build information")
+	rootCmd.PersistentFlags().Bool("debug", false, "enables debug output")
 }
 
 func initConfig() {
