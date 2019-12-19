@@ -58,9 +58,6 @@ File.`,
 			fmt.Printf("%-20v: %s\n", "Version", internal.Version)
 			fmt.Printf("%-20v: %s\n", "Build", internal.BuildTime)
 			fmt.Printf("%-20v: %s\n", "Git Hash", internal.Hash)
-		} else {
-			cmd.Help()
-			os.Exit(0)
 		}
 	},
 }
