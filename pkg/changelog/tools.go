@@ -41,7 +41,7 @@ func CheckDir() {
 // GetEntries returns a List of all Entries found in the Changelog-Data directory.
 func GetEntries(r *Release) error {
 	// contains all found unreleased Files
-	var files map[string][]byte
+	var files = make(map[string][]byte)
 
 	// initialize r.Info if its not already initialized
 	if r.Info == nil {
