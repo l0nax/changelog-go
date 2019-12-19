@@ -3,6 +3,7 @@ package changelog
 import (
 	"fmt"
 
+	"github.com/kr/pretty"
 	log "github.com/sirupsen/logrus"
 	"gitlab.com/l0nax/changelog-go/internal"
 
@@ -31,6 +32,9 @@ func GenerateChangelog(r *Release) {
 
 	// get Entries by Change Type
 	for _, cType := range internal.EntryT.ListAvailableTypes() {
+		log.Debugf("Listing Entries of Type '%s': %# v\n",
+			(*cType).GetShortTypeName(), (*cType).GetListEntries())
+
 		changeEntries := (*cType).GetListEntries()
 		if len(changeEntries) == 0 {
 			// skip this Change entry type because it has no changes
@@ -53,6 +57,8 @@ func GenerateChangelog(r *Release) {
 		for iType, tChange := range changeEntries {
 			newEntry.Changes[iType] = tChange
 		}
+
+		log.Debugf("Adding new Entries: %# v\n", pretty.Formatter(newEntry))
 
 		// append the new Change entry to the list of changes
 		r.Releases[0].Entries = append(r.Releases[0].Entries, newEntry)
