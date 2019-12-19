@@ -18,21 +18,26 @@ func YAMLMarshal(in entry.Entry) ([]byte, error) {
 }
 
 func YAMLUnmarshal(in []byte, out *entry.Entry) error {
+	err := yaml.Unmarshal(in, out)
+	if err != nil {
+		return err
+	}
+
+	// after unmarshaling the input data into the struct, we can now search
+	// for the type of the ChangeEntry
 	typeSearch := &internal.SEntryType{
 		TypeID: (*out).TypeID,
 	}
 
-	log.Debugf("new SEntryType: %# v\n", pretty.Formatter(typeSearch))
-	log.Debugf("Out Struct: %# v\n", pretty.Formatter(out))
+	// search for the Change entry type and call the 'Add' method
+	(*out).Type, err = internal.EntryT.SearchEntryType(typeSearch)
+	if err != nil {
+		return err
+	}
 
-	// var err error
-	// // search for the Change entry type and call the 'Add' method
-	// (*out).Type, err = internal.EntryT.SearchEntryType(typeSearch)
-	// if err != nil {
-	//         return err
-	// }
-	// fmt.Printf("%#v\n", *out)
-	// (*out.Type).AddEntry(out)
+	// add the unmarshalled type to our internal change list to keep track
+	// of him
+	(*out.Type).AddEntry(out)
 
-	return yaml.Unmarshal(in, out)
+	return nil
 }
