@@ -1,10 +1,13 @@
 package changelog
 
 import (
+	"fmt"
+
 	log "github.com/sirupsen/logrus"
 	"gitlab.com/l0nax/changelog-go/internal"
-	"gitlab.com/l0nax/changelog-go/pkg/entry"
-	"gitlab.com/l0nax/changelog-go/pkg/tools"
+
+	// "gitlab.com/l0nax/changelog-go/pkg/entry"
+	// "gitlab.com/l0nax/changelog-go/pkg/tools"
 	"strings"
 )
 
@@ -56,4 +59,36 @@ func GenerateChangelog(r *Release) {
 	}
 
 	// debug: print the Releases
+
+	log.Debug("Processing changelog entries")
+	var rawEntries = ""
+
+	// get the raw changelog output of the new entries
+	for _, entries := range r.Releases[0].Entries {
+		rawEntries += "\n" + processChangeEntries(&entries)
+	}
+
+	fmt.Println(rawEntries)
+}
+
+// processChangeEntries generates the RAW output string of every change type
+// and returns it as a string.
+func processChangeEntries(entries *TplEntries) string {
+	var raw string = ""
+
+	// check if field `Changes` is not empty
+	if len(entries.Changes) == 0 {
+		panic("'entries.Changes' slice is empty!!")
+	}
+
+	// first we have to add our Title
+	// since the CHANGELOG.md output must look in the "raw" view also pretty
+	// so there must be a empty line between every change type header.
+	raw += fmt.Sprintf("\n### %s (%s)\n\n", entries.ShortTypeName, entries.NumString)
+
+	for _, entry := range entries.Changes {
+		raw += "- " + entry.ChangeTitle + "\n"
+	}
+
+	return raw
 }
