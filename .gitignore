@@ -1,4 +1,12 @@
+## ignore CodeQuery Files
+**/cscope.files
+**/.starscope.db
+**/go.db
+**/go_tags
+
+
 # Created by .ignore support plugin (hsz.mobi)
+
 ### GPG template
 secring.*
 
