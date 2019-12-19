@@ -22,7 +22,11 @@ THE SOFTWARE.
 package cmd
 
 import (
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
+	"gitlab.com/l0nax/changelog-go/pkg/changelog"
+	"regexp"
 )
 
 // releaseCmd represents the release command
@@ -35,7 +39,40 @@ Folder.`,
 	Example: `  release v1.0.0`,
 	Args:    cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
+		newRelease := changelog.Release{}
+		newRelease.Info = &changelog.ReleaseInfo{}
 
+		// this Variable describes if the current release is a PreRelrease
+		var isPreRelrease bool
+
+		// check if Version is a pre-release
+		if viper.GetBool("preRelrease.detect") {
+			r := regexp.MustCompile(`^(?P<major>0|[1-9]\d*)\.(?P<minor>0|[1-9]\d*)\.(?P<patch>0|[1-9]\d*)(?:-(?P<prerelease>(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+(?P<buildmetadata>[0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$`)
+
+			newRelease.Info.Version = r.FindStringSubmatch(args[0])
+
+			// check if Version is a pre-release
+			for i, group := range r.SubexpNames() {
+				if group == "prerelease" {
+					if len(newRelease.Info.Version[i]) != 0 {
+						isPreRelrease = true
+					}
+					break
+				}
+			}
+		}
+
+		fIsPreRelease, err := cmd.Flags().GetBool("pre-release")
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		if isPreRelrease || fIsPreRelease {
+			newRelease.Info.IsPreRelease = true
+		}
+
+		// generate CHANGELOG.md
+		changelog.GenerateChangelog(&newRelease)
 	},
 }
 
