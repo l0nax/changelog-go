@@ -12,7 +12,7 @@ import (
 	"github.com/spf13/viper"
 	"gitlab.com/l0nax/changelog-go/internal"
 	"gitlab.com/l0nax/changelog-go/pkg/entry"
-	"gopkg.in/yaml.v2"
+	"gitlab.com/l0nax/changelog-go/pkg/tools"
 )
 
 // CheckDir will check if the changelog directory exists
@@ -41,7 +41,7 @@ func CheckDir() {
 // GetEntries returns a List of all Entries found in the Changelog-Data directory.
 func GetEntries(r *Release) error {
 	// contains all found unreleased Files
-	var files = make(map[string][]byte)
+	var files map[string][]byte
 
 	// initialize r.Info if its not already initialized
 	if r.Info == nil {
@@ -82,7 +82,7 @@ func GetEntries(r *Release) error {
 	for _, fileData := range files {
 		// unmarshal Filecontent into Struct
 		changeEntry := entry.Entry{}
-		err = yaml.Unmarshal(fileData, &changeEntry)
+		err = tools.YAMLUnmarshal(fileData, &changeEntry)
 		if err != nil {
 			log.Fatal(err)
 			return err
