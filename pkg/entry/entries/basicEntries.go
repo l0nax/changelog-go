@@ -2,6 +2,9 @@ package entries
 
 import "gitlab.com/l0nax/changelog-go/pkg/entry"
 
+import "github.com/kr/pretty"
+import log "github.com/sirupsen/logrus"
+
 /// ++++++] Added [++++++
 
 //// register Type
@@ -35,7 +38,10 @@ func (e *Entry_Added) GetTypeDescription() string { return e.typeDescription }
 
 func (e *Entry_Added) GetTypeID() int { return e.typeID }
 
-func (e *Entry_Added) GetListEntries() []*entry.Entry { return e.entries }
+func (e *Entry_Added) GetListEntries() []*entry.Entry {
+	log.Debugf("Returning: %# v\n", pretty.Formatter(e.entries))
+	return e.entries
+}
 
 func (e *Entry_Added) AddEntry(ent *entry.Entry) {
 	if len(e.entries) == 0 || e.entries == nil {
