@@ -78,6 +78,12 @@ func GenerateChangelog(r *Release) {
 	fmt.Println("---------------------------------------------")
 	fmt.Println(rawEntries)
 	fmt.Println("---------------------------------------------")
+
+	// TODO: move changelog Files to `released/[...]`
+
+	// TODO: read old re-leases and generate changelog
+
+	// TODO: write new CHANGELOG.md
 }
 
 // processChangeEntries generates the RAW output string of every change type
