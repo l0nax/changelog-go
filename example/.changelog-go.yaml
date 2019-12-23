@@ -3,7 +3,7 @@
 # IT'S NEEDED TO PROVIDE BACKWARD-COMPATIBILITY!!
 version: "1"
 
-preRelrease:
+preRelease:
         # if you set 'detect' to true, changelog-go will automatically detect
         # if the released Version is an pre-release Version, so a User or CI/CD
         # has not to manually set the pre-release Flag.
