@@ -2,6 +2,7 @@ package changelog
 
 import (
 	"fmt"
+	"strconv"
 
 	"github.com/kr/pretty"
 	log "github.com/sirupsen/logrus"
@@ -48,14 +49,14 @@ func GenerateChangelog(r *Release) {
 
 		// write 'n changes' instead of '1 change' if more than one
 		if len(changeEntries) > 1 {
-			newEntry.NumString = string(len(changeEntries)) + " changes"
+			newEntry.NumString = strconv.Itoa(len(changeEntries)) + " changes"
 		} else {
 			newEntry.NumString = "1 change"
 		}
 
 		// add change-entry to the list of changes
-		for iType, tChange := range changeEntries {
-			newEntry.Changes[iType] = tChange
+		for _, tChange := range changeEntries {
+			newEntry.Changes = append(newEntry.Changes, tChange)
 		}
 
 		log.Debugf("Adding new Entries: %# v\n", pretty.Formatter(newEntry))
@@ -74,7 +75,9 @@ func GenerateChangelog(r *Release) {
 		rawEntries += "\n" + processChangeEntries(&entries)
 	}
 
+	fmt.Println("---------------------------------------------")
 	fmt.Println(rawEntries)
+	fmt.Println("---------------------------------------------")
 }
 
 // processChangeEntries generates the RAW output string of every change type
