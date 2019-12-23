@@ -5,12 +5,12 @@ package config
 // V1 represents the Config Version 1.
 // Versioning the Config Types is to provide Backward compatibility.
 type V1 struct {
-	PreRelrease struct {
+	PreRelease struct {
 		// detect pre-releases or not
 		Detect           bool `yaml:"detect"`
 		DeletePreRelease bool `yaml:"deletePreRelease"` // if true the pre-releases would be deleted on an non pre-release
 		FoldPreReleases  bool `yaml:"foldPreReleases"`
-	} `yaml:"preRelrease"`
+	} `yaml:"preRelease"`
 
 	Entry struct {
 		Author rune `yaml:"author"`
