@@ -93,10 +93,10 @@ func processChangeEntries(entries *TplEntries) string {
 	// first we have to add our Title
 	// since the CHANGELOG.md output must look in the "raw" view also pretty
 	// so there must be a empty line between every change type header.
-	raw += fmt.Sprintf("\n### %s (%s)\n\n", entries.ShortTypeName, entries.NumString)
+	raw += fmt.Sprintf("\n### %s (%s)\n", entries.ShortTypeName, entries.NumString)
 
 	for _, entry := range entries.Changes {
-		raw += "- " + entry.ChangeTitle + "\n"
+		raw += "\n- " + entry.ChangeTitle
 	}
 
 	return raw
