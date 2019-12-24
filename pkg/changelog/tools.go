@@ -51,45 +51,18 @@ func GetEntries(r *Release) error {
 	// First check if everything is ok
 	CheckDir()
 
-	unreleasedPath := path.Join(
-		path.Join(internal.GitPath,
-			viper.GetString("changelog.entryPath")),
-		"unreleased/")
+	unreleasedPath := path.Join(internal.GitPath,
+		viper.GetString("changelog.entryPath"), "unreleased")
 
-	err := filepath.Walk(unreleasedPath, func(path string, info os.FileInfo, err error) error {
-		// check if path is File
-		if info.IsDir() {
-			return nil
-		}
-
-		log.Debugf("Reading '%s'\n", path)
-
-		// read file content
-		data, err := ioutil.ReadFile(path)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		files[path] = data
-		return nil
-	})
-
+	files, err := ReadEntryFiles(unreleasedPath)
 	if err != nil {
 		log.Panic(err)
-		return err
 	}
 
-	for _, fileData := range files {
-		// unmarshal Filecontent into Struct
-		changeEntry := entry.Entry{}
-		err = tools.YAMLUnmarshal(fileData, &changeEntry)
-		if err != nil {
-			log.Fatal(err)
-			return err
-		}
-
-		// append new Filecontent to Release Data
-		(*r).Entries = append(r.Entries, changeEntry)
+	// parse file data into struct
+	r.Entries, err = ParseFiles(files)
+	if err != nil {
+		return err
 	}
 
 	return nil
@@ -126,4 +99,50 @@ func MoveEntries(version string) error {
 	log.Debug("Moved all unreleased Files")
 
 	return nil
+}
+
+// ReadEntryFiles reads all changelog entry files form a given path
+func ReadEntryFiles(filesPath string) (map[string][]byte, error) {
+	var files = make(map[string][]byte)
+
+	err := filepath.Walk(filesPath, func(path string, info os.FileInfo, err error) error {
+		// check if path is File
+		if info.IsDir() {
+			return nil
+		}
+
+		log.Debugf("Reading '%s'\n", path)
+
+		// read file content
+		data, err := ioutil.ReadFile(path)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		files[path] = data
+		return nil
+	})
+
+	return files, err
+}
+
+// ParseFiles parses all given files into an Entries struct
+// @param files is a map of 'FILE_PATH' => 'FILE_CONTENT'
+func ParseFiles(files map[string][]byte) ([]entry.Entry, error) {
+	var entries = []entry.Entry{}
+
+	for _, file := range files {
+		// unmarshal Filecontent into Struct
+		changeEntry := entry.Entry{}
+		err := tools.YAMLUnmarshal(file, &changeEntry)
+		if err != nil {
+			log.Fatal(err)
+			return nil, err
+		}
+
+		// append new Filecontent to Release Data
+		entries = append(entries, changeEntry)
+	}
+
+	return entries, nil
 }
