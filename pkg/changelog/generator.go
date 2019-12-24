@@ -7,10 +7,8 @@ import (
 	"github.com/kr/pretty"
 	log "github.com/sirupsen/logrus"
 	"gitlab.com/l0nax/changelog-go/internal"
-
 	// "gitlab.com/l0nax/changelog-go/pkg/entry"
 	// "gitlab.com/l0nax/changelog-go/pkg/tools"
-	"strings"
 )
 
 // GenerateChangelog will generate a new CHANGELOG.md
@@ -24,9 +22,9 @@ func GenerateChangelog(r *Release) {
 	// TODO: Implement Feature (and Config variable) to allow the User
 	// to regenerate the complete CHANGELOG.md.
 
-	// prepend our NEW release (data) to the list of releases
+	// prepend our NEW release (data) to the list of releases at index 0
 	r.Releases = append([]TplRelease{{
-		Version: strings.Join(r.Info.Version[:], ""),
+		Version: r.Info.Version[0],
 		Colapse: false,
 		Entries: []TplEntries{},
 	}}, r.Releases...)
