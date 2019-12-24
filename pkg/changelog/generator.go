@@ -90,7 +90,7 @@ func GenerateChangelog(r *Release) {
 }
 
 // prepareReleaseDir creates all needed files and directory for the release
-func prepareReleaseDir(info *ReleaseInfo) error {
+func prepareReleaseDir(info ReleaseInfo) error {
 	basePath := path.Join(internal.GitPath, viper.GetString("changelog.entryPath"))
 	releasedPath := path.Join(basePath, "released", info.Version[0])
 
