@@ -22,10 +22,10 @@ type Release struct {
 
 // TplRelease contains all Data of a Release
 type TplRelease struct {
-	Info    *ReleaseInfo // All Informations about the this Release
-	Version string       // Release Version
-	Colapse bool         // This Field indicates if this Release should be collapsed
-	Entries []TplEntries // Contains a list with all available Change-Entries
+	Info     *ReleaseInfo // All Informations about the this Release
+	Version  string       // Release Version
+	Collapse bool         // This Field indicates if this Release should be collapsed
+	Entries  []TplEntries // Contains a list with all available Change-Entries
 }
 
 // TplEntries is like a normal Entry, but it contains only Changes of a specific
@@ -46,11 +46,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 {{ with .Releases }}
 {{ range . }}
-## {{ .Version }} ({{ .ReleaseDate }})
+## {{ .Version }} ({{ .Info.ReleaseDate }})
 
-{{/* Colapse if PreRelease */}}
-{{- if .Colapse -}}<details>{{- end -}}
-{{- if .Colapse -}}<summary>This is a Pre-Release, Click to see details.</summary>{{- end -}}
+{{/* Collapse if PreRelease */}}
+{{- if .Collapse -}}<details>{{- end -}}
+{{- if .Collapse -}}<summary>This is a Pre-Release, Click to see details.</summary>{{- end -}}
 
 {{ with .Entries }}
 {{ range . }}
@@ -58,11 +58,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 {{ with .Changes }}
 {{ range . }}
-- {{ .Title }}
+- {{ .ChangeTitle }}
 {{ end }}
 {{ end }}
 
-{{- if .Colapse -}}</details>{{- end -}}
+{{- if .Collapse -}}</details>{{- end -}}
 {{/* two empty lines so thath the Markdown Parser will put here '<br/>' */}}
 
 
