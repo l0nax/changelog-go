@@ -1,10 +1,12 @@
 package changelog
 
 import (
+	"bytes"
 	"fmt"
 	"os"
 	"path"
 	"strconv"
+	"text/template"
 
 	"github.com/kr/pretty"
 	"github.com/pkg/errors"
@@ -12,8 +14,6 @@ import (
 	"github.com/spf13/viper"
 	"gitlab.com/l0nax/changelog-go/internal"
 	"gopkg.in/yaml.v2"
-	// "gitlab.com/l0nax/changelog-go/pkg/entry"
-	// "gitlab.com/l0nax/changelog-go/pkg/tools"
 )
 
 // GenerateChangelog will generate a new CHANGELOG.md
@@ -82,11 +82,35 @@ func GenerateChangelog(r *Release) {
 	fmt.Println(rawEntries)
 	fmt.Println("---------------------------------------------")
 
-	// TODO: move changelog Files to `released/[...]`
+	// read old releases into Release struct
+	err = GetReleasedEntries(r)
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	// TODO: read old re-leases and generate changelog
+	// create release dir
+	err = createReleaseDir(r.Info.Version[0])
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// prepare release dir
+	err = prepareReleaseDir(*r.Info)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = moveToReleaseFolder(r.Info.Version[0])
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	log.Debugf("%# v\n", pretty.Formatter(r))
 
 	// TODO: write new CHANGELOG.md
+	fmt.Println("---------------------------------------------")
+	fmt.Println(processChangelogTmpl(r))
+	fmt.Println("---------------------------------------------")
 }
 
 // prepareReleaseDir creates all needed files and directory for the release
