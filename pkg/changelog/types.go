@@ -8,6 +8,7 @@ import (
 type ReleaseInfo struct {
 	Version      []string // Contains the string slice output of the Regex
 	IsPreRelease bool     // True if the release is a pre-release
+	ReleaseDate  string   // Release Date in ISO foramt (eg. "2019-12-24")
 }
 
 // Release contains the ReleaseInfo and all Changelog entry types.
