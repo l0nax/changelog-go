@@ -10,17 +10,18 @@ type ReleaseInfo struct {
 	IsPreRelease bool     // True if the release is a pre-release
 }
 
-// Release contains the ReleaseInfo and all NEW Changelog entry types.
+// Release contains the ReleaseInfo and all Changelog entry types.
 type Release struct {
 	Info    *ReleaseInfo  // All Informations about the current Release
 	Entries []entry.Entry // Holds all NEW changelog entry Types
 
-	// == Fields used in the Changelog Template == //
+	// == Fields used in the Changelog Template ==
 	Releases []TplRelease // Holds all Releases
 }
 
 // TplRelease contains all Data of a Release
 type TplRelease struct {
+	Info    *ReleaseInfo // All Informations about the current Release
 	Version string       // Release Version
 	Colapse bool         // This Field indicates if this Release should be collapsed
 	Entries []TplEntries // Contains a list with all available Change-Entries
