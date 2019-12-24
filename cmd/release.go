@@ -73,6 +73,11 @@ Folder.`,
 			newRelease.Info.IsPreRelease = true
 		}
 
+		newRelease.Info.ReleaseDate, err = cmd.Flags().GetString("release-date")
+		if err != nil {
+			log.Fatal(err)
+		}
+
 		// generate CHANGELOG.md
 		changelog.GenerateChangelog(&newRelease)
 	},
@@ -81,7 +86,7 @@ Folder.`,
 func init() {
 	rootCmd.AddCommand(releaseCmd)
 
-	releaseCmd.Flags().StringP("release-date", "d", time.Now().Format("2019-12-24"), "set the release date, defaults to today")
+	releaseCmd.Flags().StringP("release-date", "d", time.Now().Format("2006-01-02"), "set the release date, defaults to today")
 	releaseCmd.Flags().BoolP("pre-release", "p", false, `Mark this Release as pre-release in the CHANGELOG.md.
 The Output and how the Application reacts depends on your Configuration.`)
 
