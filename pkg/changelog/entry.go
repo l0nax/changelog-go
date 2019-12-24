@@ -74,7 +74,7 @@ func GetReleasedEntries(r *Release) error {
 		// create skeleton struct
 		release := TplRelease{
 			Info: &ReleaseInfo{
-				// TODO: fill up this struct
+				// TODO: IsPreRelease can be checked with the Regex
 			},
 			Version: info.Name(),
 			Colapse: false,
