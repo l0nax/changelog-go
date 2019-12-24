@@ -81,7 +81,7 @@ func MoveEntries(version string) error {
 	}
 
 	// create new release directory
-	err := os.Mkdir(verPath, 0755)
+	err := os.MkdirAll(verPath, 0755)
 	if err != nil {
 		return err
 	}
