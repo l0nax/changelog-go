@@ -56,7 +56,7 @@ func AddEntry(entry entry.Entry) {
 	}
 }
 
-// GetReleasedEntries returns a slice which contains all releaed entries
+// GetReleasedEntries returns a slice which contains all released entries
 func GetReleasedEntries(r *Release) error {
 	// we need to APPEND all new Release data!
 
@@ -64,7 +64,58 @@ func GetReleasedEntries(r *Release) error {
 	releasedPath := path.Join(basePath, "released")
 
 	err := filepath.Walk(releasedPath, func(_path string, info os.FileInfo, err error) error {
-		log.Debugf("===> %s\n", _path)
+		// skip if entity is not directory or start path
+		if !info.IsDir() || _path == releasedPath {
+			return nil
+		}
+
+		// create skeleton struct
+		release := TplRelease{
+			Info: &ReleaseInfo{
+				// TODO: fill up this struct
+			},
+			Version: info.Name(),
+			Colapse: false,
+			Entries: []TplEntries{},
+		}
+
+		// get and parse all files from this directory
+		files, err := ReadEntryFiles(_path)
+		if err != nil {
+			return err
+		}
+
+		entries, err := ParseFiles(files)
+		if err != nil {
+			return err
+		}
+
+		// get change-type
+		for i, entry := range entries {
+			if entry.Type != nil {
+				// we can skip this entry because the Type is
+				// already set
+				continue
+			}
+
+			entries[i].Type, err = internal.EntryT.SearchEntryType(&internal.SEntryType{
+				TypeID: entry.TypeID,
+			})
+
+			if err != nil {
+				return err
+			}
+		}
+
+		// "sort" all entries, this means that all entries will be added
+		// to the TplEntries struct
+		release.Entries, err = sortEntries(&entries)
+		if err != nil {
+			return err
+		}
+
+		// append "new" old release to *r
+		r.Releases = append(r.Releases, release)
 
 		return nil
 	})
