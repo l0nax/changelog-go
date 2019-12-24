@@ -21,7 +21,7 @@ type Release struct {
 
 // TplRelease contains all Data of a Release
 type TplRelease struct {
-	Info    *ReleaseInfo // All Informations about the current Release
+	Info    *ReleaseInfo // All Informations about the this Release
 	Version string       // Release Version
 	Colapse bool         // This Field indicates if this Release should be collapsed
 	Entries []TplEntries // Contains a list with all available Change-Entries
