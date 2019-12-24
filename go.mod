@@ -12,6 +12,7 @@ require (
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/onsi/gomega v1.8.0 // indirect
 	github.com/pelletier/go-toml v1.6.1-0.20191106154939-c4efb7477c43 // indirect
+	github.com/pkg/errors v0.8.1
 	github.com/sergi/go-diff v1.0.1-0.20180205163309-da645544ed44 // indirect
 	github.com/sirupsen/logrus v1.4.2
 	github.com/spf13/afero v1.2.2 // indirect
