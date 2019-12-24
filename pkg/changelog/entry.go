@@ -10,6 +10,7 @@ import (
 	"gitlab.com/l0nax/changelog-go/pkg/gut"
 	"gitlab.com/l0nax/changelog-go/pkg/tools"
 	git "gopkg.in/src-d/go-git.v4"
+	"gopkg.in/yaml.v2"
 	"os"
 	"path"
 	"path/filepath"
@@ -87,6 +88,25 @@ func GetReleasedEntries(r *Release) error {
 			return err
 		}
 
+		// get ReleaseInfo file and remove it from the map
+		releaseInfo, ok := files[path.Join(_path, "ReleaseInfo")]
+		if !ok {
+			log.Fatalf("No 'ReleaseInfo' file was found...!\n")
+		}
+
+		delete(files, path.Join(_path, "ReleaseInfo"))
+
+		_releaseInfo := &ReleaseInfo{}
+		err = yaml.Unmarshal(releaseInfo, _releaseInfo)
+		if err != nil {
+			return err
+		}
+
+		release.Info.ReleaseDate = _releaseInfo.ReleaseDate
+		_releaseInfo = nil
+
+
+		// parse changelog-entry files
 		entries, err := ParseFiles(files)
 		if err != nil {
 			return err
