@@ -2,6 +2,7 @@ package changelog
 
 import (
 	"fmt"
+	"strings"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 	"gitlab.com/l0nax/changelog-go/internal"
@@ -12,6 +13,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"strconv"
 )
 
 // AddEntry() creates a new Changelog Entry by creating the Entry File
@@ -148,6 +150,12 @@ func sortEntries(entries *[]entry.Entry) ([]TplEntries, error) {
 		} else {
 			// add entry to list
 			ret[iRet].Changes = append(ret[iRet].Changes, &(*entries)[i])
+
+			// increase NumString
+			num, _ := strconv.Atoi(strings.Split(ret[iRet].NumString, " ")[0])
+			num++
+
+			ret[iRet].NumString = string(num) + " changes"
 		}
 	}
 
