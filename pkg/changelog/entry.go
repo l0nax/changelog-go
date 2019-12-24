@@ -77,11 +77,11 @@ func GetReleasedEntries(r *Release) error {
 }
 
 // sortEntries will sort all changelog entries into TplEntries struct
-func sortEntries(entries []*entry.Entry) ([]TplEntries, error) {
+func sortEntries(entries *[]entry.Entry) ([]TplEntries, error) {
 	var ret = []TplEntries{}
 	var typeMap = make(map[int]int) // typeMap contains the map of TypeID-->Index_in_'ret'
 
-	for i, entry := range entries {
+	for i, entry := range *entries {
 		// check if entry type does not exists in typeMap
 		if iRet, ok := typeMap[entry.TypeID]; !ok {
 			// add entry-type to 'ret'
@@ -90,13 +90,13 @@ func sortEntries(entries []*entry.Entry) ([]TplEntries, error) {
 				NumString:     "1 change",
 			})
 
-			ret[len(ret)-1].Changes = append(ret[len(ret)-1].Changes, entries[i])
+			ret[len(ret)-1].Changes = append(ret[len(ret)-1].Changes, &(*entries)[i])
 
 			// add index of ret to typeMap
 			typeMap[entry.TypeID] = len(ret)
 		} else {
 			// add entry to list
-			ret[iRet].Changes = append(ret[iRet].Changes, entries[i])
+			ret[iRet].Changes = append(ret[iRet].Changes, &(*entries)[i])
 		}
 	}
 
