@@ -11,6 +11,7 @@ import (
 	git "gopkg.in/src-d/go-git.v4"
 	"os"
 	"path"
+	"path/filepath"
 )
 
 // AddEntry() creates a new Changelog Entry by creating the Entry File
@@ -53,4 +54,24 @@ func AddEntry(entry entry.Entry) {
 	if err != nil {
 		log.Fatal(err)
 	}
+}
+
+// GetReleasedEntries returns a slice which contains all releaed entries
+func GetReleasedEntries(r *Release) error {
+	// we need to APPEND all new Release data!
+
+	basePath := path.Join(internal.GitPath, viper.GetString("changelog.entryPath"))
+	releasedPath := path.Join(basePath, "released")
+
+	err := filepath.Walk(releasedPath, func(_path string, info os.FileInfo, err error) error {
+		log.Debugf("===> %s\n", _path)
+
+		return nil
+	})
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
