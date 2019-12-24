@@ -27,6 +27,7 @@ import (
 	"github.com/spf13/viper"
 	"gitlab.com/l0nax/changelog-go/pkg/changelog"
 	"regexp"
+	"time"
 )
 
 // releaseCmd represents the release command
@@ -80,6 +81,7 @@ Folder.`,
 func init() {
 	rootCmd.AddCommand(releaseCmd)
 
+	releaseCmd.Flags().StringP("release-date", "d", time.Now().Format("2019-12-24"), "set the release date, defaults to today")
 	releaseCmd.Flags().BoolP("pre-release", "p", false, `Mark this Release as pre-release in the CHANGELOG.md.
 The Output and how the Application reacts depends on your Configuration.`)
 
