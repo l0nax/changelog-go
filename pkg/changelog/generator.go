@@ -2,11 +2,16 @@ package changelog
 
 import (
 	"fmt"
+	"os"
+	"path"
 	"strconv"
 
 	"github.com/kr/pretty"
+	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
+	"github.com/spf13/viper"
 	"gitlab.com/l0nax/changelog-go/internal"
+	"gopkg.in/yaml.v2"
 	// "gitlab.com/l0nax/changelog-go/pkg/entry"
 	// "gitlab.com/l0nax/changelog-go/pkg/tools"
 )
@@ -82,6 +87,32 @@ func GenerateChangelog(r *Release) {
 	// TODO: read old re-leases and generate changelog
 
 	// TODO: write new CHANGELOG.md
+}
+
+// prepareReleaseDir creates all needed files and directory for the release
+func prepareReleaseDir(info *ReleaseInfo) error {
+	basePath := path.Join(internal.GitPath, viper.GetString("changelog.entryPath"))
+	releasedPath := path.Join(basePath, "released", info.Version[0])
+
+	// create 'ReleaseInfo' file
+	infoFile, err := os.Create(path.Join(releasedPath, "ReleaseInfo"))
+	if err != nil {
+		return err
+	}
+
+	rawData, err := yaml.Marshal(info)
+	if err != nil {
+		return errors.Wrap(err, "Error while marshaling ReleaseInfo struct")
+	}
+
+	// write informations to file
+	infoFile.Write(rawData)
+	err = infoFile.Close()
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // processChangeEntries generates the RAW output string of every change type
