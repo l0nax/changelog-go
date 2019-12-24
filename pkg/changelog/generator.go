@@ -29,9 +29,9 @@ func GenerateChangelog(r *Release) {
 
 	// prepend our NEW release (data) to the list of releases at index 0
 	r.Releases = append([]TplRelease{{
-		Version: r.Info.Version[0],
-		Colapse: false,
-		Entries: []TplEntries{},
+		Version:  r.Info.Version[0],
+		Collapse: false,
+		Entries:  []TplEntries{},
 	}}, r.Releases...)
 
 	// get Entries by Change Type

@@ -78,7 +78,7 @@ func GetReleasedEntries(r *Release) error {
 				// TODO: IsPreRelease can be checked with the Regex
 			},
 			Version: info.Name(),
-			Colapse: false,
+			Collapse: false,
 			Entries: []TplEntries{},
 		}
 
