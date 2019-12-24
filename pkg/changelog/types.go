@@ -6,9 +6,9 @@ import (
 
 // ReleaseInfo holds all informations about the current release
 type ReleaseInfo struct {
-	Version      []string // Contains the string slice output of the Regex
-	IsPreRelease bool     // True if the release is a pre-release
-	ReleaseDate  string   // Release Date in ISO foramt (eg. "2019-12-24")
+	Version      []string `yaml:"-"`                  // Contains the string slice output of the Regex
+	IsPreRelease bool     `mapstructure:"prerelease"` // True if the release is a pre-release
+	ReleaseDate  string   `mapstructure:"date"`       // Release Date in ISO foramt (eg. "2019-12-24")
 }
 
 // Release contains the ReleaseInfo and all Changelog entry types.
