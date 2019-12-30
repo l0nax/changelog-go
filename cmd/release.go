@@ -37,7 +37,7 @@ var releaseCmd = &cobra.Command{
 	Long: `The CHANGELOG.md will be generated and – depending on
 the configuration and flags – the Entry Fiels will be moved to the 'released'
 Folder.`,
-	Example: `  release v1.0.0`,
+	Example: `  release 1.0.0`,
 	Args:    cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		newRelease := changelog.Release{}
@@ -57,6 +57,7 @@ Folder.`,
 					if len(newRelease.Info.Version[i]) != 0 {
 						isPreRelrease = true
 					}
+
 					break
 				}
 			}
