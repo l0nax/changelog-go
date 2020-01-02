@@ -72,9 +72,3 @@ Example:
 
 ## (3) push/ merge your changes or create (ie.) a Pull-Request
 ```
-
-### Example workflow
-
-```bash
-## (1) Initialize git-flow
-```
