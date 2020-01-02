@@ -52,6 +52,9 @@ your entry.`,
 			log.Fatalln("The Title of your Change MUST be specified!")
 		}
 
+		// replace all '/' with '_'
+		title = strings.ReplaceAll(title, "/", "_")
+
 		// check if needed Directories exists
 		changelog.CheckDir()
 
