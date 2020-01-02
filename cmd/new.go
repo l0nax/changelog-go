@@ -97,7 +97,7 @@ your entry.`,
 		var choosenType int
 
 		if choosenType, err = strconv.Atoi(text); err != nil {
-			log.Fatalln("Please enter only VALID number!")
+			log.Fatalln("Please enter only VALID numbers (error while converting)!")
 		}
 
 		// check if Number does exists in our Entry Types List
