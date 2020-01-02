@@ -52,13 +52,6 @@ File.`,
 		if d, _ := cmd.Flags().GetBool("debug"); d {
 			log.SetLevel(log.DebugLevel)
 		}
-
-		// print Version information if flag is set
-		if val, _ := cmd.Flags().GetBool("version"); val {
-			fmt.Printf("%-20v: %s\n", "Version", internal.Version)
-			fmt.Printf("%-20v: %s\n", "Build", internal.BuildTime)
-			fmt.Printf("%-20v: %s\n", "Git Hash", internal.Hash)
-		}
 	},
 }
 
@@ -73,7 +66,6 @@ func init() {
 	cobra.OnInitialize(initConfig)
 
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.changelog-go.yaml)")
-	rootCmd.PersistentFlags().Bool("version", false, "prints the actual version and build information")
 	rootCmd.PersistentFlags().Bool("debug", false, "enables debug output")
 }
 
