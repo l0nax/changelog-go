@@ -162,6 +162,8 @@ func sortEntries(entries *[]entry.Entry) ([]TplEntries, error) {
 				NumString:     "1 change",
 			})
 
+			log.Debugf("Appendet TplEntries struct to 'ret' struct on index (%d) and (%d)\n",
+				i, (len(ret) - 1))
 			ret[len(ret)-1].Changes = append(ret[len(ret)-1].Changes, &(*entries)[i])
 
 			// add index of ret to typeMap
