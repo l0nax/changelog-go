@@ -32,6 +32,7 @@ func GenerateChangelog(r *Release) {
 		Version:  r.Info.Version[0],
 		Collapse: false,
 		Entries:  []TplEntries{},
+		Info:     r.Info,
 	}}, r.Releases...)
 
 	// get Entries by Change Type
