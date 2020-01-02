@@ -36,11 +36,11 @@ snapshot:
   name_template: "{{ .Tag }}-next"
 
 signs:
-  cmd: gpg2
+- cmd: gpg2
   artifacts: all
 
 nfpms:
-  replacements:
+- replacements:
     386: x86_64
 
   vendor: l0nax
@@ -55,7 +55,7 @@ nfpms:
     - rpm
 
 snapcrafts:
-  publish: true
+- publish: true
 
   summary: CLI to create and manage Changelog even on big projects
   description: changelog is a CLI that helps a team/ person to keep track of all changes and also helps creating (and managing) a readable CHANGELOG.md
