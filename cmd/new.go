@@ -24,6 +24,7 @@ package cmd
 import (
 	"bufio"
 	"fmt"
+	"github.com/kr/pretty"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -101,7 +102,9 @@ your entry.`,
 		}
 
 		// check if Number does exists in our Entry Types List
-		if choosenType >= (len(internal.EntryT.ListAvailableTypes()) - 1) {
+		if choosenType >= len(internal.EntryT.ListAvailableTypes()) {
+			log.Debugln(len(internal.EntryT.ListAvailableTypes()))
+			log.Debugf("%# v\n", pretty.Formatter(internal.EntryT.ListAvailableTypes()))
 			log.Fatalln("Please choose a VALID number!")
 		}
 
