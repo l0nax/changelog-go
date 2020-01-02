@@ -66,6 +66,7 @@ func GetReleasedEntries(r *Release) error {
 	basePath := path.Join(internal.GitPath, viper.GetString("changelog.entryPath"))
 	releasedPath := path.Join(basePath, "released")
 
+	// get over all released Changelog-Releases and parse them
 	err := filepath.Walk(releasedPath, func(_path string, info os.FileInfo, err error) error {
 		// skip if entity is not directory or start path
 		if !info.IsDir() || _path == releasedPath {
