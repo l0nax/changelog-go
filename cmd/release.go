@@ -72,6 +72,7 @@ Folder.`,
 
 		if isPreRelrease || fIsPreRelease {
 			newRelease.Info.IsPreRelease = true
+			log.Debugln("Current release is a Pre-Release!")
 		}
 
 		newRelease.Info.ReleaseDate, err = cmd.Flags().GetString("release-date")
