@@ -102,8 +102,19 @@ func GetReleasedEntries(r *Release) error {
 			return err
 		}
 
-		release.Info.ReleaseDate = _releaseInfo.ReleaseDate
+		release.Info = _releaseInfo
+
+		// clear _releaseInfo since we do not need it anymore
 		_releaseInfo = nil
+
+		// skip this release if its a pre-release and 'deletePreRelease'
+		// is set
+		if release.Info.IsPreRelease &&
+			viper.GetBool("preRelease.deletePreRelease") {
+			log.Debugf("Skipping pre-release '%s' because 'deletePreRelease' is set to 'true'\n",
+				release.Version)
+			return nil
+		}
 
 		// parse changelog-entry files
 		entries, err := ParseFiles(files)
