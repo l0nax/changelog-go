@@ -165,9 +165,6 @@ func processChangeEntries(entries *TplEntries) string {
 // processChangelogTmpl generates the CHANGELOG.md via the text template
 func processChangelogTmpl(r *Release) string {
 	// TODO: implement support for custom changelog template
-	vars := make(map[string]interface{})
-	vars["Release"] = r
-
 	tmpl, err := template.New("changelog").Parse(changelogScheme)
 	if err != nil {
 		log.Fatal(err)
@@ -175,7 +172,7 @@ func processChangelogTmpl(r *Release) string {
 
 	var tmplOut bytes.Buffer
 
-	err = tmpl.Execute(&tmplOut, vars)
+	err = tmpl.Execute(&tmplOut, r)
 	if err != nil {
 		log.Fatal(err)
 	}
