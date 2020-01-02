@@ -79,9 +79,9 @@ func GenerateChangelog(r *Release) {
 		rawEntries += "\n" + processChangeEntries(&entries)
 	}
 
-	fmt.Println("---------------------------------------------")
-	fmt.Println(rawEntries)
-	fmt.Println("---------------------------------------------")
+	// fmt.Println("---------------------------------------------")
+	// fmt.Println(rawEntries)
+	// fmt.Println("---------------------------------------------")
 
 	// read old releases into Release struct
 	err = GetReleasedEntries(r)
