@@ -76,7 +76,9 @@ your entry.`,
 
 		// get all available Entry Types
 		for i, entryType := range internal.EntryT.ListAvailableTypes() {
-			fmt.Printf("[%d] %s\n", i, (*entryType).GetTypeDescription())
+			fmt.Printf("[%d] %- 20s (%s)\n", i,
+				(*entryType).GetTypeDescription(),
+				(*entryType).GetShortTypeName())
 		}
 
 		reader := bufio.NewReader(os.Stdin)
