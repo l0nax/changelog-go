@@ -2,7 +2,6 @@ package changelog
 
 import (
 	"fmt"
-	"strings"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 	"gitlab.com/l0nax/changelog-go/internal"
@@ -15,6 +14,7 @@ import (
 	"path"
 	"path/filepath"
 	"strconv"
+	"strings"
 )
 
 // AddEntry() creates a new Changelog Entry by creating the Entry File
@@ -77,9 +77,9 @@ func GetReleasedEntries(r *Release) error {
 			Info: &ReleaseInfo{
 				// TODO: IsPreRelease can be checked with the Regex
 			},
-			Version: info.Name(),
+			Version:  info.Name(),
 			Collapse: false,
-			Entries: []TplEntries{},
+			Entries:  []TplEntries{},
 		}
 
 		// get and parse all files from this directory
@@ -104,7 +104,6 @@ func GetReleasedEntries(r *Release) error {
 
 		release.Info.ReleaseDate = _releaseInfo.ReleaseDate
 		_releaseInfo = nil
-
 
 		// parse changelog-entry files
 		entries, err := ParseFiles(files)
