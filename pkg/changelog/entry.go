@@ -10,6 +10,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/blang/semver"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 	"gitlab.com/l0nax/changelog-go/internal"
@@ -159,6 +160,19 @@ func GetReleasedEntries(r *Release) error {
 	if err != nil {
 		return err
 	}
+
+	log.Debugln("Starting sorting of releases")
+
+	start := time.Now()
+
+	// sort all releases
+	sort.SliceStable(r.Releases, func(i, j int) bool {
+		_i, _ := semver.Make(r.Releases[i].Version)
+		_j, _ := semver.Make(r.Releases[j].Version)
+		return _i.GT(_j)
+	})
+
+	log.Infof("Sorting tooked %s\n", time.Since(start))
 
 	return nil
 }
