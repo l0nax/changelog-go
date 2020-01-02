@@ -1,7 +1,7 @@
 VERSION := $(shell git describe --long --dirty --tags)
 DATE := $(date)
 COMMIT := $(shell git rev-parse HEAD)
-LDFLAGS := -ldflags "-X=version.Version=$(VERSION) -X=version.BuildTime=$(DATE) -X=version.Hash=$(COMMIT)"
+LDFLAGS := -ldflags "-X 'gitlab.com/l0nax/changelog-go/pkg/version.Version=$(VERSION)' -X 'gitlab.com/l0nax/changelog-go/pkg/version.BuildTime=$(DATE)' -X 'gitlab.com/l0nax/changelog-go/pkg/version.Hash=$(COMMIT)'"
 
 .PHONY: all
 all: build-dev
