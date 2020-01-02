@@ -41,6 +41,11 @@ func AddEntry(entry entry.Entry) {
 	_path := path.Join(internal.GitPath, viper.GetString("changelog.entryPath"))
 	_path = path.Join(_path, "unreleased")
 
+	// check if path exists
+	if _, err := os.Stat(_path); os.IsNotExist(err) {
+		os.MkdirAll(_path, 0666)
+	}
+
 	// get random String
 	fileName := path.Join(_path, fmt.Sprintf("%s-%s", branchName, tools.RandomString(8)))
 
