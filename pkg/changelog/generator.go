@@ -109,9 +109,9 @@ func GenerateChangelog(r *Release) {
 	log.Debugf("%# v\n", pretty.Formatter(r))
 
 	// TODO: write new CHANGELOG.md
-	fmt.Println("---------------------------------------------")
+	fmt.Println("+++---------------------------------------------+++")
 	fmt.Println(processChangelogTmpl(r))
-	fmt.Println("---------------------------------------------")
+	fmt.Println("+++---------------------------------------------+++")
 }
 
 // prepareReleaseDir creates all needed files and directory for the release
