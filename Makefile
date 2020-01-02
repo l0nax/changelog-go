@@ -7,9 +7,17 @@ LDFLAGS := -ldflags "-X=internal.Version=$(VERSION) -X=internal.BuildTime=$(DATE
 all: build-dev
 
 .PHONY: build-dev
-build-dev:
+build-dev: assets
 	go build $(LDFLAGS) -o changelog-go
 
 .PHONY: release
 release:
 	@echo "TO BE DONE!!!"
+
+.PHONY: assets
+assets:
+	resources -declare -fmt -output internal/assets.go -package internal example/.changelog-go.yaml
+
+.PHONY: depends
+depends:
+	go get github.com/omeid/go-resources/cmd/resources
