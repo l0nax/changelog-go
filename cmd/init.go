@@ -46,7 +46,8 @@ var initCmd = &cobra.Command{
 		}
 
 		// write default config
-		data, _ := internal.FS.String("example/.changelog-go.yaml")
+		//			       /example/.changelog-go.yaml
+		data, _ := internal.FS.String("/example/.changelog-go.yaml")
 		file.WriteString(data)
 
 		err = file.Close()
