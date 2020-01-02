@@ -18,6 +18,40 @@ It does not break the functionality.
 **And** this Tool does _not_ disturb any other Tool (eg IDE, CI/CD, Artifact, ...)
 
 
+## Installation
+
+There are many possibilities to install this Application.
+
+### snap
+
+```bash
+~] snap install changelog
+```
+
+### script
+
+You can also install `changelog-go` via a shell script:
+```bash
+~] curl https://gitlab.com/l0nax/changelog-go/raw/master/install.sh | bash
+```
+
+### RPM/ Deb
+
+```bash
+### (1) download the file from https://gitlab.com/l0nax/changelog-go/-/tags/
+
+### (2) install it via
+~] rpm -iv PATH/TO/FILE
+# or
+~] dep -iv PATH/TO/FILE
+```
+
+### binary
+
+1. Download the binary file from the [Release Page](https://gitlab.com/l0nax/changelog-go/-/tags/)
+2. Add the Path to the binary to your `$PATH` environment variable
+
+
 ## Usage
 
 _NOTE: You don't have to be at the root path (eg. where your `.git` relies) to
