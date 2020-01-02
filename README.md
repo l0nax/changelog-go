@@ -8,14 +8,28 @@ Windows and Mac OS-X.
 Think about that: You have a Project where you work with other 4-5 Peoples. How do you track changes so that they can
 easily added to a Changelog File?
 
-This Tool helps you to keep track of you Changelog (and changes) and its fully compatible with (eg) the Git Flow.
-This Tool does **not** aim to replace Tools like _Jira_ moreover, it extends it.
-Create Changelog Files easily with one Command (`changelog release <version>`).
+This Tool helps you to keep track of you Changelog (and changes) and its fully
+compatible with (eg.) the Git Flow. This Tool does **not** aim to replace Tools
+like _Jira_ moreover, it extends it. Create Changelog Files easily with one
+Command (`changelog release <version>`).
 
 Feature branches can contain Changelog Entries and can be merged whenever you want!
 It does not break the functionality.
 
 **And** this Tool does _not_ disturb any other Tool (eg IDE, CI/CD, Artifact, ...)
+
+## Features
+
+- seamless integration into your Workflow and CI/CD environment
+- works with Git, SVN, ... (every version control system)
+- highly customizable
+  * `CHANGELOG.md` output can be easily changed without writting any code
+  * for internal and OpenSource Projects
+- MIT license
+- wide range of supported (and pre-compiled) Operating Systems
+- keep track of changes made in your Project
+- generates a changelog exactly the way you want it
+- _free_ and _fast_ support
 
 
 ## Installation
