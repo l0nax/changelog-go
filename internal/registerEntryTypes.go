@@ -12,6 +12,7 @@ import (
 func RegisterAll() {
 	// --- Initialize base Pointer to Types --- //
 	var added entry.ChangeEntry = &entries.Entry_Added{}
+	var fixed entry.ChangeEntry = &entries.Entry_Fixed{}
 	var changed entry.ChangeEntry = &entries.Entry_Changed{}
 	var deprecated entry.ChangeEntry = &entries.Entry_Deprecated{}
 	var removed entry.ChangeEntry = &entries.Entry_Removed{}
@@ -20,6 +21,7 @@ func RegisterAll() {
 
 	// --- Register --- //
 	_ = EntryT.RegisterEntryType(added.NewChangeType())
+	_ = EntryT.RegisterEntryType(fixed.NewChangeType())
 	_ = EntryT.RegisterEntryType(changed.NewChangeType())
 	_ = EntryT.RegisterEntryType(deprecated.NewChangeType())
 	_ = EntryT.RegisterEntryType(removed.NewChangeType())
