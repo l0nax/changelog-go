@@ -2,6 +2,14 @@ package changelog
 
 import (
 	"fmt"
+	"os"
+	"path"
+	"path/filepath"
+	"sort"
+	"strconv"
+	"strings"
+	"time"
+
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 	"gitlab.com/l0nax/changelog-go/internal"
@@ -10,11 +18,6 @@ import (
 	"gitlab.com/l0nax/changelog-go/pkg/tools"
 	git "gopkg.in/src-d/go-git.v4"
 	"gopkg.in/yaml.v2"
-	"os"
-	"path"
-	"path/filepath"
-	"strconv"
-	"strings"
 )
 
 // AddEntry() creates a new Changelog Entry by creating the Entry File
