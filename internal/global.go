@@ -5,5 +5,7 @@ var (
 	// to the `.git` directory, it contains the path to the Root directory
 	// of the project – which contains the `.git` directory.
 	GitPath string
-	Cwd     string // Path to the current working directory
+
+	// Path to the current working directory
+	Cwd string
 )
