@@ -24,9 +24,6 @@ func GenerateChangelog(r *Release) {
 		log.Fatal(err)
 	}
 
-	// TODO: Implement Feature (and Config variable) to allow the User
-	// to regenerate the complete CHANGELOG.md.
-
 	// prepend our NEW release (data) to the list of releases at index 0
 	r.Releases = append([]TplRelease{{
 		Version:  r.Info.Version[0],
