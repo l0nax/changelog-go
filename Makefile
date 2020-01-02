@@ -1,7 +1,7 @@
 VERSION := $(shell git describe --long --dirty --tags)
 DATE := $(date)
 COMMIT := $(shell git rev-parse HEAD)
-LDFLAGS := -ldflags "-X=internal.Version=$(VERSION) -X=internal.BuildTime=$(DATE) -X=internal.Hash=$(COMMIT)"
+LDFLAGS := -ldflags "-X=version.Version=$(VERSION) -X=version.BuildTime=$(DATE) -X=version.Hash=$(COMMIT)"
 
 .PHONY: all
 all: build-dev

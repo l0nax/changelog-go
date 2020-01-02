@@ -20,7 +20,7 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
-	"gitlab.com/l0nax/changelog-go/internal"
+	"gitlab.com/l0nax/changelog-go/pkg/version"
 )
 
 // versionCmd represents the version command
@@ -28,9 +28,9 @@ var versionCmd = &cobra.Command{
 	Use:   "version",
 	Short: "Prints the Version information about this binary",
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Printf("%-20v: %s\n", "Version", internal.Version)
-		fmt.Printf("%-20v: %s\n", "Build", internal.BuildTime)
-		fmt.Printf("%-20v: %s\n", "Git Hash", internal.Hash)
+		fmt.Printf("%-20v: %s\n", "Version", version.Version)
+		fmt.Printf("%-20v: %s\n", "Build", version.BuildTime)
+		fmt.Printf("%-20v: %s\n", "Git Hash", version.Hash)
 
 		os.Exit(0)
 	},
