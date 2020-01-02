@@ -38,7 +38,7 @@ You can also install `changelog-go` via a shell script:
 ### RPM/ Deb
 
 ```bash
-### (1) download the file from https://gitlab.com/l0nax/changelog-go/-/tags/
+### (1) download the file from https://gitlab.com/l0nax/changelog-go/-/releases
 
 ### (2) install it via
 ~] rpm -iv PATH/TO/FILE
@@ -48,7 +48,7 @@ You can also install `changelog-go` via a shell script:
 
 ### binary
 
-1. Download the binary file from the [Release Page](https://gitlab.com/l0nax/changelog-go/-/tags/)
+1. Download the binary file from the [Release Page](https://gitlab.com/l0nax/changelog-go/-/releases)
 2. Add the Path to the binary to your `$PATH` environment variable
 
 

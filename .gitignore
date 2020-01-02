@@ -7,6 +7,9 @@
 # generated assets
 internal/assets.go
 
+# goreleaser artefacts
+dist/
+
 # Created by .ignore support plugin (hsz.mobi)
 
 ### GPG template
