@@ -20,6 +20,8 @@ preRelease:
         # setting 'deletePreRelease' to true will cause changelog-go to delete
         # the written Pre-Releases from the CHANGELOG.md file when releasing an
         # non-pre-release Version (eg. "1.0.0").
+        # If 'deletePreRelease' and 'foldPreReleases' are enabled at the same time
+        # then 'deletePreRelease' will be prioritised.
         deletePreRelease: false
 
         # 'foldPreReleases' will "fold" the Pre-Release entries if you release
