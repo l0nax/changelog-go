@@ -6,6 +6,10 @@
 A Changelog Management Tool written in Go which is compatible with Linux,
 Windows and Mac OS-X.
 
+## Demo
+
+[![asciicast](https://asciinema.org/a/291463.svg)](https://asciinema.org/a/291463)
+
 ## Motivation
 
 Think about that: You have a Project where you work with other 4-5 Peoples. How do you track changes so that they can
