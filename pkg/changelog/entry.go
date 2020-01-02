@@ -38,6 +38,9 @@ func AddEntry(entry entry.Entry) {
 		log.Fatal(err)
 	}
 
+	// replace all '/' with '_'
+	branchName = strings.ReplaceAll(branchName, "/", "_")
+
 	_path := path.Join(internal.GitPath, viper.GetString("changelog.entryPath"))
 	_path = path.Join(_path, "unreleased")
 
