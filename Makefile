@@ -12,7 +12,8 @@ build-dev: assets
 
 .PHONY: release
 release:
-	@echo "TO BE DONE!!!"
+	goreleaser release
+	godownloader --repo=l0nax/changelog-go > install.sh
 
 .PHONY: assets
 assets:
