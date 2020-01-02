@@ -167,7 +167,7 @@ func sortEntries(entries *[]entry.Entry) ([]TplEntries, error) {
 			ret[len(ret)-1].Changes = append(ret[len(ret)-1].Changes, &(*entries)[i])
 
 			// add index of ret to typeMap
-			typeMap[entry.TypeID] = len(ret)
+			typeMap[entry.TypeID] = len(ret) - 1
 		} else {
 			// add entry to list
 			ret[iRet].Changes = append(ret[iRet].Changes, &(*entries)[i])
