@@ -4,6 +4,8 @@
 **/go.db
 **/go_tags
 
+# generated assets
+internal/assets.go
 
 # Created by .ignore support plugin (hsz.mobi)
 
