@@ -1,5 +1,8 @@
 # `changelog-go`
 
+[![Get it from the Snap Store](https://snapcraft.io/static/images/badges/en/snap-store-black.svg)](https://snapcraft.io/changelog)
+[![changelog](https://snapcraft.io//changelog/badge.svg)](https://snapcraft.io/changelog)
+
 A Changelog Management Tool written in Go which is compatible with Linux,
 Windows and Mac OS-X.
 
