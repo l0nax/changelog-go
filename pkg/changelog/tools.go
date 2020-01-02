@@ -25,12 +25,14 @@ func CheckDir() {
 	}
 
 	// create Directory structure if it does not exists
-	if _, err := os.Stat(dataDir); os.IsNotExist(err) {
+	if _, err := os.Stat(path.Join(dataDir, "unreleased")); os.IsNotExist(err) {
 		err = os.MkdirAll(path.Join(dataDir, "unreleased"), 0755)
 		if err != nil {
 			panic(err)
 		}
+	}
 
+	if _, err := os.Stat(path.Join(dataDir, "released")); os.IsNotExist(err) {
 		err = os.MkdirAll(path.Join(dataDir, "released"), 0755)
 		if err != nil {
 			panic(err)
