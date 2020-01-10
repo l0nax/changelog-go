@@ -80,6 +80,8 @@ func GetReleasedEntries(r *Release) error {
 
 	// get over all released Changelog-Releases and parse them
 	err := filepath.Walk(releasedPath, func(_path string, info os.FileInfo, err error) error {
+		log.Debugf("Working on/in '%s'\n", _path)
+
 		// skip if entity is not directory or start path
 		if !info.IsDir() || _path == releasedPath {
 			return nil
