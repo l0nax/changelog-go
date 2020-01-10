@@ -104,7 +104,8 @@ func GetReleasedEntries(r *Release) error {
 		// get ReleaseInfo file and remove it from the map
 		releaseInfo, ok := files[path.Join(_path, "ReleaseInfo")]
 		if !ok {
-			log.Fatalf("No 'ReleaseInfo' file was found...!\n")
+			log.Fatalf("No 'ReleaseInfo' file was found (version '%s')...!\n",
+				info.Name())
 		}
 
 		delete(files, path.Join(_path, "ReleaseInfo"))
