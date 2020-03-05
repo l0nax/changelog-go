@@ -1,4 +1,4 @@
-image: golang:1.13
+image: golang:1.13-stretch
 
 include:
  - template: SAST.gitlab-ci.yml
