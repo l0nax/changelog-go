@@ -1,10 +1,9 @@
-default:
- image: golang:1.13-stretch
-
- before_script:
-   - apt-get update && apt-get install -y make
-   - make depends assets 
+image: golang:1.14
 
 include:
- - template: SAST.gitlab-ci.yml
- - template: Dependency-Scanning.gitlab-ci.yml
+  - template: SAST.gitlab-ci.yml
+
+sast:
+  before_script:
+  - apt-get update && apt-get install -y make
+  - make depends assets
