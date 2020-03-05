@@ -4,5 +4,5 @@ include:
   - template: SAST.gitlab-ci.yml
 
 before_script:
-  - apk add make git
+  - apk add make git go
   - make depends assets
