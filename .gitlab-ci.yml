@@ -1,3 +1,8 @@
+image: golang:1.13
+
 include:
  - template: SAST.gitlab-ci.yml
  - template: Dependency-Scanning.gitlab-ci.yml
+
+before_script:
+  - make depends assets 
