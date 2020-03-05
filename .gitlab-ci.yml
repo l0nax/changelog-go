@@ -3,7 +3,6 @@ image: golang:1.14
 include:
   - template: SAST.gitlab-ci.yml
 
-sast:
-  before_script:
-  - apk add make
+before_script:
+  - apk add make git
   - make depends assets
