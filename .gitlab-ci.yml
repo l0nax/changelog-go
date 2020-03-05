@@ -5,5 +5,5 @@ include:
 
 sast:
   before_script:
-  - apk add -y make
+  - apk add make
   - make depends assets
