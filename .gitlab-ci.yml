@@ -5,7 +5,6 @@ default:
    - apt-get update && apt-get install -y make
    - make depends assets 
 
-test:
- include:
-  - template: SAST.gitlab-ci.yml
-  - template: Dependency-Scanning.gitlab-ci.yml
+include:
+ - template: SAST.gitlab-ci.yml
+ - template: Dependency-Scanning.gitlab-ci.yml
