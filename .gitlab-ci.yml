@@ -5,5 +5,5 @@ include:
 
 sast:
   before_script:
-  - apt-get update && apt-get install -y make
+  - apk add -y make
   - make depends assets
