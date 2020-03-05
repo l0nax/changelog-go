@@ -1,9 +1,11 @@
-image: golang:1.13-stretch
+default:
+ image: golang:1.13-stretch
 
-include:
- - template: SAST.gitlab-ci.yml
- - template: Dependency-Scanning.gitlab-ci.yml
+ before_script:
+   - apt-get update && apt-get install -y make
+   - make depends assets 
 
-before_script:
-  - apt-get update && apt-get install -y make
-  - make depends assets 
+test:
+ include:
+  - template: SAST.gitlab-ci.yml
+  - template: Dependency-Scanning.gitlab-ci.yml
