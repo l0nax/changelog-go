@@ -5,4 +5,5 @@ include:
  - template: Dependency-Scanning.gitlab-ci.yml
 
 before_script:
+  - apt-get update && apt-get install -y make
   - make depends assets 
