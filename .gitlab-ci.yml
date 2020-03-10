@@ -1,8 +1,14 @@
 image: golang:1.14
 
+
 include:
   - template: SAST.gitlab-ci.yml
+  - template: Dependency-Scanning.gitlab-ci.yml
 
-before_script:
+build:
+  stage: build
+  script:
+  script:
   - apk add make git go
   - make depends assets
+  - make build-dev
