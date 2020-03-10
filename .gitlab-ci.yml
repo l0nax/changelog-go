@@ -5,7 +5,7 @@ include:
   - template: SAST.gitlab-ci.yml
   - template: Dependency-Scanning.gitlab-ci.yml
 
-sast:
+sast_assets:
   extends: sast
   before_script:
   - make depends assets
