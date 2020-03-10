@@ -1,0 +1,16 @@
+image: golang:1.14
+
+include:
+  - template: SAST.gitlab-ci.yml
+  - template: Dependency-Scanning.gitlab-ci.yml
+  - template: License-Scanning.gitlab-ci.yml
+
+build:
+  stage: build
+  script:
+  - make depends assets
+  - make build-dev
+  artifacts:
+    expire_in: 1 hour
+    paths:
+    - internal/assets.go
