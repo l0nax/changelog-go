@@ -5,19 +5,12 @@ include:
   - template: SAST.gitlab-ci.yml
   - template: Dependency-Scanning.gitlab-ci.yml
 
-sast_assets:
-  extends: sast
-  before_script:
-  - make depends assets
-  - make build-dev
-
 build:
   stage: build
   script:
   - make depends assets
   - make build-dev
   artifacts:
-    expires:: 1 hour
+    expire_in: 1 hour
     paths:
     - internal/assets.go
-    
