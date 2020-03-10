@@ -1,9 +1,9 @@
 image: golang:1.14
 
-
 include:
   - template: SAST.gitlab-ci.yml
   - template: Dependency-Scanning.gitlab-ci.yml
+  - template: License-Scanning.gitlab-ci.yml
 
 build:
   stage: build
