@@ -16,3 +16,8 @@ build:
   script:
   - make depends assets
   - make build-dev
+  artifacts:
+    expires:: 1 hour
+    paths:
+    - internal/assets.go
+    
