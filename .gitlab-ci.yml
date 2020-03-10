@@ -9,6 +9,5 @@ build:
   stage: build
   script:
   script:
-  - apk add make git go
   - make depends assets
   - make build-dev
