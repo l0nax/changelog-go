@@ -15,10 +15,14 @@ build:
   script:
   - make depends assets
   - make build-dev
+  # execute goreleaser but without pushing, signing or validating – so we can
+  # use the artifacts ie. in Sentry
+  - goreleaser release --skip-validate --skip-publish --skip-sign
   artifacts:
     expire_in: 1 hour
     paths:
     - internal/assets.go
+    - dist/
 
 sentry_deploy:
   stage: deploy
@@ -32,7 +36,9 @@ sentry_deploy:
     # add commits
     - sentry-cli releases set-commits --auto $CI_COMMIT_SHA
     # upload artifacts
-    - sentry-cli upload-dif -p ${SENTRY_PRJ} --wait bin/*
-    - sentry-cli releases files ${VERSION} upload bin/*
+    - export BINARIES=$(ls -d dist/*/* | grep -v prime)
+    - ls -d dist/*/* | grep -v prime
+    - sentry-cli upload-dif -p ${SENTRY_PRJ} --wait ${BINARIES}
+    - sentry-cli releases files ${VERSION} upload ${BINARIES}
     # finalize sentry release
     - sentry-cli releases finalize $CI_COMMIT_SHA
