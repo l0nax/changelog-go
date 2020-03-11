@@ -34,7 +34,7 @@ sentry_deploy:
   stage: deploy
   image: getsentry/sentry-cli
   script:
-    - export NEW_VERSION="${PRJ}@$(cat `pwd`/.version)"
+    - export VERSION="${PRJ}@$(cat `pwd`/.version)"
     # create new release in sentry
     - sentry-cli releases new -p ${SENTRY_PRJ} ${VERSION}
     # add commits
