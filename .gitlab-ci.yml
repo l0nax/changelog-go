@@ -5,6 +5,11 @@ include:
   - template: Dependency-Scanning.gitlab-ci.yml
   - template: License-Scanning.gitlab-ci.yml
 
+stages:
+  - build
+  - test
+  - deploy
+
 build:
   stage: build
   script:
@@ -14,3 +19,20 @@ build:
     expire_in: 1 hour
     paths:
     - internal/assets.go
+
+sentry_deploy:
+  stage: deploy
+  image: getsentry/sentry-cli
+  script:
+    # get new Version from `git-semver`
+    - go get github.com/mdomke/git-semver@master
+    - export NEW_VERSION="${PRJ}@$(git-semver -prefix v)"
+    # create new release in sentry
+    - sentry-cli releases new -p ${SENTRY_PRJ} ${VERSION}
+    # add commits
+    - sentry-cli releases set-commits --auto $CI_COMMIT_SHA
+    # upload artifacts
+    - sentry-cli upload-dif -p ${SENTRY_PRJ} --wait bin/*
+    - sentry-cli releases files ${VERSION} upload bin/*
+    # finalize sentry release
+    - sentry-cli releases finalize $CI_COMMIT_SHA
