@@ -15,9 +15,11 @@ build:
   script:
   - make depends assets
   - make build-dev
+  # install goreleaser
+  - curl -sfL https://install.goreleaser.com/github.com/goreleaser/goreleaser.sh | sh
   # execute goreleaser but without pushing, signing or validating – so we can
   # use the artifacts ie. in Sentry
-  - goreleaser release --skip-validate --skip-publish --skip-sign
+  - ./bin/goreleaser release --skip-validate --skip-publish --skip-sign --config="`pwd`/.ci/.goreleaser.no-snapcraft.yml"
   artifacts:
     expire_in: 1 hour
     paths:
