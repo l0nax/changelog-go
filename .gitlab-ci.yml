@@ -46,3 +46,19 @@ sentry_deploy:
     - sentry-cli releases files ${VERSION} upload ${BINARIES}
     # finalize sentry release
     - sentry-cli releases finalize $CI_COMMIT_SHA
+
+# upload new Version to GitLab Pages site
+pages:
+  stage: deploy
+  script:
+  # install go-selfupdate
+  - go get -u github.com/sanbornm/go-selfupdate/...
+  # generate content for 'public'
+  - ./.ci/getReleases.sh $(cat `pwd`/.version)
+  # move 'index.html' to public/
+  # TODO: create nice index.html
+  artifacts:
+    paths:
+    - public
+  only:
+  - tags
