@@ -6,14 +6,16 @@ require (
 	github.com/blang/semver v3.5.1+incompatible
 	github.com/emirpasic/gods v1.12.1-0.20191007224813-4e23915b9a82 // indirect
 	github.com/fsnotify/fsnotify v1.4.8-0.20191012010759-4bf2d1fec783 // indirect
+	github.com/getsentry/sentry-go v0.5.1 // indirect
 	github.com/hashicorp/hcl v1.0.1-0.20191016231534-914dc3f8dd7c // indirect
 	github.com/konsorten/go-windows-terminal-sequences v1.0.2 // indirect
 	github.com/kr/pretty v0.1.0
 	github.com/magiconair/properties v1.8.2-0.20191019074931-a586bb8b7dea // indirect
+	github.com/makasim/sentryhook v0.3.0 // indirect
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/onsi/gomega v1.8.0 // indirect
 	github.com/pelletier/go-toml v1.6.1-0.20191106154939-c4efb7477c43 // indirect
-	github.com/pkg/errors v0.8.1
+	github.com/pkg/errors v0.9.1
 	github.com/sergi/go-diff v1.0.1-0.20180205163309-da645544ed44 // indirect
 	github.com/sirupsen/logrus v1.4.2
 	github.com/spf13/afero v1.2.2 // indirect
