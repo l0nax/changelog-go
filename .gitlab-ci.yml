@@ -13,6 +13,9 @@ stages:
 build:
   stage: build
   script:
+  # get new Version from `git-semver`
+  - go get github.com/mdomke/git-semver@master
+  - git-semver -prefix v > `pwd`/.version
   - make depends assets
   - make build-dev
   # install goreleaser
@@ -25,14 +28,13 @@ build:
     paths:
     - internal/assets.go
     - dist/
+    - .version
 
 sentry_deploy:
   stage: deploy
   image: getsentry/sentry-cli
   script:
-    # get new Version from `git-semver`
-    - go get github.com/mdomke/git-semver@master
-    - export NEW_VERSION="${PRJ}@$(git-semver -prefix v)"
+    - export NEW_VERSION="${PRJ}@$(cat `pwd`/.version)"
     # create new release in sentry
     - sentry-cli releases new -p ${SENTRY_PRJ} ${VERSION}
     # add commits
