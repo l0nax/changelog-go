@@ -6,7 +6,6 @@ import (
 	"path/filepath"
 
 	"github.com/pkg/errors"
-	log "github.com/sirupsen/logrus"
 
 	"github.com/spf13/viper"
 	"gitlab.com/l0nax/changelog-go/internal"

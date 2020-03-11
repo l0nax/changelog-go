@@ -8,7 +8,6 @@ import (
 	"path"
 	"path/filepath"
 
-	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 	"gitlab.com/l0nax/changelog-go/internal"
 	"gitlab.com/l0nax/changelog-go/pkg/entry"

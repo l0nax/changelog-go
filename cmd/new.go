@@ -24,17 +24,17 @@ package cmd
 import (
 	"bufio"
 	"fmt"
+	"os"
+	"strconv"
+	"strings"
+
 	"github.com/kr/pretty"
-	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"gitlab.com/l0nax/changelog-go/internal"
 	"gitlab.com/l0nax/changelog-go/pkg/changelog"
 	"gitlab.com/l0nax/changelog-go/pkg/entry"
 	"gitlab.com/l0nax/changelog-go/pkg/gut"
-	"os"
-	"strconv"
-	"strings"
 )
 
 // newCmd represents the new command

@@ -22,12 +22,12 @@ THE SOFTWARE.
 package cmd
 
 import (
-	log "github.com/sirupsen/logrus"
+	"regexp"
+	"time"
+
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"gitlab.com/l0nax/changelog-go/pkg/changelog"
-	"regexp"
-	"time"
 )
 
 // releaseCmd represents the release command
