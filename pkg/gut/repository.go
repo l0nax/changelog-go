@@ -1,5 +1,3 @@
-// gut (git utils) implements some Helper Functions around the `git` Library to easier
-// interact with the Repository.
 package gut
 
 import (

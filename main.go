@@ -21,8 +21,18 @@ THE SOFTWARE.
 */
 package main
 
-import "gitlab.com/l0nax/changelog-go/cmd"
+import (
+	"time"
+
+	"github.com/getsentry/sentry-go"
+	"gitlab.com/l0nax/changelog-go/cmd"
+)
 
 func main() {
+	// Flush buffered events before the program terminates.
+	// Set the timeout to the maximum duration the program can afford to wait.
+	defer sentry.Flush(time.Second * 2)
+	defer sentry.Recover()
+
 	cmd.Execute()
 }
