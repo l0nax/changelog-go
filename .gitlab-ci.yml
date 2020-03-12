@@ -1,5 +1,13 @@
 image: golang:1.14
 
+variables:
+  GOCACHE: "/go/.build_cache"
+
+cache:
+  paths:
+    - ${GOCACHE}
+    - ${GOPATH}/pkg/mod
+
 include:
   - template: SAST.gitlab-ci.yml
   - template: Dependency-Scanning.gitlab-ci.yml
