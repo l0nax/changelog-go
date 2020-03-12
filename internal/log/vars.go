@@ -17,6 +17,14 @@ func init() {
 		Dsn:         "https://e87c950e1b544af385a198035234b248@fabmation.info/3",
 		Release:     "changelog-go@" + version.Version,
 		Environment: version.Environment,
+		BeforeSend: func(event *sentry.Event, hint *sentry.EventHint) *sentry.Event {
+			// discard the event if Environment is 'develop'
+			if event.Environment == "develop" {
+				return nil
+			}
+
+			return event
+		},
 	})
 	if err != nil {
 		logrus.Fatalf("sentry.Init: %s", err)
