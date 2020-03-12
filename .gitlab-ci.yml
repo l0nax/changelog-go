@@ -3,10 +3,6 @@ image: golang:1.14
 variables:
   GOCACHE: "/go/.build_cache"
 
-cache:
-  paths:
-    - ${GOCACHE}
-    - ${GOPATH}/pkg/mod
 
 include:
   - template: SAST.gitlab-ci.yml
@@ -37,6 +33,10 @@ build:
   - ./bin/goreleaser release --skip-validate --skip-publish --skip-sign --config="`pwd`/.ci/.goreleaser.develop.yml"
   # delete all archives from dist/
   - rm -rf `pwd`/dist/*.tar.gz
+  cache:
+    paths:
+      - ${GOCACHE}
+      - /go/pkg/mod
   artifacts:
     expire_in: 1 hour
     paths:
