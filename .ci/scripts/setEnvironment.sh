@@ -45,8 +45,8 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 #     developer will resolve it ASAP. So we are not interested in such error
 #     reports. And the `changelog-go` application will also NOT send crashes to
 #     the server if this environment is set.
-if [[ $VERSION == *"-dev"* ]]; then
-        if [[ $CI_COMMIT_BRANCH == "develop" ]]; then
+if [[ "$VERSION" == *"-dev"* ]]; then
+        if [ "$CI_COMMIT_BRANCH" == "develop" ]; then
           export ENV="staging"
         else
           export ENV="develop"

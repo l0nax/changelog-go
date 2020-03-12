@@ -62,7 +62,7 @@ sentry_deploy:
     - sentry-cli releases finalize ${VERSION}
     # mark release as deployed if environment is production
     - >-
-        if [[ $BUILD_ENVIRONMENT == "production" ]] || [[ $BUILD_ENVIRONMENT == "staging" ]]; then
+        if [ "$BUILD_ENVIRONMENT" == "production" ] || [ "$BUILD_ENVIRONMENT" == "staging" ]; then
           sentry-cli releases deploys ${VERSION} new -e ${BUILD_ENVIRONMENT}
         fi
 
