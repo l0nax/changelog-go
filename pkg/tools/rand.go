@@ -1,9 +1,7 @@
-// Package tools implements some Functions which are needed to run this Application
 package tools
 
 import (
 	"crypto/rand"
-	log "github.com/sirupsen/logrus"
 )
 
 const randStrLetters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"

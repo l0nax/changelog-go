@@ -4,7 +4,6 @@ import (
 	// "fmt"
 
 	"github.com/kr/pretty"
-	log "github.com/sirupsen/logrus"
 	"gitlab.com/l0nax/changelog-go/internal"
 	"gitlab.com/l0nax/changelog-go/pkg/entry"
 	"gopkg.in/yaml.v2"

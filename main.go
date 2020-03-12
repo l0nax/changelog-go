@@ -21,8 +21,34 @@ THE SOFTWARE.
 */
 package main
 
-import "gitlab.com/l0nax/changelog-go/cmd"
+import (
+	"time"
+
+	"github.com/getsentry/sentry-go"
+	"github.com/sanbornm/go-selfupdate/selfupdate"
+	"gitlab.com/l0nax/changelog-go/cmd"
+	"gitlab.com/l0nax/changelog-go/pkg/version"
+)
 
 func main() {
+	// Flush buffered events before the program terminates.
+	// Set the timeout to the maximum duration the program can afford to wait.
+	defer sentry.Flush(time.Second * 2)
+	defer sentry.Recover()
+
+	// configure and start self-updater
+	var updater = &selfupdate.Updater{
+		CurrentVersion: version.Version,
+		ApiURL:         "https://l0nax.gitlab.io/",
+		BinURL:         "https://l0nax.gitlab.io/",
+		DiffURL:        "https://l0nax.gitlab.io/",
+		Dir:            "update/",
+		CmdName:        "changelog-go",
+	}
+
+	if updater != nil {
+		go updater.BackgroundRun()
+	}
+
 	cmd.Execute()
 }

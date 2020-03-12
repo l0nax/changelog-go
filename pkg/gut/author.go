@@ -1,7 +1,6 @@
 package gut
 
 import (
-	log "github.com/sirupsen/logrus"
 	gitcfg "github.com/tcnksm/go-gitconfig"
 )
 

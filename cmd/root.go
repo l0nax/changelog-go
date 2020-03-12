@@ -23,10 +23,11 @@ package cmd
 
 import (
 	"fmt"
-	log "github.com/sirupsen/logrus"
+	"os"
+
+	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"gitlab.com/l0nax/changelog-go/internal"
-	"os"
 
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/viper"
@@ -50,7 +51,7 @@ File.`,
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
 		// check if debug flag has been set
 		if d, _ := cmd.Flags().GetBool("debug"); d {
-			log.SetLevel(log.DebugLevel)
+			log.SetLevel(logrus.DebugLevel)
 		}
 	},
 }

@@ -11,7 +11,6 @@ import (
 	"time"
 
 	"github.com/blang/semver"
-	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 	"gitlab.com/l0nax/changelog-go/internal"
 	"gitlab.com/l0nax/changelog-go/pkg/entry"
@@ -80,6 +79,8 @@ func GetReleasedEntries(r *Release) error {
 
 	// get over all released Changelog-Releases and parse them
 	err := filepath.Walk(releasedPath, func(_path string, info os.FileInfo, err error) error {
+		log.Debugf("Working on/in '%s'\n", _path)
+
 		// skip if entity is not directory or start path
 		if !info.IsDir() || _path == releasedPath {
 			return nil
@@ -104,7 +105,8 @@ func GetReleasedEntries(r *Release) error {
 		// get ReleaseInfo file and remove it from the map
 		releaseInfo, ok := files[path.Join(_path, "ReleaseInfo")]
 		if !ok {
-			log.Fatalf("No 'ReleaseInfo' file was found...!\n")
+			log.Fatalf("No 'ReleaseInfo' file was found (version '%s')...!\n",
+				info.Name())
 		}
 
 		delete(files, path.Join(_path, "ReleaseInfo"))

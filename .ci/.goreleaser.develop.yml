@@ -1,0 +1,34 @@
+## this GoReleaser config is like the one which can be found in the project
+## root, but this config does ONLY create the resulting binaries.
+project_name: changelog
+
+before:
+  hooks:
+    - go mod tidy
+
+builds:
+- id: "default"
+  binary: changelog
+
+  goos:
+    - freebsd
+    - linux
+    - windows
+    - darwin
+
+  goarch:
+    - amd64
+    - arm
+    - arm64
+    - 386
+
+  ldflags:
+    - -X gitlab.com/l0nax/changelog-go/pkg/version.Version={{.Version}} -X gitlab.com/l0nax/changelog-go/pkg/version.Hash={{.Commit}} -X gitlab.com/l0nax/changelog-go/pkg/version.BuildTime={{.Date}} -X gitlab.com/l0nax/changelog-go/pkg/version.Environment={{.Env.BUILD_ENVIRONMENT}}
+
+changelog:
+  skip: true
+  sort: asc
+  filters:
+    exclude:
+    - '^docs:'
+    - '^test:'

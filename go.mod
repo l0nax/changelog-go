@@ -3,17 +3,22 @@ module gitlab.com/l0nax/changelog-go
 go 1.13
 
 require (
-	github.com/blang/semver v3.6.1+incompatible
+	github.com/blang/semver v3.5.1+incompatible
 	github.com/emirpasic/gods v1.12.1-0.20191007224813-4e23915b9a82 // indirect
 	github.com/fsnotify/fsnotify v1.4.8-0.20191012010759-4bf2d1fec783 // indirect
+	github.com/getsentry/sentry-go v0.5.1
 	github.com/hashicorp/hcl v1.0.1-0.20191016231534-914dc3f8dd7c // indirect
+	github.com/kardianos/osext v0.0.0-20190222173326-2bc1f35cddc0 // indirect
 	github.com/konsorten/go-windows-terminal-sequences v1.0.2 // indirect
+	github.com/kr/binarydist v0.1.0 // indirect
 	github.com/kr/pretty v0.1.0
 	github.com/magiconair/properties v1.8.2-0.20191019074931-a586bb8b7dea // indirect
+	github.com/makasim/sentryhook v0.3.0
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/onsi/gomega v1.8.0 // indirect
 	github.com/pelletier/go-toml v1.6.1-0.20191106154939-c4efb7477c43 // indirect
-	github.com/pkg/errors v0.8.1
+	github.com/pkg/errors v0.9.1
+	github.com/sanbornm/go-selfupdate v0.0.0-20190330003341-f041b81ae5e6
 	github.com/sergi/go-diff v1.0.1-0.20180205163309-da645544ed44 // indirect
 	github.com/sirupsen/logrus v1.4.2
 	github.com/spf13/afero v1.2.2 // indirect
@@ -28,6 +33,7 @@ require (
 	golang.org/x/net v0.0.0-20191112182307-2180aed22343 // indirect
 	golang.org/x/sys v0.0.0-20191113165036-4c7a9d0fe056 // indirect
 	golang.org/x/text v0.3.3-0.20191031172631-4b67af870c6f // indirect
+	gopkg.in/inconshreveable/go-update.v0 v0.0.0-20150814200126-d8b0b1d421aa // indirect
 	gopkg.in/src-d/go-git.v4 v4.13.1
 	gopkg.in/yaml.v2 v2.2.5
 )
