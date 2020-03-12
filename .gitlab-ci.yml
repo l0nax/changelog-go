@@ -43,9 +43,12 @@ sentry_deploy:
     - export BINARIES=$(ls -d dist/*/* | grep -v prime)
     - ls -d dist/*/* | grep -v prime
     - sentry-cli upload-dif -p ${SENTRY_PRJ} --wait ${BINARIES}
-    - sentry-cli releases files ${VERSION} upload ${BINARIES}
+    - >-
+        for i in ${BINARIES}; do
+          sentry-cli releases files ${VERSION} upload ${i}
+        done
     # finalize sentry release
-    - sentry-cli releases finalize $CI_COMMIT_SHA
+    - sentry-cli releases finalize ${VERSION}
 
 # upload new Version to GitLab Pages site
 pages:
