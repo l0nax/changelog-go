@@ -38,7 +38,7 @@ sentry_deploy:
     # create new release in sentry
     - sentry-cli releases new -p ${SENTRY_PRJ} ${VERSION}
     # add commits
-    - sentry-cli releases set-commits --auto $CI_COMMIT_SHA
+    - sentry-cli releases set-commits --commit "${SENTRY_GIT_REPO_NAME}" ${VERSION}
     # upload artifacts
     - export BINARIES=$(ls -d dist/*/* | grep -v prime)
     - ls -d dist/*/* | grep -v prime
