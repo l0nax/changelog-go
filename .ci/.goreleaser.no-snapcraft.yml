@@ -55,15 +55,6 @@ nfpms:
     - deb
     - rpm
 
-snapcrafts:
-- publish: true
-
-  summary: CLI to create and manage Changelog even on big projects
-  description: changelog is a CLI that helps a team/ person to keep track of all changes and also helps creating (and managing) a readable CHANGELOG.md
-
-  grade: stable
-  license: MIT
-
 changelog:
   sort: asc
   filters:

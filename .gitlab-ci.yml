@@ -5,12 +5,59 @@ include:
   - template: Dependency-Scanning.gitlab-ci.yml
   - template: License-Scanning.gitlab-ci.yml
 
+stages:
+  - build
+  - test
+  - deploy
+
 build:
   stage: build
   script:
+  # get new Version from `git-semver`
+  - go get github.com/mdomke/git-semver@master
+  - git-semver -prefix v > `pwd`/.version
   - make depends assets
   - make build-dev
+  # install goreleaser
+  - curl -sfL https://install.goreleaser.com/github.com/goreleaser/goreleaser.sh | sh
+  # execute goreleaser but without pushing, signing or validating – so we can
+  # use the artifacts ie. in Sentry
+  - ./bin/goreleaser release --skip-validate --skip-publish --skip-sign --config="`pwd`/.ci/.goreleaser.no-snapcraft.yml"
   artifacts:
     expire_in: 1 hour
     paths:
     - internal/assets.go
+    - dist/
+    - .version
+
+sentry_deploy:
+  stage: deploy
+  image: getsentry/sentry-cli
+  script:
+    - export VERSION="${PRJ}@$(cat `pwd`/.version)"
+    # create new release in sentry
+    - sentry-cli releases new -p ${SENTRY_PRJ} ${VERSION}
+    # add commits
+    - sentry-cli releases set-commits --commit "${SENTRY_GIT_REPO_NAME}" ${VERSION}
+    # upload artifacts
+    - export BINARIES=$(ls -d dist/*/* | grep -v prime)
+    - ls -d dist/*/* | grep -v prime
+    - sentry-cli upload-dif -p ${SENTRY_PRJ} --wait ${BINARIES}
+    # finalize sentry release
+    - sentry-cli releases finalize ${VERSION}
+
+# upload new Version to GitLab Pages site
+pages:
+  stage: deploy
+  script:
+  # install go-selfupdate
+  - go get -u github.com/sanbornm/go-selfupdate/...
+  # generate content for 'public'
+  - ./.ci/getReleases.sh $(cat `pwd`/.version)
+  # move 'index.html' to public/
+  # TODO: create nice index.html
+  artifacts:
+    paths:
+    - public
+  only:
+  - tags
