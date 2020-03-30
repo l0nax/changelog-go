@@ -86,7 +86,7 @@ release:
       echo "++ Build Date: \"${BUILD_DATE}\""
   # execute goreleaser but without pushing, signing or validating – so we can
   # use the artifacts ie. in Sentry
-  - ./bin/goreleaser release --skip-validate
+  - ./bin/goreleaser release --skip-validate --config="`pwd`/.ci/.goreleaser.release.yml"
   # delete all archives from dist/
   - rm -rf `pwd`/dist/*.tar.gz
   cache:
