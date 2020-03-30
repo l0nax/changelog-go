@@ -14,14 +14,27 @@ stages:
   - test
   - deploy
 
-build:
-  stage: build
+# this job creates all relevant files which are needed in the 'build' AND
+# 'release' job/ stage.
+go_prepare:
+  stage: .pre
   script:
   # get new Version from `git-semver`
   - go get github.com/mdomke/git-semver@master
   - git-semver -prefix v > `pwd`/.version
+  # generate GoLang assets
   - make depends assets
   - make build-dev
+  artifacts:
+    expire_in: 1 hour
+    paths:
+    - internal/assets.go
+    - .version
+    - ENVIRONMENT
+
+build:
+  stage: build
+  script:
   # install goreleaser
   - curl -sfL https://install.goreleaser.com/github.com/goreleaser/goreleaser.sh | sh
   # get build/ target environment
