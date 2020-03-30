@@ -36,10 +36,6 @@ checksum:
 snapshot:
   name_template: "{{ .Tag }}-next"
 
-signs:
-- cmd: gpg2
-  artifacts: all
-
 nfpms:
 - replacements:
     386: x86_64
