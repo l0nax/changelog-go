@@ -93,6 +93,7 @@ your entry.`,
 
 		// convert CRLF to LF
 		text = strings.Replace(text, "\n", "", -1)
+		text = strings.Replace(text, "\r", "", -1)
 
 		// convert input to Number
 		var choosenType int

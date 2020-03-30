@@ -14,20 +14,39 @@ stages:
   - test
   - deploy
 
-build:
-  stage: build
+# this job creates all relevant files which are needed in the 'build' AND
+# 'release' job/ stage.
+go_prepare:
+  stage: .pre
   script:
   # get new Version from `git-semver`
   - go get github.com/mdomke/git-semver@master
   - git-semver -prefix v > `pwd`/.version
-  - make depends assets
-  - make build-dev
-  # install goreleaser
-  - curl -sfL https://install.goreleaser.com/github.com/goreleaser/goreleaser.sh | sh
   # get build/ target environment
   - export VERSION=$(cat `pwd`/.version)
   - $(pwd)/.ci/scripts/setEnvironment.sh
   - export BUILD_ENVIRONMENT=$(cat `pwd`/ENVIRONMENT)
+  # generate GoLang assets
+  - make depends assets
+  - make build-dev
+  artifacts:
+    expire_in: 1 hour
+    paths:
+    - internal/assets.go
+    - .version
+    - ENVIRONMENT
+
+build:
+  stage: build
+  script:
+  # install goreleaser
+  - curl -sfL https://install.goreleaser.com/github.com/goreleaser/goreleaser.sh | sh
+  # get build/ target environment and build date
+  - export VERSION=$(cat `pwd`/.version)
+  - export BUILD_ENVIRONMENT=$(cat `pwd`/ENVIRONMENT)
+  - export BUILD_DATE=$(date --utc +%Y-%m-%dT%H:%M:%S%Z)
+  - >-
+      echo "++ Build Date: \"${BUILD_DATE}\""
   # execute goreleaser but without pushing, signing or validating – so we can
   # use the artifacts ie. in Sentry
   - ./bin/goreleaser release --skip-validate --skip-publish --skip-sign --config="`pwd`/.ci/.goreleaser.develop.yml"
@@ -37,6 +56,45 @@ build:
     paths:
       - ${GOCACHE}
       - /go/pkg/mod
+  except:
+    # there is a "release" job which runs only when we are creating a new release
+    - tags
+  artifacts:
+    expire_in: 1 hour
+    paths:
+    - internal/assets.go
+    - dist/
+    - .version
+    - ENVIRONMENT
+
+release:
+  stage: build
+  variables:
+    # Disable shallow cloning so that goreleaser can diff between tags to
+    # generate a changelog.
+    #
+    # TODO: Use custom CHANGELOG.md (stripped from previous releases)
+    GIT_DEPTH: 0
+  script:
+  # install goreleaser
+  - curl -sfL https://install.goreleaser.com/github.com/goreleaser/goreleaser.sh | sh
+  # get build/ target environment and build date
+  - export VERSION=$(cat `pwd`/.version)
+  - export BUILD_ENVIRONMENT=$(cat `pwd`/ENVIRONMENT)
+  - export BUILD_DATE=$(date --utc +%Y-%m-%dT%H:%M:%S%Z)
+  - >-
+      echo "++ Build Date: \"${BUILD_DATE}\""
+  # execute goreleaser but without pushing, signing or validating – so we can
+  # use the artifacts ie. in Sentry
+  - ./bin/goreleaser release
+  # delete all archives from dist/
+  - rm -rf `pwd`/dist/*.tar.gz
+  cache:
+    paths:
+      - ${GOCACHE}
+      - /go/pkg/mod
+  only:
+    - tags
   artifacts:
     expire_in: 1 hour
     paths:
@@ -73,6 +131,7 @@ pages:
   # install go-selfupdate
   - go get -u github.com/sanbornm/go-selfupdate/...
   # generate content for 'public'
+  # TODO: filter all other 'goreleaser' files out
   - ./.ci/getReleases.sh $(cat `pwd`/.version)
   # move 'index.html' to public/
   # TODO: create nice index.html

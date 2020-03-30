@@ -25,9 +25,7 @@ import (
 	"time"
 
 	"github.com/getsentry/sentry-go"
-	"github.com/sanbornm/go-selfupdate/selfupdate"
 	"gitlab.com/l0nax/changelog-go/cmd"
-	"gitlab.com/l0nax/changelog-go/pkg/version"
 )
 
 func main() {
@@ -36,19 +34,22 @@ func main() {
 	defer sentry.Flush(time.Second * 2)
 	defer sentry.Recover()
 
-	// configure and start self-updater
-	var updater = &selfupdate.Updater{
-		CurrentVersion: version.Version,
-		ApiURL:         "https://l0nax.gitlab.io/",
-		BinURL:         "https://l0nax.gitlab.io/",
-		DiffURL:        "https://l0nax.gitlab.io/",
-		Dir:            "update/",
-		CmdName:        "changelog-go",
-	}
+	// NOTE: We are currently disabling the AUTOMATIC update, because we
+	//	 have now the 'update' subcommand. So we do not force clients
+	//	 to update to the newest version. See Issue #2
+	// // configure and start self-updater
+	// var updater = &selfupdate.Updater{
+	//         CurrentVersion: version.Version,
+	//         ApiURL:         "https://l0nax.gitlab.io/",
+	//         BinURL:         "https://l0nax.gitlab.io/",
+	//         DiffURL:        "https://l0nax.gitlab.io/",
+	//         Dir:            "update/",
+	//         CmdName:        "changelog-go",
+	// }
 
-	if updater != nil {
-		go updater.BackgroundRun()
-	}
+	// if updater != nil {
+	//         go updater.BackgroundRun()
+	// }
 
 	cmd.Execute()
 }

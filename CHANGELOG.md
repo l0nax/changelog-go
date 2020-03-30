@@ -5,13 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 
-## 1.1.0 (2020-03-12)
+## 1.1.1 (2020-03-30)
 
 ### Added (1 change)
-- Add auto-updater
+- Add 'update' command
+
+### Fixed (1 change)
+- Fix 'error on number conversion' on Windows platform
+
+### Changed (1 change)
+- Disable automatic updates [#2](https://gitlab.com/l0nax/changelog-go/-/issues/2)
+
+
+## 1.1.0 (2020-03-12)
 
 ### Other (1 change)
 - Add sentry crash reporter
+
+### Added (1 change)
+- Add auto-updater
 
 
 ## 1.0.3 (2020-01-02)
@@ -25,12 +37,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## 1.0.1 (2020-01-02)
 
-### Fixed ( changes)
+### Fixed (3 changes)
+- Fix version data problems with GoReleaser
 - Fix 'panic: file does not exist'
 - Fix error if 'unreleased' folder does not exists
-- Fix version data problems with GoReleaser
 
-### Changed ( changes)
+### Changed (2 changes)
 - Remove 'version' flag
 - Add 'version' sub-command
 
