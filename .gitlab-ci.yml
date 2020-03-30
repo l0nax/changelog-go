@@ -22,6 +22,10 @@ go_prepare:
   # get new Version from `git-semver`
   - go get github.com/mdomke/git-semver@master
   - git-semver -prefix v > `pwd`/.version
+  # get build/ target environment
+  - export VERSION=$(cat `pwd`/.version)
+  - $(pwd)/.ci/scripts/setEnvironment.sh
+  - export BUILD_ENVIRONMENT=$(cat `pwd`/ENVIRONMENT)
   # generate GoLang assets
   - make depends assets
   - make build-dev
@@ -39,7 +43,6 @@ build:
   - curl -sfL https://install.goreleaser.com/github.com/goreleaser/goreleaser.sh | sh
   # get build/ target environment
   - export VERSION=$(cat `pwd`/.version)
-  - $(pwd)/.ci/scripts/setEnvironment.sh
   - export BUILD_ENVIRONMENT=$(cat `pwd`/ENVIRONMENT)
   # execute goreleaser but without pushing, signing or validating – so we can
   # use the artifacts ie. in Sentry
