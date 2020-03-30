@@ -1,0 +1,56 @@
+project_name: changelog
+
+before:
+  hooks:
+    - go mod tidy
+builds:
+- id: "default"
+  binary: changelog
+
+  goos:
+    - freebsd
+    - linux
+    - windows
+    - darwin
+
+  goarch:
+    - amd64
+    - arm
+    - arm64
+    - 386
+
+  ldflags:
+    - -X gitlab.com/l0nax/changelog-go/pkg/version.Version={{.Version}} -X gitlab.com/l0nax/changelog-go/pkg/version.Hash={{.Commit}} -X gitlab.com/l0nax/changelog-go/pkg/version.BuildTime={{.Env.BUILD_DATE}} -X gitlab.com/l0nax/changelog-go/pkg/version.Environment={{.Env.BUILD_ENVIRONMENT}}
+
+archives:
+- replacements:
+    darwin: Darwin
+    linux: Linux
+    windows: Windows
+    386: i386
+    amd64: x86_64
+
+checksum:
+  name_template: 'checksums.txt'
+
+snapshot:
+  name_template: "{{ .Tag }}-next"
+
+signs:
+- cmd: gpg2
+  artifacts: all
+
+nfpms:
+- replacements:
+    386: x86_64
+
+  vendor: l0nax
+  homepage: https://gitlab.com/l0nax
+
+  maintainer: Francesco Emanuel Bennici <benniciemanuel78@gmail.com>
+  description: Changelog management tool
+  license: MIT
+
+  formats:
+    - deb
+    - rpm
