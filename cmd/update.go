@@ -50,6 +50,12 @@ var updateCmd = &cobra.Command{
 			log.Fatalln("Could not create 'updater' object (nil)")
 		}
 
+		// run Updater
+		if err := updater.BackgroundRun(); err != nil {
+			log.Fatalf("Error while updating: %s\n", err)
+		} else {
+			log.Infoln("Updated successfully")
+		}
 	},
 }
 
