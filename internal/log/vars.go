@@ -37,7 +37,5 @@ func init() {
 		logrus.PanicLevel,
 		logrus.FatalLevel,
 		logrus.ErrorLevel,
-		logrus.WarnLevel,
-		logrus.InfoLevel,
 	}))
 }
