@@ -23,6 +23,7 @@ package cmd
 
 import (
 	"regexp"
+	"strings"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -44,8 +45,12 @@ Folder.`,
 		newRelease := changelog.Release{}
 		newRelease.Info = &changelog.ReleaseInfo{}
 
+		// remove 'v' to prevent bugs like #4, but only from the start
+		// of the version string.
+		versionString := strings.TrimPrefix(args[0], "v")
+
 		r := regexp.MustCompile(`^(?P<major>0|[1-9]\d*)\.(?P<minor>0|[1-9]\d*)\.(?P<patch>0|[1-9]\d*)(?:-(?P<prerelease>(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+(?P<buildmetadata>[0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$`)
-		newRelease.Info.Version = r.FindStringSubmatch(args[0])
+		newRelease.Info.Version = r.FindStringSubmatch(versionString)
 
 		// this Variable describes if the current release is a Pre-Release
 		var isPreRelrease bool
