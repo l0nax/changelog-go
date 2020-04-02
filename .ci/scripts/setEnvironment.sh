@@ -18,8 +18,6 @@
 #      REVISION: 001
 #===============================================================================
 
-set -o nounset                              # Treat unset variables as an error
-
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 # we check if this release is an production release or an dev comment
