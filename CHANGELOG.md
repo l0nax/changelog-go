@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 
+## 1.1.2 (2020-04-02)
+
+### Added (1 change)
+- Add 'update available' reminder
+
+### Fixed (1 change)
+- Trim 'v' from version string when calling `release` command ([#4](https://gitlab.com/l0nax/changelog-go/-/issues/4))
+
+
 ## 1.1.1 (2020-03-30)
 
 ### Added (1 change)
@@ -37,12 +46,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## 1.0.1 (2020-01-02)
 
-### Fixed (3 changes)
+### Fixed ( changes)
+- Fix error if 'unreleased' folder does not exists
 - Fix version data problems with GoReleaser
 - Fix 'panic: file does not exist'
-- Fix error if 'unreleased' folder does not exists
 
-### Changed (2 changes)
+### Changed ( changes)
 - Remove 'version' flag
 - Add 'version' sub-command
 
