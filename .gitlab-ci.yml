@@ -108,6 +108,7 @@ sentry_deploy:
   image: getsentry/sentry-cli
   script:
     - export VERSION="${PRJ}@$(cat `pwd`/.version)"
+    - export BUILD_ENVIRONMENT=$(cat `pwd`/ENVIRONMENT)
     # create new release in sentry
     - sentry-cli releases new -p ${SENTRY_PRJ} ${VERSION}
     # add commits
