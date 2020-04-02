@@ -23,10 +23,12 @@ package cmd
 
 import (
 	"regexp"
+	"strings"
 	"time"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+
 	"gitlab.com/l0nax/changelog-go/pkg/changelog"
 )
 
@@ -35,7 +37,7 @@ var releaseCmd = &cobra.Command{
 	Use:   "release <version>",
 	Short: "This Command will generate the CHANGELOG.md file.",
 	Long: `The CHANGELOG.md will be generated and – depending on
-the configuration and flags – the Entry Fiels will be moved to the 'released'
+the configuration and flags – the Entry files will be moved to the 'released'
 Folder.`,
 	Example: `  release 1.0.0`,
 	Args:    cobra.ExactArgs(1),
@@ -43,10 +45,14 @@ Folder.`,
 		newRelease := changelog.Release{}
 		newRelease.Info = &changelog.ReleaseInfo{}
 
-		r := regexp.MustCompile(`^(?P<major>0|[1-9]\d*)\.(?P<minor>0|[1-9]\d*)\.(?P<patch>0|[1-9]\d*)(?:-(?P<prerelease>(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+(?P<buildmetadata>[0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$`)
-		newRelease.Info.Version = r.FindStringSubmatch(args[0])
+		// remove 'v' to prevent bugs like #4, but only from the start
+		// of the version string.
+		versionString := strings.TrimPrefix(args[0], "v")
 
-		// this Variable describes if the current release is a PreRelrease
+		r := regexp.MustCompile(`^(?P<major>0|[1-9]\d*)\.(?P<minor>0|[1-9]\d*)\.(?P<patch>0|[1-9]\d*)(?:-(?P<prerelease>(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+(?P<buildmetadata>[0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$`)
+		newRelease.Info.Version = r.FindStringSubmatch(versionString)
+
+		// this Variable describes if the current release is a Pre-Release
 		var isPreRelrease bool
 
 		// check if Version is a pre-release
@@ -91,14 +97,4 @@ func init() {
 	releaseCmd.Flags().StringP("release-date", "d", time.Now().Format("2006-01-02"), "set the release date, defaults to today")
 	releaseCmd.Flags().BoolP("pre-release", "p", false, `Mark this Release as pre-release in the CHANGELOG.md.
 The Output and how the Application reacts depends on your Configuration.`)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// releaseCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// releaseCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }

@@ -1,0 +1,2 @@
+title: Trim 'v' from version string when calling `release` command ([#4](https://gitlab.com/l0nax/changelog-go/-/issues/4))
+type: 1
