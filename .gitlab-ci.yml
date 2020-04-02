@@ -106,8 +106,13 @@ release:
 sentry_deploy:
   stage: deploy
   image: getsentry/sentry-cli
+  only:
+    # run only on release build OR on develop branch (testing "deployments")
+    - tags
+    - develop
   script:
     - export VERSION="${PRJ}@$(cat `pwd`/.version)"
+    - export BUILD_ENVIRONMENT=$(cat `pwd`/ENVIRONMENT)
     # create new release in sentry
     - sentry-cli releases new -p ${SENTRY_PRJ} ${VERSION}
     # add commits
@@ -118,7 +123,7 @@ sentry_deploy:
     - sentry-cli upload-dif -p ${SENTRY_PRJ} --wait ${BINARIES}
     # finalize sentry release
     - sentry-cli releases finalize ${VERSION}
-    # mark release as deployed if environment is production
+    # mark release as deployed if environment is production or "staging"
     - >-
         if [ "$BUILD_ENVIRONMENT" == "production" ] || [ "$BUILD_ENVIRONMENT" == "staging" ]; then
           sentry-cli releases deploys ${VERSION} new -e ${BUILD_ENVIRONMENT}

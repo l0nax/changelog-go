@@ -22,10 +22,14 @@ THE SOFTWARE.
 package main
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/getsentry/sentry-go"
+
 	"gitlab.com/l0nax/changelog-go/cmd"
+	"gitlab.com/l0nax/changelog-go/internal"
+	"gitlab.com/l0nax/changelog-go/pkg/version"
 )
 
 func main() {
@@ -33,6 +37,16 @@ func main() {
 	// Set the timeout to the maximum duration the program can afford to wait.
 	defer sentry.Flush(time.Second * 2)
 	defer sentry.Recover()
+
+	// check if there are any updates available, if so print info message
+	// has a timeout of 500ms to not slow down the changelog application
+	// if its offline.
+	if internal.CheckUpdate(version.Version,
+		"https://l0nax.gitlab.io/changelog-go") {
+		fmt.Printf("[UPDATE] There is a new version available, run" +
+			" 'changelog update' or 'snap refresh changelog' " +
+			"to update to the latest version.\n\n")
+	}
 
 	// NOTE: We are currently disabling the AUTOMATIC update, because we
 	//	 have now the 'update' subcommand. So we do not force clients
