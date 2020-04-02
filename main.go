@@ -43,9 +43,9 @@ func main() {
 	// if its offline.
 	if internal.CheckUpdate(version.Version,
 		"https://l0nax.gitlab.io/changelog-go") {
-		fmt.Println("[UPDATE] There is a new version available, run" +
+		fmt.Printf("[UPDATE] There is a new version available, run" +
 			" 'changelog update' or 'snap refresh changelog' " +
-			"to update to the latest version.")
+			"to update to the latest version.\n\n")
 	}
 
 	// NOTE: We are currently disabling the AUTOMATIC update, because we

@@ -19,8 +19,8 @@ type versionInfo struct {
 func CheckUpdate(version, dataURL string) bool {
 	// initialize HTTP Client
 	client := http.Client{
-		// max 500ms timeout, to not slow the application too much down
-		Timeout: time.Millisecond * 500,
+		// max 1s timeout, to not slow the application too much down
+		Timeout: time.Second * 1,
 	}
 
 	// prepare API URL
@@ -28,13 +28,13 @@ func CheckUpdate(version, dataURL string) bool {
 
 	req, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
-		ilog.Log.Fatalln(err)
+		ilog.Log.Errorln(err)
 	}
 
 	var res *http.Response
 	res, err = client.Do(req)
 	if err != nil {
-		ilog.Log.Fatalln(err)
+		ilog.Log.Errorln(err)
 	}
 
 	if res.Body != nil {
