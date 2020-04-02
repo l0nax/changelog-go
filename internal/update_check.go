@@ -2,8 +2,10 @@ package internal
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"runtime"
+	"strings"
 	"time"
 
 	ilog "gitlab.com/l0nax/changelog-go/internal/log"
@@ -45,6 +47,10 @@ func CheckUpdate(version, dataURL string) bool {
 
 	// marshal response body into versionInfo struct
 	_ = json.NewDecoder(res.Body).Decode(info)
+
+	// remove 'v' prefix from any versions
+	info.Version = strings.TrimPrefix(info.Version, "v")
+	version = strings.TrimPrefix(version, "v")
 
 	if version != info.Version {
 		// update is available
