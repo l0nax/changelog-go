@@ -3,7 +3,7 @@ package log
 
 import (
 	"github.com/getsentry/sentry-go"
-	"github.com/makasim/sentryhook"
+	"github.com/l0nax/sentryhook"
 	"github.com/sirupsen/logrus"
 
 	"gitlab.com/l0nax/changelog-go/pkg/version"
@@ -51,6 +51,13 @@ func init() {
 	Log.AddHook(sentryhook.New([]logrus.Level{
 		logrus.PanicLevel,
 		logrus.FatalLevel,
+
+		// log events with this level will only be captured and not
+		// directly send to the Sentry server.
 		logrus.ErrorLevel,
+		logrus.WarnLevel,
+		logrus.InfoLevel,
+		logrus.DebugLevel,
+		logrus.TraceLevel,
 	}))
 }
