@@ -1,5 +1,5 @@
-// logrus contains the initialized and configured logrus logger
-package logrus
+// Package log contains the initialized and configured logrus logger
+package log
 
 import (
 	"github.com/getsentry/sentry-go"
