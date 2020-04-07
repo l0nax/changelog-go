@@ -47,6 +47,9 @@ func GenerateChangelog(r *Release) {
 			ShortTypeName: (*cType).GetShortTypeName(),
 		}
 
+		log.Debugf("len(changeEntries) before Itoa conversion: '%d'\n",
+			len(changeEntries))
+
 		// write 'n changes' instead of '1 change' if more than one
 		if len(changeEntries) > 1 {
 			newEntry.NumString = strconv.Itoa(len(changeEntries)) + " changes"
