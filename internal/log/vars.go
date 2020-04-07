@@ -38,6 +38,14 @@ func init() {
 	}
 
 	Log = logrus.New()
+	// Overwrite the default exit function to flush the sentry
+	// events
+	Log.ExitFunc = func(e int) {
+		// sentry flush
+		fmt.Printf("Sentry flushed: %t\n", sentry.Flush(time.Second*2))
+
+		os.Exit(1)
+	}
 
 	// add logrus sentry hook
 	Log.AddHook(sentryhook.New([]logrus.Level{
