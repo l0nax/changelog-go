@@ -9,6 +9,12 @@ import (
 	"gitlab.com/l0nax/changelog-go/pkg/version"
 )
 
+// Log is the global "logger" which can be used by any other package
+//
+// Example (global variable):
+//	import ilog gitlab.com/l0nax/changelog-go/internal/log
+//
+//	var log = ilog.Log
 var Log *logrus.Logger
 
 func init() {

@@ -31,6 +31,7 @@ var versionCmd = &cobra.Command{
 		fmt.Printf("%-20v: %s\n", "Version", version.Version)
 		fmt.Printf("%-20v: %s\n", "Build", version.BuildTime)
 		fmt.Printf("%-20v: %s\n", "Git Hash", version.Hash)
+		fmt.Printf("%-20v: %s\n", "Build Environment", version.Environment)
 
 		os.Exit(0)
 	},
