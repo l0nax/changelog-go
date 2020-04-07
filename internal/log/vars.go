@@ -26,6 +26,7 @@ func init() {
 		BeforeSend: func(event *sentry.Event, hint *sentry.EventHint) *sentry.Event {
 			// discard the event if Environment is 'develop'
 			if event.Environment == "develop" {
+				Log.Debugln("Discard sending crash to sentry server because Environment == 'develop'")
 				return nil
 			}
 
