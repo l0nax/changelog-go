@@ -20,7 +20,7 @@ builds:
     - 386
 
   ldflags:
-    - -X gitlab.com/l0nax/changelog-go/pkg/version.Version={{.Version}} -X gitlab.com/l0nax/changelog-go/pkg/version.Hash={{.Commit}} -X gitlab.com/l0nax/changelog-go/pkg/version.BuildTime={{.Env.BUILD_DATE}} -X gitlab.com/l0nax/changelog-go/pkg/version.Environment={{.Env.BUILD_ENVIRONMENT}}
+    - -X gitlab.com/l0nax/changelog-go/pkg/version.Version={{.Env.VERSION}} -X gitlab.com/l0nax/changelog-go/pkg/version.Hash={{.Commit}} -X gitlab.com/l0nax/changelog-go/pkg/version.BuildTime={{.Env.BUILD_DATE}} -X gitlab.com/l0nax/changelog-go/pkg/version.Environment={{.Env.BUILD_ENVIRONMENT}}
 
 archives:
 - replacements:
