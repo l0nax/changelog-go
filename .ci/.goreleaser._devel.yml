@@ -1,0 +1,41 @@
+project_name: changelog
+
+before:
+  hooks:
+    - go mod tidy
+
+builds:
+- id: "default"
+  binary: changelog
+
+  goos:
+    - freebsd
+    - linux
+    - windows
+    - darwin
+
+  goarch:
+    - amd64
+    - arm
+    - arm64
+    - 386
+
+  ldflags:
+    - -X gitlab.com/l0nax/changelog-go/pkg/version.Version={{.Version}} -X gitlab.com/l0nax/changelog-go/pkg/version.Hash={{.Commit}} -X gitlab.com/l0nax/changelog-go/pkg/version.BuildTime={{.Env.BUILD_DATE}} -X gitlab.com/l0nax/changelog-go/pkg/version.Environment={{.Env.BUILD_ENVIRONMENT}}
+
+
+snapcrafts:
+- publish: true
+
+  summary: CLI to create and manage Changelog even on big projects
+  description: changelog is a CLI that helps a team/ person to keep track of all changes and also helps creating (and managing) a readable CHANGELOG.md
+
+  license: MIT
+  grade: devel
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+    - '^docs:'
+    - '^test:'
