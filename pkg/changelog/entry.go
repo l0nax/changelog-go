@@ -199,6 +199,7 @@ func sortEntries(entries *[]entry.Entry) ([]TplEntries, error) {
 			ret = append(ret, TplEntries{
 				ShortTypeName: (*entry.Type).GetShortTypeName(),
 				NumString:     "1 change",
+				NumChanges:    1,
 			})
 
 			log.Debugf("Appendet TplEntries struct to 'ret' struct on index (%d) and (%d)\n",
@@ -211,11 +212,9 @@ func sortEntries(entries *[]entry.Entry) ([]TplEntries, error) {
 			// add entry to list
 			ret[iRet].Changes = append(ret[iRet].Changes, &(*entries)[i])
 
-			// increase NumString
-			num, _ := strconv.Atoi(strings.Split(ret[iRet].NumString, " ")[0])
-			num++
-
-			ret[iRet].NumString = string(num) + " changes"
+			// increase NumChanges and update NumString
+			ret[iRet].NumChanges++
+			ret[iRet].NumString = strconv.Itoa(ret[iRet].NumChanges) + " changes"
 		}
 	}
 

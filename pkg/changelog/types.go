@@ -31,8 +31,9 @@ type TplRelease struct {
 // TplEntries is like a normal Entry, but it contains only Changes of a specific
 // Change Type.
 type TplEntries struct {
-	ShortTypeName string         // Short Type Name, eg. "Added"
-	NumString     string         // Contains the 'Number of Changes' String, eg: "1 change" OR "5 changes"
+	ShortTypeName string         // ShortTypeName is the Short Type Name, eg. "Added"
+	NumString     string         // NumString Contains the 'Number of Changes' String, eg: "1 change" OR "5 changes"
+	NumChanges    int            // NumChanges Contains the 'Number of Changes'
 	Changes       []*entry.Entry // Contains the raw Change-Entry struct
 }
 
