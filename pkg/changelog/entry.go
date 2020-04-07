@@ -20,10 +20,10 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-// AddEntry() creates a new Changelog Entry by creating the Entry File
+// AddEntry creates a new Changelog Entry by creating the Entry File
 // under (default)
 //
-// Entryname Scheme: $ROOT/.changelogs/unrelease/$BRANCH_NAME-$RAND_STRING
+// Entry name Scheme: $ROOT/.changelogs/unreleased/$BRANCH_NAME-$RAND_STRING
 func AddEntry(entry entry.Entry) {
 	// open the Git Repository
 	repo, err := git.PlainOpen(internal.GitPath)
@@ -31,7 +31,7 @@ func AddEntry(entry entry.Entry) {
 		log.Fatal(err)
 	}
 
-	// get Branchname
+	// get branch name
 	branchName, err := gut.GetCurrentBranchFromRepository(repo)
 	if err != nil {
 		log.Fatal(err)
@@ -51,7 +51,7 @@ func AddEntry(entry entry.Entry) {
 	// get random String
 	fileName := path.Join(_path, fmt.Sprintf("%s-%s", branchName, tools.RandomString(8)))
 
-	// crete File and write Data down
+	// create File and write Data down
 	file, err := os.Create(fileName)
 	if err != nil {
 		log.Fatal(err)
@@ -202,7 +202,7 @@ func sortEntries(entries *[]entry.Entry) ([]TplEntries, error) {
 				NumChanges:    1,
 			})
 
-			log.Debugf("Appendet TplEntries struct to 'ret' struct on index (%d) and (%d)\n",
+			log.Debugf("Appended TplEntries struct to 'ret' struct on index (%d) and (%d)\n",
 				i, (len(ret) - 1))
 			ret[len(ret)-1].Changes = append(ret[len(ret)-1].Changes, &(*entries)[i])
 
