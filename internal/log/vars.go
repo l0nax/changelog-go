@@ -2,6 +2,10 @@
 package log
 
 import (
+	"fmt"
+	"os"
+	"time"
+
 	"github.com/getsentry/sentry-go"
 	"github.com/l0nax/sentryhook"
 	"github.com/sirupsen/logrus"
@@ -20,9 +24,10 @@ var Log *logrus.Logger
 func init() {
 	// initialize sentry before starting
 	err := sentry.Init(sentry.ClientOptions{
-		Dsn:         "https://e87c950e1b544af385a198035234b248@fabmation.info/3",
-		Release:     "changelog-go@" + version.Version,
-		Environment: version.Environment,
+		Dsn:              "https://e87c950e1b544af385a198035234b248@fabmation.info/3",
+		Release:          "changelog-go@" + version.Version,
+		Environment:      version.Environment,
+		AttachStacktrace: true,
 		BeforeSend: func(event *sentry.Event, hint *sentry.EventHint) *sentry.Event {
 			// discard the event if Environment is 'develop'
 			if event.Environment == "develop" {
@@ -46,6 +51,9 @@ func init() {
 
 		os.Exit(1)
 	}
+
+	// enable setting the report caller
+	Log.SetReportCaller(true)
 
 	// add logrus sentry hook
 	Log.AddHook(sentryhook.New([]logrus.Level{
