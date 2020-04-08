@@ -34,7 +34,7 @@ func AddEntry(entry entry.Entry) {
 	// get branch name
 	branchName, err := gut.GetCurrentBranchFromRepository(repo)
 	if err != nil {
-		log.Fatal(err)
+		log.WithError(err).Fatalln("could not get current repository branch")
 	}
 
 	// replace all '/' with '_'
@@ -61,11 +61,12 @@ func AddEntry(entry entry.Entry) {
 	// Marshal Changelog Type into byte slice
 	data, err := tools.YAMLMarshal(entry)
 	if err != nil {
-		log.Fatal(err)
+		log.WithError(err).Fatalln("could not marshal changelog type")
 	}
 
 	_, err = file.Write(data)
 	if err != nil {
+		log.WithError(err).Fatalln("could not write file")
 		log.Fatal(err)
 	}
 }
@@ -105,7 +106,7 @@ func GetReleasedEntries(r *Release) error {
 		// get ReleaseInfo file and remove it from the map
 		releaseInfo, ok := files[path.Join(_path, "ReleaseInfo")]
 		if !ok {
-			log.Fatalf("No 'ReleaseInfo' file was found (version '%s')...!\n",
+			log.Fatalf("No 'ReleaseInfo' file was found (version '%s')!\n",
 				info.Name())
 		}
 

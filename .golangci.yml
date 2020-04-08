@@ -187,7 +187,6 @@ linters:
     - wsl
     - goimports
     - gofmt
-    - gochecknoinits
     - goconst
     - gocritic
     - bodyclose

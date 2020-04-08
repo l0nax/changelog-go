@@ -88,7 +88,7 @@ your entry.`,
 		// ask User about Entry Type
 		text, err := reader.ReadString('\n')
 		if err != nil {
-			log.Fatal(err)
+			log.WithError(err).Fatalln("could not read input")
 		}
 
 		// convert CRLF to LF
@@ -99,13 +99,14 @@ your entry.`,
 		var choosenType int
 
 		if choosenType, err = strconv.Atoi(text); err != nil {
-			log.Fatalln("Please enter only VALID numbers (error while converting)!")
+			log.WithError(err).Fatalln("Please enter only VALID numbers (error while converting)!")
 		}
 
 		// check if Number does exists in our Entry Types List
 		if choosenType >= len(internal.EntryT.ListAvailableTypes()) {
 			log.Debugln(len(internal.EntryT.ListAvailableTypes()))
 			log.Debugf("%# v\n", pretty.Formatter(internal.EntryT.ListAvailableTypes()))
+
 			log.Fatalln("Please choose a VALID number!")
 		}
 

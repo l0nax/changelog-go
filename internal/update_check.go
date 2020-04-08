@@ -29,13 +29,13 @@ func CheckUpdate(version, dataURL string) bool {
 
 	req, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
-		ilog.Log.Errorln(err)
+		ilog.Log.WithError(err).Errorln("could not initialize http requester")
 	}
 
 	var res *http.Response
 	res, err = client.Do(req)
 	if err != nil {
-		ilog.Log.Errorln(err)
+		ilog.Log.WithError(err).Errorln("could not make HTTP request")
 	}
 
 	if res.Body != nil {
