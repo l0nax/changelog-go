@@ -107,7 +107,6 @@ func GenerateChangelog(r *Release) {
 
 	log.Debugf("%# v\n", pretty.Formatter(r))
 
-	// TODO: write new CHANGELOG.md
 	data := processChangelogTmpl(r)
 	file, err := os.Create(path.Join(internal.GitPath, "CHANGELOG.md"))
 	if err != nil {
