@@ -1,10 +1,11 @@
 # `changelog-go`
 
-[![Get it from the Snap Store](https://snapcraft.io/static/images/badges/en/snap-store-black.svg)](https://snapcraft.io/changelog)
 [![changelog](https://snapcraft.io//changelog/badge.svg)](https://snapcraft.io/changelog)
+[![Go Report Card](https://goreportcard.com/badge/gitlab.com/l0nax/changelog-go)](https://goreportcard.com/report/gitlab.com/l0nax/changelog-go)
+[![Maintainability](https://api.codeclimate.com/v1/badges/49aa4776dd7cc094658b/maintainability)](https://codeclimate.com/github/l0nax/changelog-go/maintainability)
 
-A Changelog Management Tool written in Go which is compatible with Linux,
-Windows and Mac OS-X.
+
+A Changelog Management Tool written in Go which is compatible with Linux, Windows and Mac OS-X.
 
 ## Demo
 
@@ -44,6 +45,8 @@ It does not break the functionality.
 There are many possibilities to install this Application.
 
 ### snap
+
+[![Get it from the Snap Store](https://snapcraft.io/static/images/badges/en/snap-store-black.svg)](https://snapcraft.io/changelog)
 
 ```bash
 ~] snap install changelog
