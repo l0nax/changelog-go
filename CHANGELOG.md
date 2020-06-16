@@ -7,10 +7,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## 1.1.4 (2020-06-16)
 
-### Fixed (3 changes)
+### Fixed (5 changes)
 - Fix incorrect representation of the 'Number of Changes' in the CHANGELOG.md
 - Fix bug in 'update avail.' checker
 - Fix that no stacktrace will be send to Sentry. It also improves how the messages are stacked and send.
+- Fix runtime.errorString in CheckUpdate algo ([#9](https://gitlab.com/l0nax/changelog-go/-/issues/9))
+- Fix runtime.boundError in 'release' command ([#8](https://gitlab.com/l0nax/changelog-go/-/issues/8))
 
 
 ## 1.1.3 (2020-04-02)
