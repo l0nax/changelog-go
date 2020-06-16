@@ -57,14 +57,19 @@ Folder.`,
 
 		// check if Version is a pre-release
 		if viper.GetBool("preRelease.detect") {
-			// check if Version is a pre-release
-			for i, group := range r.SubexpNames() {
-				if group == "prerelease" {
-					if len(newRelease.Info.Version[i]) != 0 {
-						isPreRelrease = true
-					}
+			// check if regex returned data
+			if len(newRelease.Info.Version) == 0 {
+				log.Info("NOTE: Automatically pre-release detection doesn't work with given version string.")
+			} else {
+				// check if Version is a pre-release
+				for i, group := range r.SubexpNames() {
+					if group == "prerelease" {
+						if len(newRelease.Info.Version[i]) != 0 {
+							isPreRelrease = true
+						}
 
-					break
+						break
+					}
 				}
 			}
 		}
