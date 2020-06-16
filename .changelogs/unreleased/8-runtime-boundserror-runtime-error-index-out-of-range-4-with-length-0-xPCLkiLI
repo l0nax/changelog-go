@@ -1,0 +1,2 @@
+title: Fix runtime.boundError in 'release' command ([#8](https://gitlab.com/l0nax/changelog-go/-/issues/8))
+type: 1
