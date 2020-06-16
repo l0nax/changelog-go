@@ -1,0 +1,2 @@
+title: Fix runtime.errorString in CheckUpdate algo ([#9](https://gitlab.com/l0nax/changelog-go/-/issues/9))
+type: 1

@@ -35,7 +35,8 @@ func CheckUpdate(version, dataURL string) bool {
 	var res *http.Response
 	res, err = client.Do(req)
 	if err != nil {
-		ilog.Log.WithError(err).Errorln("could not make HTTP request")
+		ilog.Log.Errorln(err)
+		return false
 	}
 
 	if res.Body != nil {
