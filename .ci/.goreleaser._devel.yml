@@ -25,14 +25,14 @@ builds:
 
 
 snapcrafts:
-- publish: true
+  - publish: true
 
-  summary: CLI to create and manage Changelog even on big projects
-  description: changelog is a CLI that helps a team/ person to keep track of all changes and also helps creating (and managing) a readable CHANGELOG.md
+    summary: CLI to create and manage Changelog even on big projects
+    description: changelog is a CLI that helps a team/ person to keep track of all changes and also helps creating (and managing) a readable CHANGELOG.md
 
-  license: MIT
-  grade: devel
-  name_template: "{{ .ProjectName }}_{{ .Env.VERSION }}_{{ .Os }}_{{ .Arch }}"
+    license: MIT
+    grade: stable
+    name_template: "{{ .ProjectName }}_{{ .Env.VERSION }}_{{ .Os }}_{{ .Arch }}"
 
 ## GitLab release
 release:
