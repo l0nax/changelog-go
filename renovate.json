@@ -2,5 +2,13 @@
   "extends": [
     "config:base"
   ],
-  "baseBranches": ["develop"]
+  "baseBranches": ["develop"],
+  "hostRules": [
+    {
+      "domainName": "github.com",
+      "encrypted": {
+        "token": "ju9zwhnZQStnwt7Rjs28ZfZCBHbzvGDMghaXdyMpEBK3IfEp0r5o8CevwLcGYyO16AL7BO0y4IAasHIphEbdsxWIknb96w3aDonMckBkp1s6PQvUr/xwAdkBYl50FFAc9g+Aytx3PIJItog/871j6YpRPUaaKMIy/4RYNNocrm7KmREv5v3yQXTRRKx8v9rY4UdCRFwTfF1veoHvUevsrwzhN+NgqjQGXzC2NnnbobsrxXJRnymi4KnoQ2q9VvBoH8vPGYhc3Aax/4TjdEzqfNzyjHSF/t2jnLSUZz3tSikbqyRjmiY0dH0mKClmP+uqmZF9duCA1kqP/EBXa8eW+A=="
+      }
+    }
+  ]
 }
