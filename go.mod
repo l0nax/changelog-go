@@ -3,7 +3,7 @@ module gitlab.com/l0nax/changelog-go
 go 1.14
 
 require (
-	github.com/blang/semver v3.5.1+incompatible
+	github.com/blang/semver v3.8.0+incompatible
 	github.com/emirpasic/gods v1.12.1-0.20191007224813-4e23915b9a82 // indirect
 	github.com/fsnotify/fsnotify v1.4.8-0.20191012010759-4bf2d1fec783 // indirect
 	github.com/getsentry/sentry-go v0.5.1
