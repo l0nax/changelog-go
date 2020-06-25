@@ -36,5 +36,5 @@ require (
 	golang.org/x/text v0.3.3-0.20191031172631-4b67af870c6f // indirect
 	gopkg.in/inconshreveable/go-update.v0 v0.0.0-20150814200126-d8b0b1d421aa // indirect
 	gopkg.in/src-d/go-git.v4 v4.13.1
-	gopkg.in/yaml.v2 v2.2.5
+	gopkg.in/yaml.v2 v2.3.0
 )
