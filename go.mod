@@ -27,7 +27,7 @@ require (
 	github.com/spf13/cobra v1.0.0
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
-	github.com/spf13/viper v1.5.0
+	github.com/spf13/viper v1.7.0
 	github.com/subosito/gotenv v1.2.1-0.20190917103637-de67a6614a4d // indirect
 	github.com/tcnksm/go-gitconfig v0.1.2
 	golang.org/x/crypto v0.0.0-20191112222119-e1110fd1c708 // indirect
