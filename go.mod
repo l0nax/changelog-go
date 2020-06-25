@@ -21,7 +21,7 @@ require (
 	github.com/pelletier/go-toml v1.6.1-0.20191106154939-c4efb7477c43 // indirect
 	github.com/pkg/errors v0.9.1
 	github.com/sergi/go-diff v1.0.1-0.20180205163309-da645544ed44 // indirect
-	github.com/sirupsen/logrus v1.5.0
+	github.com/sirupsen/logrus v1.6.0
 	github.com/spf13/afero v1.2.2 // indirect
 	github.com/spf13/cast v1.3.1-0.20190531093228-c01685bb8421 // indirect
 	github.com/spf13/cobra v1.0.0
