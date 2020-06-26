@@ -11,7 +11,7 @@ require (
 	github.com/kardianos/osext v0.0.0-20190222173326-2bc1f35cddc0 // indirect
 	github.com/konsorten/go-windows-terminal-sequences v1.0.2 // indirect
 	github.com/kr/binarydist v0.1.0 // indirect
-	github.com/kr/pretty v0.1.0
+	github.com/kr/pretty v0.2.0
 	github.com/l0nax/go-selfupdate v0.0.0-20200330101320-dd48074c4073
 	github.com/l0nax/sentryhook v0.3.1-0.20200407181428-507bfb785cb1
 	github.com/magiconair/properties v1.8.2-0.20191019074931-a586bb8b7dea // indirect
