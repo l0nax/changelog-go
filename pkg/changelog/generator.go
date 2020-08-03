@@ -11,8 +11,9 @@ import (
 	"github.com/kr/pretty"
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
-	"gitlab.com/l0nax/changelog-go/internal"
 	"gopkg.in/yaml.v2"
+
+	"gitlab.com/l0nax/changelog-go/internal"
 )
 
 // GenerateChangelog will generate a new CHANGELOG.md

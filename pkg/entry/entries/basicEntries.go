@@ -1,9 +1,12 @@
 package entries
 
-import "gitlab.com/l0nax/changelog-go/pkg/entry"
+import (
+	"github.com/kr/pretty"
 
-import "github.com/kr/pretty"
-import log "github.com/sirupsen/logrus"
+	"gitlab.com/l0nax/changelog-go/pkg/entry"
+
+	log "github.com/sirupsen/logrus"
+)
 
 /// ++++++] Added [++++++
 

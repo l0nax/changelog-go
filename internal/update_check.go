@@ -6,8 +6,6 @@ import (
 	"runtime"
 	"strings"
 	"time"
-
-	ilog "gitlab.com/l0nax/changelog-go/internal/log"
 )
 
 type versionInfo struct {

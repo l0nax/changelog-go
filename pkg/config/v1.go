@@ -5,9 +5,9 @@ import (
 	"path"
 
 	"github.com/spf13/viper"
+
 	"gitlab.com/l0nax/changelog-go/internal"
 )
-
 
 // Check will test if all required Paths and files are represent
 // and if not it will TRY to create them. If an Error occurs while

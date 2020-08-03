@@ -3,6 +3,7 @@ package internal
 import (
 	"github.com/kr/pretty"
 	log "github.com/sirupsen/logrus"
+
 	"gitlab.com/l0nax/changelog-go/pkg/entry"
 	"gitlab.com/l0nax/changelog-go/pkg/errors"
 )

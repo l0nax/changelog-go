@@ -8,6 +8,7 @@ import (
 	"github.com/pkg/errors"
 
 	"github.com/spf13/viper"
+
 	"gitlab.com/l0nax/changelog-go/internal"
 )
 

@@ -24,6 +24,7 @@ package cmd
 import (
 	"github.com/l0nax/go-selfupdate/selfupdate"
 	"github.com/spf13/cobra"
+
 	"gitlab.com/l0nax/changelog-go/pkg/version"
 )
 

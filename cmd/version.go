@@ -20,6 +20,7 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
+
 	"gitlab.com/l0nax/changelog-go/pkg/version"
 )
 

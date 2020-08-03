@@ -4,7 +4,7 @@ package errors
 
 // EntryTypeExistsError occurs when the Application tries to add/ register a new
 // Entry Type but it already Exists a equal Entry Type
-type EntryTypeExistsError struct { message string }
+type EntryTypeExistsError struct{ message string }
 
 func NewEntryTypeExistsError() *EntryTypeExistsError {
 	return &EntryTypeExistsError{
@@ -21,4 +21,3 @@ func NewEntryTypeExistsErrorMsg(message string) *EntryTypeExistsError {
 func (e *EntryTypeExistsError) Error() string {
 	return e.message
 }
-

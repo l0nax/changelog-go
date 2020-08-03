@@ -12,12 +12,13 @@ import (
 
 	"github.com/blang/semver"
 	"github.com/spf13/viper"
+	git "gopkg.in/src-d/go-git.v4"
+	"gopkg.in/yaml.v2"
+
 	"gitlab.com/l0nax/changelog-go/internal"
 	"gitlab.com/l0nax/changelog-go/pkg/entry"
 	"gitlab.com/l0nax/changelog-go/pkg/gut"
 	"gitlab.com/l0nax/changelog-go/pkg/tools"
-	git "gopkg.in/src-d/go-git.v4"
-	"gopkg.in/yaml.v2"
 )
 
 // AddEntry creates a new Changelog Entry by creating the Entry File

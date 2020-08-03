@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 
 	"github.com/spf13/viper"
+
 	"gitlab.com/l0nax/changelog-go/internal"
 	"gitlab.com/l0nax/changelog-go/pkg/entry"
 	"gitlab.com/l0nax/changelog-go/pkg/tools"
