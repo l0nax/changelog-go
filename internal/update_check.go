@@ -37,7 +37,8 @@ func CheckUpdate(version, dataURL string) bool {
 	var res *http.Response
 	res, err = client.Do(req)
 	if err != nil {
-		ilog.Log.Errorln(err)
+		// NOTE(l0nax): Do not print an error when the update check fails.
+		// ilog.Log.Errorln(err)
 		return false
 	}
 
