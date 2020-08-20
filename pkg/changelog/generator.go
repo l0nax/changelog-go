@@ -36,8 +36,7 @@ func GenerateChangelog(r *Release) {
 
 	// get Entries by Change Type
 	for _, cType := range internal.EntryT.ListAvailableTypes() {
-		log.Debugf("Listing Entries of Type '%s': %# v\n",
-			(*cType).GetShortTypeName(), (*cType).GetListEntries())
+		log.Debugf("Listing Entries of Type '%s': %# v\n", (*cType).GetShortTypeName(), (*cType).GetListEntries())
 
 		changeEntries := (*cType).GetListEntries()
 		if len(changeEntries) == 0 {
@@ -50,8 +49,7 @@ func GenerateChangelog(r *Release) {
 			ShortTypeName: (*cType).GetShortTypeName(),
 		}
 
-		log.Debugf("len(changeEntries) before Itoa conversion: '%d'\n",
-			len(changeEntries))
+		log.Debugf("len(changeEntries) before Itoa conversion: '%d'\n", len(changeEntries))
 
 		// write 'n changes' instead of '1 change' if more than one
 		if len(changeEntries) > 1 {
@@ -91,6 +89,9 @@ func GenerateChangelog(r *Release) {
 		log.Fatal(err)
 	}
 
+	// sort change entries
+	sortReleaseEntries(r)
+
 	// create release dir
 	err = createReleaseDir(r.Info.Version[0])
 	if err != nil {
@@ -123,6 +124,14 @@ func GenerateChangelog(r *Release) {
 	// fmt.Println("+++---------------------------------------------+++")
 	// fmt.Println(processChangelogTmpl(r))
 	// fmt.Println("+++---------------------------------------------+++")
+}
+
+// sortReleaseEntries does sort the changelog entries from `r.[]Releases.Entries`
+// by their `ShortTypeName` field.
+func sortReleaseEntries(r *Release) {
+	for i := range r.Releases {
+		r.Releases[i].SortEntries()
+	}
 }
 
 // prepareReleaseDir creates all needed files and directory for the release

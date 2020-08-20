@@ -53,8 +53,7 @@ func GetEntries(r *Release) error {
 	// First check if everything is ok
 	CheckDir()
 
-	unreleasedPath := path.Join(internal.GitPath,
-		viper.GetString("changelog.entryPath"), "unreleased")
+	unreleasedPath := path.Join(internal.GitPath, viper.GetString("changelog.entryPath"), "unreleased")
 
 	files, err := ReadEntryFiles(unreleasedPath)
 	if err != nil {
