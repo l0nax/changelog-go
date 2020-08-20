@@ -37,9 +37,9 @@ var updateCmd = &cobra.Command{
 
 		var updater = &selfupdate.Updater{
 			CurrentVersion: version.Version,
-			ApiURL:         "https://l0nax.gitlab.io/",
-			BinURL:         "https://l0nax.gitlab.io/",
-			DiffURL:        "https://l0nax.gitlab.io/",
+			ApiURL:         "https://update.l0nax.org/",
+			BinURL:         "https://update.l0nax.org/",
+			DiffURL:        "https://update.l0nax.org/",
 			Dir:            "update/",
 			CmdName:        "changelog-go",
 

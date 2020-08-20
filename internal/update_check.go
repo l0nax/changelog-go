@@ -6,6 +6,8 @@ import (
 	"runtime"
 	"strings"
 	"time"
+
+	ilog "gitlab.com/l0nax/changelog-go/internal/log"
 )
 
 type versionInfo struct {
@@ -36,7 +38,7 @@ func CheckUpdate(version, dataURL string) bool {
 	res, err = client.Do(req)
 	if err != nil {
 		// NOTE(l0nax): Do not print an error when the update check fails.
-		// ilog.Log.Errorln(err)
+		ilog.Log.Errorln(err)
 		return false
 	}
 
