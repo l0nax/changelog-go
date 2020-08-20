@@ -1,8 +1,6 @@
 package tools
 
 import (
-	// "fmt"
-
 	"github.com/kr/pretty"
 	"gopkg.in/yaml.v2"
 

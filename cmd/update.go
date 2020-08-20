@@ -35,7 +35,7 @@ var updateCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		log.Infoln("Checking for new available versions...")
 
-		var updater = &selfupdate.Updater{
+		updater := &selfupdate.Updater{
 			CurrentVersion: version.Version,
 			ApiURL:         "https://update.l0nax.org/",
 			BinURL:         "https://update.l0nax.org/",

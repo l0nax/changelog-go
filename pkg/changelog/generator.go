@@ -72,7 +72,7 @@ func GenerateChangelog(r *Release) {
 	// debug: print the Releases
 
 	log.Debug("Processing changelog entries")
-	var rawEntries = ""
+	rawEntries := ""
 
 	// get the raw changelog output of the new entries
 	for _, entries := range r.Releases[0].Entries {

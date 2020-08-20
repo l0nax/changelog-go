@@ -52,7 +52,6 @@ func moveToReleaseFolder(version string) error {
 		// since it's a file, we can now move it to the new directory.
 		return os.Rename(_path, path.Join(releasedPath, info.Name()))
 	})
-
 	if err != nil {
 		return errors.Wrap(err, "Error while moving changelog-entry to release directory")
 	}

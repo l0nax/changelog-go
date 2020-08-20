@@ -13,7 +13,7 @@ import (
 //// register Type
 //internal.EntryT.RegisterEntryType
 
-//noinspection ALL
+// noinspection ALL
 type Entry_Added struct {
 	// internal Struct Data
 	entries []*entry.Entry

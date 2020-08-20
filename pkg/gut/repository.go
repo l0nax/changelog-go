@@ -17,7 +17,7 @@ const maxDepth = 16
 // It will return an Error if the `.git/` Directory could not be found.
 func FindGitRoot(base string) (string, error) {
 	var i int = 0
-	var _path = base
+	_path := base
 
 	for {
 		// if we are at the Root Directory stop searching
