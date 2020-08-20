@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path"
+	"sort"
 	"strconv"
 	"text/template"
 
@@ -128,10 +129,25 @@ func GenerateChangelog(r *Release) {
 
 // sortReleaseEntries does sort the changelog entries from `r.[]Releases.Entries`
 // by their `ShortTypeName` field.
+// Additionally the "raw" change(log) entries (per-change-type) will be sorted.
 func sortReleaseEntries(r *Release) {
+	// Sort by Version->Change Type
 	for i := range r.Releases {
 		r.Releases[i].SortEntries()
 	}
+
+	// Sort by Version->Change Type->Change Entry
+	for i := range r.Releases {
+		for j := range r.Releases[i].Entries {
+			sortRawChangeLogEntries(&r.Releases[i].Entries[j])
+		}
+	}
+}
+
+func sortRawChangeLogEntries(r *TplEntries) {
+	sort.SliceStable(r.Changes, func(i, j int) bool {
+		return r.Changes[i].ChangeTitle < r.Changes[j].ChangeTitle
+	})
 }
 
 // prepareReleaseDir creates all needed files and directory for the release
