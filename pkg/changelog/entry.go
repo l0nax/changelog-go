@@ -12,12 +12,13 @@ import (
 
 	"github.com/blang/semver"
 	"github.com/spf13/viper"
+	git "gopkg.in/src-d/go-git.v4"
+	"gopkg.in/yaml.v2"
+
 	"gitlab.com/l0nax/changelog-go/internal"
 	"gitlab.com/l0nax/changelog-go/pkg/entry"
 	"gitlab.com/l0nax/changelog-go/pkg/gut"
 	"gitlab.com/l0nax/changelog-go/pkg/tools"
-	git "gopkg.in/src-d/go-git.v4"
-	"gopkg.in/yaml.v2"
 )
 
 // AddEntry creates a new Changelog Entry by creating the Entry File
@@ -45,7 +46,7 @@ func AddEntry(entry entry.Entry) {
 
 	// check if path exists
 	if _, err := os.Stat(_path); os.IsNotExist(err) {
-		os.MkdirAll(_path, 0666)
+		os.MkdirAll(_path, 0o666)
 	}
 
 	// get random String
@@ -167,7 +168,6 @@ func GetReleasedEntries(r *Release) error {
 
 		return nil
 	})
-
 	if err != nil {
 		return err
 	}
@@ -190,8 +190,8 @@ func GetReleasedEntries(r *Release) error {
 
 // sortEntries will sort all changelog entries into TplEntries struct
 func sortEntries(entries *[]entry.Entry) ([]TplEntries, error) {
-	var ret = []TplEntries{}
-	var typeMap = make(map[int]int) // typeMap contains the map of TypeID-->Index_in_'ret'
+	ret := []TplEntries{}
+	typeMap := make(map[int]int) // typeMap contains the map of TypeID-->Index_in_'ret'
 
 	for i, entry := range *entries {
 		// check if entry type does not exists in typeMap

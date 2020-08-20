@@ -31,6 +31,7 @@ import (
 	"github.com/kr/pretty"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+
 	"gitlab.com/l0nax/changelog-go/internal"
 	"gitlab.com/l0nax/changelog-go/pkg/changelog"
 	"gitlab.com/l0nax/changelog-go/pkg/entry"

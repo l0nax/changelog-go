@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 
 	"github.com/spf13/viper"
+
 	"gitlab.com/l0nax/changelog-go/internal"
 	"gitlab.com/l0nax/changelog-go/pkg/entry"
 	"gitlab.com/l0nax/changelog-go/pkg/tools"
@@ -25,14 +26,14 @@ func CheckDir() {
 
 	// create Directory structure if it does not exists
 	if _, err := os.Stat(path.Join(dataDir, "unreleased")); os.IsNotExist(err) {
-		err = os.MkdirAll(path.Join(dataDir, "unreleased"), 0755)
+		err = os.MkdirAll(path.Join(dataDir, "unreleased"), 0o755)
 		if err != nil {
 			panic(err)
 		}
 	}
 
 	if _, err := os.Stat(path.Join(dataDir, "released")); os.IsNotExist(err) {
-		err = os.MkdirAll(path.Join(dataDir, "released"), 0755)
+		err = os.MkdirAll(path.Join(dataDir, "released"), 0o755)
 		if err != nil {
 			panic(err)
 		}
@@ -42,7 +43,7 @@ func CheckDir() {
 // GetEntries returns a List of all Entries found in the Changelog-Data directory.
 func GetEntries(r *Release) error {
 	// contains all found unreleased Files
-	var files = make(map[string][]byte)
+	files := make(map[string][]byte)
 
 	// initialize r.Info if its not already initialized
 	if r.Info == nil {
@@ -52,8 +53,7 @@ func GetEntries(r *Release) error {
 	// First check if everything is ok
 	CheckDir()
 
-	unreleasedPath := path.Join(internal.GitPath,
-		viper.GetString("changelog.entryPath"), "unreleased")
+	unreleasedPath := path.Join(internal.GitPath, viper.GetString("changelog.entryPath"), "unreleased")
 
 	files, err := ReadEntryFiles(unreleasedPath)
 	if err != nil {
@@ -82,7 +82,7 @@ func MoveEntries(version string) error {
 	}
 
 	// create new release directory
-	err := os.MkdirAll(verPath, 0755)
+	err := os.MkdirAll(verPath, 0o755)
 	if err != nil {
 		return err
 	}
@@ -104,7 +104,7 @@ func MoveEntries(version string) error {
 
 // ReadEntryFiles reads all changelog entry files form a given path
 func ReadEntryFiles(filesPath string) (map[string][]byte, error) {
-	var files = make(map[string][]byte)
+	files := make(map[string][]byte)
 
 	err := filepath.Walk(filesPath, func(path string, info os.FileInfo, err error) error {
 		// check if path is File
@@ -130,7 +130,7 @@ func ReadEntryFiles(filesPath string) (map[string][]byte, error) {
 // ParseFiles parses all given files into an Entries struct
 // @param files is a map of 'FILE_PATH' => 'FILE_CONTENT'
 func ParseFiles(files map[string][]byte) ([]entry.Entry, error) {
-	var entries = []entry.Entry{}
+	entries := []entry.Entry{}
 
 	for _, file := range files {
 		// unmarshal Filecontent into Struct

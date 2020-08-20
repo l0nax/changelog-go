@@ -27,6 +27,7 @@ import (
 
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
+
 	"gitlab.com/l0nax/changelog-go/internal"
 
 	"github.com/mitchellh/go-homedir"

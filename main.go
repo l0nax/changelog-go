@@ -42,7 +42,7 @@ func main() {
 	// has a timeout of 500ms to not slow down the changelog application
 	// if its offline.
 	if internal.CheckUpdate(version.Version,
-		"https://l0nax.gitlab.io/changelog-go") {
+		"https://update.l0nax.org/changelog-go") {
 		fmt.Printf("[UPDATE] There is a new version available, run" +
 			" 'changelog update' or 'snap refresh changelog' " +
 			"to update to the latest version.\n\n")

@@ -8,6 +8,7 @@ import (
 	"github.com/pkg/errors"
 
 	"github.com/spf13/viper"
+
 	"gitlab.com/l0nax/changelog-go/internal"
 )
 
@@ -51,7 +52,6 @@ func moveToReleaseFolder(version string) error {
 		// since it's a file, we can now move it to the new directory.
 		return os.Rename(_path, path.Join(releasedPath, info.Name()))
 	})
-
 	if err != nil {
 		return errors.Wrap(err, "Error while moving changelog-entry to release directory")
 	}

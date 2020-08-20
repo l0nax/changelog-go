@@ -24,6 +24,7 @@ package cmd
 import (
 	"github.com/l0nax/go-selfupdate/selfupdate"
 	"github.com/spf13/cobra"
+
 	"gitlab.com/l0nax/changelog-go/pkg/version"
 )
 
@@ -34,11 +35,11 @@ var updateCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		log.Infoln("Checking for new available versions...")
 
-		var updater = &selfupdate.Updater{
+		updater := &selfupdate.Updater{
 			CurrentVersion: version.Version,
-			ApiURL:         "https://l0nax.gitlab.io/",
-			BinURL:         "https://l0nax.gitlab.io/",
-			DiffURL:        "https://l0nax.gitlab.io/",
+			ApiURL:         "https://update.l0nax.org/",
+			BinURL:         "https://update.l0nax.org/",
+			DiffURL:        "https://update.l0nax.org/",
 			Dir:            "update/",
 			CmdName:        "changelog-go",
 

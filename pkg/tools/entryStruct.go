@@ -1,12 +1,11 @@
 package tools
 
 import (
-	// "fmt"
-
 	"github.com/kr/pretty"
+	"gopkg.in/yaml.v2"
+
 	"gitlab.com/l0nax/changelog-go/internal"
 	"gitlab.com/l0nax/changelog-go/pkg/entry"
-	"gopkg.in/yaml.v2"
 )
 
 func YAMLMarshal(in entry.Entry) ([]byte, error) {

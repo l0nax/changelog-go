@@ -20,8 +20,8 @@ type versionInfo struct {
 func CheckUpdate(version, dataURL string) bool {
 	// initialize HTTP Client
 	client := http.Client{
-		// max 1s timeout, to not slow the application too much down
-		Timeout: time.Second * 1,
+		// max 500ms timeout, to not slow the application too much down
+		Timeout: time.Millisecond * 500,
 	}
 
 	// prepare API URL
@@ -29,12 +29,15 @@ func CheckUpdate(version, dataURL string) bool {
 
 	req, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
-		ilog.Log.WithError(err).Errorln("could not initialize http requester")
+		// NOTE(l0nax): Do not print an error when the update check fails.
+		// ilog.Log.WithError(err).Errorln("could not initialize http requester")
+		return false
 	}
 
 	var res *http.Response
 	res, err = client.Do(req)
 	if err != nil {
+		// NOTE(l0nax): Do not print an error when the update check fails.
 		ilog.Log.Errorln(err)
 		return false
 	}
@@ -52,11 +55,6 @@ func CheckUpdate(version, dataURL string) bool {
 	info.Version = strings.TrimPrefix(info.Version, "v")
 	version = strings.TrimPrefix(version, "v")
 
-	if version != info.Version {
-		// update is available
-		return true
-	}
-
 	// no update found
-	return false
+	return version != info.Version
 }

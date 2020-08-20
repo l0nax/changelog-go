@@ -3,6 +3,7 @@ package internal
 import (
 	"github.com/kr/pretty"
 	log "github.com/sirupsen/logrus"
+
 	"gitlab.com/l0nax/changelog-go/pkg/entry"
 	"gitlab.com/l0nax/changelog-go/pkg/errors"
 )
@@ -56,7 +57,7 @@ func (e *EntryTypes) RegisterEntryType(et *entry.ChangeEntry) error {
 
 func (e *EntryTypes) DeRegisterEntryType(et *entry.ChangeEntry) error {
 	// find Entry Type
-	for i, _ := range e.entryTypes {
+	for i := range e.entryTypes {
 		// Short Type Name
 		if ((*e.entryTypes[i]).GetShortTypeName() == (*et).GetShortTypeName()) &&
 			((*e.entryTypes[i]).GetTypeDescription() == (*et).GetTypeDescription()) &&
@@ -72,7 +73,7 @@ func (e *EntryTypes) DeRegisterEntryType(et *entry.ChangeEntry) error {
 
 func (e *EntryTypes) SearchEntryType(se *SEntryType) (*entry.ChangeEntry, error) {
 	// find Entry Type
-	for i, _ := range e.entryTypes {
+	for i := range e.entryTypes {
 		log.Debugf("Searching (%# v) in Entry (%# v)\n",
 			pretty.Formatter(se), pretty.Formatter(*e.entryTypes[i]))
 

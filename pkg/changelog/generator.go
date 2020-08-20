@@ -3,16 +3,20 @@ package changelog
 import (
 	"bytes"
 	"fmt"
+	"io/ioutil"
 	"os"
 	"path"
+	"sort"
 	"strconv"
 	"text/template"
 
 	"github.com/kr/pretty"
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
-	"gitlab.com/l0nax/changelog-go/internal"
 	"gopkg.in/yaml.v2"
+
+	"gitlab.com/l0nax/changelog-go/internal"
+	"gitlab.com/l0nax/changelog-go/pkg/tools"
 )
 
 // GenerateChangelog will generate a new CHANGELOG.md
@@ -33,8 +37,7 @@ func GenerateChangelog(r *Release) {
 
 	// get Entries by Change Type
 	for _, cType := range internal.EntryT.ListAvailableTypes() {
-		log.Debugf("Listing Entries of Type '%s': %# v\n",
-			(*cType).GetShortTypeName(), (*cType).GetListEntries())
+		log.Debugf("Listing Entries of Type '%s': %# v\n", (*cType).GetShortTypeName(), (*cType).GetListEntries())
 
 		changeEntries := (*cType).GetListEntries()
 		if len(changeEntries) == 0 {
@@ -47,8 +50,7 @@ func GenerateChangelog(r *Release) {
 			ShortTypeName: (*cType).GetShortTypeName(),
 		}
 
-		log.Debugf("len(changeEntries) before Itoa conversion: '%d'\n",
-			len(changeEntries))
+		log.Debugf("len(changeEntries) before Itoa conversion: '%d'\n", len(changeEntries))
 
 		// write 'n changes' instead of '1 change' if more than one
 		if len(changeEntries) > 1 {
@@ -71,7 +73,7 @@ func GenerateChangelog(r *Release) {
 	// debug: print the Releases
 
 	log.Debug("Processing changelog entries")
-	var rawEntries = ""
+	rawEntries := ""
 
 	// get the raw changelog output of the new entries
 	for _, entries := range r.Releases[0].Entries {
@@ -87,6 +89,9 @@ func GenerateChangelog(r *Release) {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	// sort change entries
+	sortReleaseEntries(r)
 
 	// create release dir
 	err = createReleaseDir(r.Info.Version[0])
@@ -120,6 +125,29 @@ func GenerateChangelog(r *Release) {
 	// fmt.Println("+++---------------------------------------------+++")
 	// fmt.Println(processChangelogTmpl(r))
 	// fmt.Println("+++---------------------------------------------+++")
+}
+
+// sortReleaseEntries does sort the changelog entries from `r.[]Releases.Entries`
+// by their `ShortTypeName` field.
+// Additionally the "raw" change(log) entries (per-change-type) will be sorted.
+func sortReleaseEntries(r *Release) {
+	// Sort by Version->Change Type
+	for i := range r.Releases {
+		r.Releases[i].SortEntries()
+	}
+
+	// Sort by Version->Change Type->Change Entry
+	for i := range r.Releases {
+		for j := range r.Releases[i].Entries {
+			sortRawChangeLogEntries(&r.Releases[i].Entries[j])
+		}
+	}
+}
+
+func sortRawChangeLogEntries(r *TplEntries) {
+	sort.SliceStable(r.Changes, func(i, j int) bool {
+		return r.Changes[i].ChangeTitle < r.Changes[j].ChangeTitle
+	})
 }
 
 // prepareReleaseDir creates all needed files and directory for the release
@@ -172,8 +200,24 @@ func processChangeEntries(entries *TplEntries) string {
 
 // processChangelogTmpl generates the CHANGELOG.md via the text template
 func processChangelogTmpl(r *Release) string {
-	// TODO: implement support for custom changelog template
-	tmpl, err := template.New("changelog").Parse(changelogScheme)
+	var tmplStr string
+
+	// use default changelog scheme/ template if `changelog.customScheme` is set to false
+	if viper.GetBool("changelog.customScheme") {
+		fp := viper.GetString("changelog.changelog")
+		log.Infof("Custom CHANGELOG.md template has been enabled. File path: %s\n", fp)
+
+		f, err := ioutil.ReadFile(fp)
+		if err != nil {
+			log.Fatalf("Unable to read custom CHANGELOG.md from '%s': %v\n", fp, err)
+		}
+
+		tmplStr = tools.ByteSlice2String(f)
+	} else {
+		tmplStr = defaultChangelogScheme
+	}
+
+	tmpl, err := template.New("changelog").Parse(tmplStr)
 	if err != nil {
 		log.Fatal(err)
 	}
