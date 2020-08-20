@@ -38,7 +38,7 @@ type TplEntries struct {
 }
 
 // this Type is the default CHANGELOG.md Scheme
-const changelogScheme = `# Changelog
+const defaultChangelogScheme = `# Changelog
 
 All notable changes to this project will be documented in this file.
 

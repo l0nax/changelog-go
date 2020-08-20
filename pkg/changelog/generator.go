@@ -3,6 +3,7 @@ package changelog
 import (
 	"bytes"
 	"fmt"
+	"io/ioutil"
 	"os"
 	"path"
 	"strconv"
@@ -14,6 +15,7 @@ import (
 	"gopkg.in/yaml.v2"
 
 	"gitlab.com/l0nax/changelog-go/internal"
+	"gitlab.com/l0nax/changelog-go/pkg/tools"
 )
 
 // GenerateChangelog will generate a new CHANGELOG.md
@@ -173,8 +175,24 @@ func processChangeEntries(entries *TplEntries) string {
 
 // processChangelogTmpl generates the CHANGELOG.md via the text template
 func processChangelogTmpl(r *Release) string {
-	// TODO: implement support for custom changelog template
-	tmpl, err := template.New("changelog").Parse(changelogScheme)
+	var tmplStr string
+
+	// use default changelog scheme/ template if `changelog.customScheme` is set to false
+	if viper.GetBool("changelog.customScheme") {
+		fp := viper.GetString("changelog.changelog")
+		log.Infof("Custom CHANGELOG.md template has been enabled. File path: %s\n", fp)
+
+		f, err := ioutil.ReadFile(fp)
+		if err != nil {
+			log.Fatalf("Unable to read custom CHANGELOG.md from '%s': %v\n", fp, err)
+		}
+
+		tmplStr = tools.ByteSlice2String(f)
+	} else {
+		tmplStr = defaultChangelogScheme
+	}
+
+	tmpl, err := template.New("changelog").Parse(tmplStr)
 	if err != nil {
 		log.Fatal(err)
 	}
