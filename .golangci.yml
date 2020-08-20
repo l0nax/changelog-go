@@ -14,7 +14,7 @@ run:
   issues-exit-code: 0
 
   # include test files or not, default is true
-  tests: true
+  tests: false
 
   # default is true. Enables skipping of directories:
   #   vendor$, third_party$, testdata$, examples$, Godeps$, builtin$
@@ -33,7 +33,7 @@ run:
 # output configuration options
 output:
   # colored-line-number|line-number|json|tab|checkstyle|code-climate, default is "colored-line-number"
-  format: line-number
+  format: colored-line-number
 
   # print lines of code with issue, default is true
   print-issued-lines: true
@@ -49,7 +49,7 @@ output:
 linters-settings:
   dogsled:
     # checks assignments with too many blank identifiers; default is 2
-    max-blank-identifiers: 2
+    max-blank-identifiers: 5
   dupl:
     # tokens count to trigger issue, 150 by default
     threshold: 100
@@ -62,11 +62,11 @@ linters-settings:
     # default is false: such cases aren't reported by default.
     check-blank: false
   funlen:
-    lines: 60
-    statements: 40
+    lines: 132
+    statements: 60
   gocognit:
     # minimal code complexity to report, 30 by default (but we recommend 10-20)
-    min-complexity: 10
+    min-complexity: 20
   goconst:
     # minimal length of string constant, 3 by default
     min-len: 3
@@ -86,7 +86,6 @@ linters-settings:
       - assignOp
       - boolExprSimplify
       - captLocal
-      - commentFormatting
       - nestingReduce
       - unnecessaryBlock
       - yodaStyleExpr
@@ -101,15 +100,19 @@ linters-settings:
       - ifElseChain
       - octalLiteral
       - wrapperFunc
+      - commentFormatting
+      - underef
+      - hugeParam
+      - unnamedResult ## NOTE(eb): Enable this checker if it's stable => false-positive
   gocyclo:
     # minimal code complexity to report, 30 by default (but we recommend 10-20)
-    min-complexity: 10
-  # maybe enabled later
+    min-complexity: 20
   godox:
     # report any comments starting with keywords, this is useful for TODO or FIXME comments that
     # might be left in the code accidentally and should be resolved before merging
     keywords: # default keywords are TODO, BUG, and FIXME, these can be overwritten by this setting
-      - NOTE
+      - FIXME
+      - TODO
       - OPTIMIZE # marks code that should be optimized before merging
       - HACK # marks hack-arounds that should be removed before merging
   gofmt:
@@ -118,7 +121,7 @@ linters-settings:
   goimports:
     # put imports beginning with prefix after 3rd-party packages;
     # it's a comma-separated list of prefixes
-    local-prefixes: gitlab.com/l0nax/changelog-go
+    local-prefixes: gitlab.fabmation.info/20000/70135/zeit/server
   golint:
     # minimal confidence for issues, default is 0.8
     min-confidence: 0.8
@@ -136,7 +139,7 @@ linters-settings:
   lll:
     # max line length, lines longer will be reported. Default is 120.
     # '\t' is counted as 1 character by default, and can be changed with the tab-width option
-    line-length: 120
+    line-length: 132
     # tab width in spaces. Default to 1.
     tab-width: 1
   maligned:
@@ -147,8 +150,8 @@ linters-settings:
     # Default is to use a neutral variety of English.
     # Setting locale to US will correct the British spelling of 'colour' to 'color'.
     locale: US
-    ignore-words:
-      - someword
+    # ignore-words:
+    #   - someword
   nakedret:
     # make an issue if func has more lines of code than this setting and it has naked returns; default is 30
     max-func-lines: 30
@@ -178,6 +181,15 @@ linters-settings:
     force-case-trailing-whitespace: 0
 
 linters:
+  disable:
+    - nakedret
+    - gochecknoglobals
+    - godot
+    - gochecknoinits
+    - whitespace # WSL does the same job
+    - varcheck # deadcode does the same job
+    - gci # This tool isn't good as 'goimports' or 'gofumports'
+    - nlreturn # wsl does the same job
   enable:
     - misspell
     - megacheck
@@ -209,37 +221,53 @@ linters:
     - style
     - format
     - complexity
+    - performance
   fast: false
 
 
 issues:
+  exclude:
+    - composites
+
   # Excluding configuration per-path, per-linter, per-text and per-source
   exclude-rules:
     # Exclude some linters from running on tests files.
     - path: _test\.go
       linters:
+        - golint
         - gocyclo
         - errcheck
         - dupl
         - gosec
+        - lll
+        - goconst
+        - wsl
+        - funlen
 
-    # Exclude known linters from partially hard-vendored code,
-    # which is impossible to exclude via "nolint" comments.
-    - path: internal/hmac/
-      text: "weak cryptographic primitive"
+    # cuddling defer statements isn't bad for readability.
+    - text: "only one cuddle assignment allowed before defer statement"
       linters:
+        - wsl
+
+    # our constant params are not hard-coded credentials
+    - linters:
         - gosec
+      text: "G101"
+      path: handler/oauth/const.go
 
     # Exclude lll issues for long lines with go:generate
     - linters:
         - lll
       source: "^//go:generate "
 
+  include:
+    - EXC0002 # disable excluding of issues about comments from golint
+
   # Independently from option `exclude` we use default exclude patterns,
   # it can be disabled by this option. To list all
   # excluded by default patterns execute `golangci-lint run --help`.
   # Default value for this option is true.
-  exclude-use-default: false
+  exclude-use-default: true
 
   # Maximum issues count per one linter. Set to 0 to disable. Default is 50.
   max-issues-per-linter: 0
