@@ -55,11 +55,6 @@ func CheckUpdate(version, dataURL string) bool {
 	info.Version = strings.TrimPrefix(info.Version, "v")
 	version = strings.TrimPrefix(version, "v")
 
-	if version != info.Version {
-		// update is available
-		return true
-	}
-
 	// no update found
-	return false
+	return version != info.Version
 }
