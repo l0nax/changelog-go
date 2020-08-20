@@ -190,6 +190,7 @@ linters:
     - varcheck # deadcode does the same job
     - gci # This tool isn't good as 'goimports' or 'gofumports'
     - nlreturn # wsl does the same job
+    - gomnd
   enable:
     - misspell
     - megacheck
