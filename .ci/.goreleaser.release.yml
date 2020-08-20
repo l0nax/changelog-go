@@ -16,7 +16,6 @@ builds:
   goarch:
     - amd64
     - arm64
-    - 386
 
   ldflags:
     - -X gitlab.com/l0nax/changelog-go/pkg/version.Version={{.Env.VERSION}} -X gitlab.com/l0nax/changelog-go/pkg/version.Hash={{.Commit}} -X gitlab.com/l0nax/changelog-go/pkg/version.BuildTime={{.Env.BUILD_DATE}} -X gitlab.com/l0nax/changelog-go/pkg/version.Environment={{.Env.BUILD_ENVIRONMENT}}
@@ -26,7 +25,6 @@ archives:
     darwin: Darwin
     linux: Linux
     windows: Windows
-    386: i386
     amd64: x86_64
 
 checksum:
