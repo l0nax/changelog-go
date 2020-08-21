@@ -32,8 +32,9 @@ func CheckUpdate(version, dataURL string) bool {
 		return false
 	}
 
-	var res *http.Response
-	res, err = client.Do(req)
+	req.Header.Set("User-Agent", "changelog-go/" + version)
+
+	res, err := client.Do(req)
 	if err != nil {
 		// NOTE(l0nax): Do not print an error when the update check fails.
 		// ilog.Log.Errorln(err)
