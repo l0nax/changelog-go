@@ -32,7 +32,7 @@ func CheckUpdate(version, dataURL string) bool {
 		return false
 	}
 
-	req.Header.Set("User-Agent", "changelog-go/" + version)
+	req.Header.Set("User-Agent", "changelog-go/"+version)
 
 	res, err := client.Do(req)
 	if err != nil {

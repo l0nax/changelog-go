@@ -64,7 +64,7 @@ Folder.`,
 				// check if Version is a pre-release
 				for i, group := range r.SubexpNames() {
 					if group == "prerelease" {
-						if len(newRelease.Info.Version[i]) != 0 {
+						if newRelease.Info.Version[i] != "" {
 							isPreRelrease = true
 						}
 

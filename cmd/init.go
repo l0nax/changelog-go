@@ -64,7 +64,7 @@ func init() {
 	// Cobra supports Persistent Flags which will work for this command
 	// and all subcommands, e.g.:
 	// initCmd.PersistentFlags().String("foo", "", "A help for foo")
-	initCmd.Flags().BoolVar(&force, "force", false, "force writting a new config file")
+	initCmd.Flags().BoolVar(&force, "force", false, "force writing a new config file")
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
