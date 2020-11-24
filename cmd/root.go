@@ -24,6 +24,7 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"path"
 
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
@@ -32,9 +33,9 @@ import (
 
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/viper"
-
-	"gitlab.com/l0nax/changelog-go/pkg/gut"
 )
+
+const cfgFileName = ".changelog-go.yaml"
 
 var cfgFile string
 
@@ -82,9 +83,15 @@ func initConfig() {
 		panic(err)
 	}
 
-	internal.GitPath, err = gut.FindGitRoot(internal.Cwd)
+	internal.GitPath, err = findTopDir(internal.Cwd)
 	if err != nil {
 		panic(err)
+	}
+
+	if internal.GitPath == "" {
+		fmt.Println("Unable to find config file! Use `changelog init` to create one.")
+		fmt.Println("Exiting...")
+		os.Exit(1)
 	}
 
 	if cfgFile != "" {
@@ -111,4 +118,53 @@ func initConfig() {
 	if err := viper.ReadInConfig(); err == nil {
 		fmt.Println("Using config file:", viper.ConfigFileUsed())
 	}
+}
+
+// findTopDir does does in the cwd directory and searches (going against /)
+// the directoy where `.changelo-go` does reside.
+// An error will be returned if on of the I/O functions does return one.
+func findTopDir(cwd string) (string, error) {
+	var err error
+	var fs os.FileInfo
+	var c bool
+	var prevPath string // prevPath contains the previous path to prevent an infinite loop
+
+	// check does return true if the p directory does contain our changelog-go config.
+	check := func(p string) (bool, error) {
+		if fs, err = os.Stat(path.Join(p, cfgFileName)); err != nil {
+			if os.IsNotExist(err) {
+				return false, nil
+			}
+
+			return false, err
+		}
+
+		return !fs.IsDir(), nil
+	}
+
+	c, err = check(cwd)
+	if err != nil {
+		return "", err
+	}
+
+	// the config does reside in the cwd
+	if c {
+		return cwd, nil
+	}
+
+	for prevPath != cwd {
+		prevPath = cwd
+		cwd = path.Join(cwd, "../")
+		c, err = check(cwd)
+		if err != nil {
+			return "", err
+		}
+
+		// the config does reside in the cwd
+		if c {
+			return cwd, nil
+		}
+	}
+
+	return "", nil
 }

@@ -1,0 +1,2 @@
+title: Search config file by going the file-system up stopping at '/' instead of relying on the git library
+type: 2
