@@ -6,7 +6,7 @@ require (
 	github.com/blang/semver/v4 v4.0.0
 	github.com/emirpasic/gods v1.12.1-0.20191007224813-4e23915b9a82 // indirect
 	github.com/fsnotify/fsnotify v1.4.9 // indirect
-	github.com/getsentry/sentry-go v0.5.1
+	github.com/getsentry/sentry-go v0.8.0
 	github.com/hashicorp/hcl v1.0.1-0.20191016231534-914dc3f8dd7c // indirect
 	github.com/kardianos/osext v0.0.0-20190222173326-2bc1f35cddc0 // indirect
 	github.com/kr/binarydist v0.1.0 // indirect
@@ -30,8 +30,6 @@ require (
 	github.com/spf13/viper v1.7.1
 	github.com/subosito/gotenv v1.2.1-0.20190917103637-de67a6614a4d // indirect
 	github.com/tcnksm/go-gitconfig v0.1.2
-	golang.org/x/crypto v0.0.0-20191112222119-e1110fd1c708 // indirect
-	golang.org/x/net v0.0.0-20191112182307-2180aed22343 // indirect
 	golang.org/x/sys v0.0.0-20200802091954-4b90ce9b60b3 // indirect
 	golang.org/x/text v0.3.3 // indirect
 	gopkg.in/inconshreveable/go-update.v0 v0.0.0-20150814200126-d8b0b1d421aa // indirect
