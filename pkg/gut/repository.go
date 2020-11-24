@@ -15,6 +15,8 @@ const maxDepth = 16
 // Means if your are in $PATH/cmd/test and the Git Root is $PATH/
 // FuncGitRoot will return $PATH/
 // It will return an Error if the `.git/` Directory could not be found.
+//
+// Deprecated: The gut package is marked as deprecated since we will drop the git dependency in the future.
 func FindGitRoot(base string) (string, error) {
 	var i int = 0
 	_path := base

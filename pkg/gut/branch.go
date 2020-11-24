@@ -6,6 +6,9 @@ import (
 	git "gopkg.in/src-d/go-git.v4"
 )
 
+// GetCurrentBranchFromRepository does return the current checked out branch from the repository.
+//
+// Deprecated: The gut package is marked as deprecated since we will drop the git dependency in the future.
 func GetCurrentBranchFromRepository(repository *git.Repository) (string, error) {
 	branchRefs, err := repository.Branches()
 	if err != nil {
