@@ -1,8 +1,7 @@
-image: golang:1.15
+image: golang:1.16
 
 variables:
   GOCACHE: "/go/.build_cache"
-
 
 include:
   - template: SAST.gitlab-ci.yml
@@ -19,8 +18,9 @@ stages:
 go_prepare:
   stage: .pre
   script:
+  - export PATH=$PATH:$GOPATH/bin
   # get new Version from `git-semver`
-  - go get github.com/mdomke/git-semver@master
+  - go install -v github.com/mdomke/git-semver@master
   - git-semver -prefix v > `pwd`/.version
   # get build/ target environment
   - export VERSION=$(cat `pwd`/.version)
