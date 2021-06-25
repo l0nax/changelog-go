@@ -121,7 +121,7 @@ linters-settings:
   goimports:
     # put imports beginning with prefix after 3rd-party packages;
     # it's a comma-separated list of prefixes
-    local-prefixes: gitlab.fabmation.info/20000/70135/zeit/server
+    local-prefixes: gitlab.com/l0nax/changelog-go
   golint:
     # minimal confidence for issues, default is 0.8
     min-confidence: 0.8
@@ -190,7 +190,6 @@ linters:
     - varcheck # deadcode does the same job
     - gci # This tool isn't good as 'goimports' or 'gofumports'
     - nlreturn # wsl does the same job
-    - gomnd
   enable:
     - misspell
     - megacheck

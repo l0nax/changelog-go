@@ -1,3 +1,4 @@
+// Package cmd contains the changelog-go commands.
 package cmd
 
 import _log "gitlab.com/l0nax/changelog-go/internal/log"

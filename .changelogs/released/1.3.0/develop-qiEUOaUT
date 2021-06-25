@@ -1,0 +1,3 @@
+title: Enforce configuration presence only on `new` and `release` subcommands ([#11](https://gitlab.com/l0nax/changelog-go/-/issues/11))
+type: 1
+author: Emanuel Bennici

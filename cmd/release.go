@@ -42,6 +42,9 @@ Folder.`,
 	Example: `  release 1.0.0`,
 	Args:    cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
+		// configuration is required
+		initConfig()
+
 		newRelease := changelog.Release{}
 		newRelease.Info = &changelog.ReleaseInfo{}
 
@@ -64,7 +67,7 @@ Folder.`,
 				// check if Version is a pre-release
 				for i, group := range r.SubexpNames() {
 					if group == "prerelease" {
-						if len(newRelease.Info.Version[i]) != 0 {
+						if newRelease.Info.Version[i] != "" {
 							isPreRelrease = true
 						}
 

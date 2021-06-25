@@ -4,9 +4,6 @@
 **/go.db
 **/go_tags
 
-# generated assets
-internal/assets.go
-
 # goreleaser artefacts
 dist/
 

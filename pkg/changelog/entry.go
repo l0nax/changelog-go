@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/blang/semver"
+	"github.com/blang/semver/v4"
 	"github.com/spf13/viper"
 	git "gopkg.in/src-d/go-git.v4"
 	"gopkg.in/yaml.v2"

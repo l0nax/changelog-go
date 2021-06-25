@@ -44,10 +44,7 @@ var initCmd = &cobra.Command{
 			log.Fatal(err)
 		}
 
-		// write default config
-		//			       /example/.changelog-go.yaml
-		data, _ := internal.FS.String("/example/.changelog-go.yaml")
-		file.WriteString(data)
+		file.WriteString(internal.DefaultConfig)
 
 		err = file.Close()
 		if err != nil {
@@ -64,7 +61,7 @@ func init() {
 	// Cobra supports Persistent Flags which will work for this command
 	// and all subcommands, e.g.:
 	// initCmd.PersistentFlags().String("foo", "", "A help for foo")
-	initCmd.Flags().BoolVar(&force, "force", false, "force writting a new config file")
+	initCmd.Flags().BoolVar(&force, "force", false, "force writing a new config file")
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
