@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 
+## 1.3.0 (2021-06-26)
+
+### Changed (2 changes)
+- Search config file by going the file-system up stopping at '/' instead of relying on the git library
+- Use go 1.16 "embed" package instead of 3rd-party tool
+
+### Deprecated (1 change)
+- Deprecate 'gut' package
+
+### Fixed (1 change)
+- Enforce configuration presence only on `new` and `release` subcommands ([#11](https://gitlab.com/l0nax/changelog-go/-/issues/11))
+
+### Other (1 change)
+- Compile application with go 1.16.x
+
+
 ## 1.2.1 (2020-08-20)
 
 ### Fixed (1 change)
