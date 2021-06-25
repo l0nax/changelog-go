@@ -46,6 +46,9 @@ var newCmd = &cobra.Command{
 your entry.`,
 	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
+		// configuration is required
+		initConfig()
+
 		// check if first Argument is set
 		title := args[0]
 

@@ -42,6 +42,9 @@ Folder.`,
 	Example: `  release 1.0.0`,
 	Args:    cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
+		// configuration is required
+		initConfig()
+
 		newRelease := changelog.Release{}
 		newRelease.Info = &changelog.ReleaseInfo{}
 
