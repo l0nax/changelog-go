@@ -26,13 +26,10 @@ go_prepare:
   - export VERSION=$(cat `pwd`/.version)
   - $(pwd)/.ci/scripts/setEnvironment.sh
   - export BUILD_ENVIRONMENT=$(cat `pwd`/ENVIRONMENT)
-  # generate GoLang assets
-  - make depends assets
   - make build-dev
   artifacts:
     expire_in: 1 hour
     paths:
-    - internal/assets.go
     - .version
     - ENVIRONMENT
 
@@ -62,7 +59,6 @@ build:
   artifacts:
     expire_in: 1 hour
     paths:
-    - internal/assets.go
     - dist/
     - .version
     - ENVIRONMENT
@@ -98,7 +94,6 @@ release:
   artifacts:
     expire_in: 1 hour
     paths:
-    - internal/assets.go
     - dist/
     - .version
     - ENVIRONMENT

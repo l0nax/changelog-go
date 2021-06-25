@@ -7,18 +7,10 @@ LDFLAGS := -ldflags "-X 'gitlab.com/l0nax/changelog-go/pkg/version.Version=$(VER
 all: build-dev
 
 .PHONY: build-dev
-build-dev: assets
+build-dev:
 	go build $(LDFLAGS) -o changelog-go
 
 .PHONY: release
 release:
 	goreleaser release
 	godownloader --repo=l0nax/changelog-go > install.sh
-
-.PHONY: assets
-assets:
-	resources -declare -fmt -output internal/assets.go -package internal example/.changelog-go.yaml
-
-.PHONY: depends
-depends:
-	go get github.com/omeid/go-resources/cmd/resources
