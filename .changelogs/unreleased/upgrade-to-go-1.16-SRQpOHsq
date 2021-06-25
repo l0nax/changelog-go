@@ -1,0 +1,3 @@
+title: Use go 1.16 "embed" package instead of 3rd-party tool
+type: 2
+author: Emanuel Bennici

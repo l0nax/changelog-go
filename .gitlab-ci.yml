@@ -1,8 +1,7 @@
-image: golang:1.15
+image: golang:1.16
 
 variables:
   GOCACHE: "/go/.build_cache"
-
 
 include:
   - template: SAST.gitlab-ci.yml
@@ -19,20 +18,18 @@ stages:
 go_prepare:
   stage: .pre
   script:
+  - export PATH=$PATH:$GOPATH/bin
   # get new Version from `git-semver`
-  - go get github.com/mdomke/git-semver@master
+  - go install -v github.com/mdomke/git-semver@master
   - git-semver -prefix v > `pwd`/.version
   # get build/ target environment
   - export VERSION=$(cat `pwd`/.version)
   - $(pwd)/.ci/scripts/setEnvironment.sh
   - export BUILD_ENVIRONMENT=$(cat `pwd`/ENVIRONMENT)
-  # generate GoLang assets
-  - make depends assets
   - make build-dev
   artifacts:
     expire_in: 1 hour
     paths:
-    - internal/assets.go
     - .version
     - ENVIRONMENT
 
@@ -62,7 +59,6 @@ build:
   artifacts:
     expire_in: 1 hour
     paths:
-    - internal/assets.go
     - dist/
     - .version
     - ENVIRONMENT
@@ -98,7 +94,6 @@ release:
   artifacts:
     expire_in: 1 hour
     paths:
-    - internal/assets.go
     - dist/
     - .version
     - ENVIRONMENT

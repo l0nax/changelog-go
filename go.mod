@@ -1,6 +1,6 @@
 module gitlab.com/l0nax/changelog-go
 
-go 1.14
+go 1.16
 
 require (
 	github.com/blang/semver/v4 v4.0.0
