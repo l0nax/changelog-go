@@ -11,13 +11,13 @@ import (
 // RegisterAll() registers all (defined) Changelog Entry Types
 func RegisterAll() {
 	// --- Initialize base Pointer to Types --- //
-	var added entry.ChangeEntry = &entries.Entry_Added{}
-	var fixed entry.ChangeEntry = &entries.Entry_Fixed{}
-	var changed entry.ChangeEntry = &entries.Entry_Changed{}
-	var deprecated entry.ChangeEntry = &entries.Entry_Deprecated{}
-	var removed entry.ChangeEntry = &entries.Entry_Removed{}
-	var security entry.ChangeEntry = &entries.Entry_Security{}
-	var other entry.ChangeEntry = &entries.Entry_Other{}
+	var added entry.ChangeEntry = entries.NewBasicEntry("Added", "New Feature", 0)
+	var fixed entry.ChangeEntry = entries.NewBasicEntry("Fixed", "Bug Fixed", 1)
+	var changed entry.ChangeEntry = entries.NewBasicEntry("Changed", "Feature change", 2)
+	var deprecated entry.ChangeEntry = entries.NewBasicEntry("Deprecated", "New deprecation", 3)
+	var removed entry.ChangeEntry = entries.NewBasicEntry("Removed", "Feature removal", 4)
+	var security entry.ChangeEntry = entries.NewBasicEntry("Security", "Security fix", 5)
+	var other entry.ChangeEntry = entries.NewBasicEntry("Other", "Other", 6)
 
 	// --- Register --- //
 	_ = EntryT.RegisterEntryType(added.NewChangeType())

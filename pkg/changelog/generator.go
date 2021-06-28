@@ -60,9 +60,7 @@ func GenerateChangelog(r *Release) {
 		}
 
 		// add change-entry to the list of changes
-		for _, tChange := range changeEntries {
-			newEntry.Changes = append(newEntry.Changes, tChange)
-		}
+		newEntry.Changes = append(newEntry.Changes, changeEntries...)
 
 		log.Debugf("Adding new Entries: %# v\n", pretty.Formatter(newEntry))
 
