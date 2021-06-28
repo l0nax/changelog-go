@@ -19,9 +19,17 @@ builds:
     - arm
     - arm64
 
-  ldflags:
-    - -X gitlab.com/l0nax/changelog-go/pkg/version.Version={{.Env.VERSION}} -X gitlab.com/l0nax/changelog-go/pkg/version.Hash={{.Commit}} -X gitlab.com/l0nax/changelog-go/pkg/version.BuildTime={{.Env.BUILD_DATE}} -X gitlab.com/l0nax/changelog-go/pkg/version.Environment={{.Env.BUILD_ENVIRONMENT}}
+  env:
+    - CGO_ENABLED=0
 
+  flags:
+    - -a
+  ldflags:
+    - -X gitlab.com/l0nax/changelog-go/pkg/version.Version={{.Env.VERSION}}
+    - -X gitlab.com/l0nax/changelog-go/pkg/version.Hash={{.Commit}}
+    - -X gitlab.com/l0nax/changelog-go/pkg/version.BuildTime={{.Env.BUILD_DATE}}
+    - -X gitlab.com/l0nax/changelog-go/pkg/version.Environment={{.Env.BUILD_ENVIRONMENT}}
+    - -extldflags "-static"
 
 snapcrafts:
   - publish: true
