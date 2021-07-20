@@ -76,11 +76,15 @@ func AddEntry(entry entry.Entry) {
 func GetReleasedEntries(r *Release) error {
 	// we need to APPEND all new Release data!
 
-	basePath := path.Join(internal.GitPath, viper.GetString("changelog.entryPath"))
-	releasedPath := path.Join(basePath, "released")
+	basePath := filepath.Join(internal.GitPath, viper.GetString("changelog.entryPath"))
+	releasedPath := filepath.Join(basePath, "released")
 
 	// get over all released Changelog-Releases and parse them
 	err := filepath.Walk(releasedPath, func(_path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+
 		log.Debugf("Working on/in '%s'\n", _path)
 
 		// skip if entity is not directory or start path
@@ -104,25 +108,25 @@ func GetReleasedEntries(r *Release) error {
 			return err
 		}
 
-		// get ReleaseInfo file and remove it from the map
-		releaseInfo, ok := files[path.Join(_path, "ReleaseInfo")]
-		if !ok {
-			log.Fatalf("No 'ReleaseInfo' file was found (version '%s')!\n",
-				info.Name())
+		{
+			// get ReleaseInfo file and remove it from the map
+			releaseInfo, ok := files[filepath.Join(_path, "ReleaseInfo")]
+			if !ok {
+				log.Fatalf("No 'ReleaseInfo' file was found (version '%s')!\n",
+					info.Name())
+			}
+
+			delete(files, filepath.Join(_path, "ReleaseInfo"))
+
+			_releaseInfo := &ReleaseInfo{}
+			err = yaml.Unmarshal(releaseInfo, _releaseInfo)
+			if err != nil {
+				return err
+			}
+
+			release.Info = _releaseInfo
+			release.Collapse = _releaseInfo.IsPreRelease
 		}
-
-		delete(files, path.Join(_path, "ReleaseInfo"))
-
-		_releaseInfo := &ReleaseInfo{}
-		err = yaml.Unmarshal(releaseInfo, _releaseInfo)
-		if err != nil {
-			return err
-		}
-
-		release.Info = _releaseInfo
-
-		// clear _releaseInfo since we do not need it anymore
-		_releaseInfo = nil
 
 		// skip this release if its a pre-release and 'deletePreRelease'
 		// is set
@@ -180,6 +184,7 @@ func GetReleasedEntries(r *Release) error {
 	sort.SliceStable(r.Releases, func(i, j int) bool {
 		_i, _ := semver.Make(r.Releases[i].Version)
 		_j, _ := semver.Make(r.Releases[j].Version)
+
 		return _i.GT(_j)
 	})
 
