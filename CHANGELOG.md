@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 
+## 1.3.2 (2021-07-20)
+
+### Fixed (1 change)
+- Fix bug where existing `ReleaseInfo` file of a release isn't processed by `changelog-go`
+
+
 ## 1.3.1 (2021-06-28)
 
 ### Fixed (1 change)
