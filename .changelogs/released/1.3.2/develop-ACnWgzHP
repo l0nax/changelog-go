@@ -1,0 +1,2 @@
+title: Fix bug where existing `ReleaseInfo` file of a release isn't processed by `changelog-go`
+type: 1
