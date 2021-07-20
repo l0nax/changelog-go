@@ -29,6 +29,7 @@ import (
 
 	"gitlab.com/l0nax/changelog-go/cmd"
 	"gitlab.com/l0nax/changelog-go/internal"
+	"gitlab.com/l0nax/changelog-go/internal/log"
 	"gitlab.com/l0nax/changelog-go/pkg/version"
 )
 
@@ -47,6 +48,8 @@ func main() {
 			" 'changelog update' or 'snap refresh changelog' " +
 			"to update to the latest version.\n\n")
 	}
+
+	log.Log.Debug("changelog-go. Version [%s] Commit [%s]", version.Version, version.Hash)
 
 	// NOTE: We are currently disabling the AUTOMATIC update, because we
 	//	 have now the 'update' subcommand. So we do not force clients
