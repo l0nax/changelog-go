@@ -23,6 +23,7 @@ package main
 
 import (
 	"fmt"
+	"os"
 	"time"
 
 	"github.com/getsentry/sentry-go"
@@ -44,8 +45,8 @@ func main() {
 	// if its offline.
 	if internal.CheckUpdate(version.Version,
 		"https://update.l0nax.org/changelog-go") {
-		fmt.Printf("[UPDATE] There is a new version available, run" +
-			" 'changelog update' or 'snap refresh changelog' " +
+		fmt.Fprintf(os.Stderr, "[UPDATE] There is a new version available, run"+
+			" 'changelog update' or 'snap refresh changelog' "+
 			"to update to the latest version.\n\n")
 	}
 

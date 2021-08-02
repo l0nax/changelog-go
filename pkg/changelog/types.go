@@ -37,13 +37,7 @@ type TplEntries struct {
 	Changes       []*entry.Entry // Contains the raw Change-Entry struct
 }
 
-// this Type is the default CHANGELOG.md Scheme
-const defaultChangelogScheme = `# Changelog
-
-All notable changes to this project will be documented in this file.
-
-The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
-
+const defaultOneRelease = `
 {{ with .Releases -}}
 {{ range . }}
 ## {{ .Version }} ({{ .Info.ReleaseDate }})
@@ -67,4 +61,14 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 {{- /* A empty line to provide a Consistent Layout */ -}}
 
 {{- end -}}
-{{- end -}}`
+{{- end -}}
+`
+
+// defaultChangelogScheme is the default CHANGELOG.md Scheme
+const defaultChangelogScheme = `# Changelog
+
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
+
+` + defaultOneRelease
