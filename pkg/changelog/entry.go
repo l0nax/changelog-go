@@ -188,7 +188,7 @@ func GetReleasedEntries(r *Release) error {
 		return _i.GT(_j)
 	})
 
-	log.Infof("Sorting tooked %s\n", time.Since(start))
+	log.Debugf("Sorting tooked %s\n", time.Since(start))
 
 	return nil
 }

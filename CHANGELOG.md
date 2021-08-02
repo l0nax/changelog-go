@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 
+## 1.4.0 (2021-08-02)
+
+### Added (1 change)
+- Add `ci-get` command to render only latest release
+
+
 ## 1.3.2 (2021-07-20)
 
 ### Fixed (1 change)

@@ -19,6 +19,19 @@ import (
 	"gitlab.com/l0nax/changelog-go/pkg/tools"
 )
 
+func PrintChangesFromLatest() {
+	r := Release{}
+
+	// read old releases into Release struct
+	err := GetReleasedEntries(&r)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	r.Releases = []TplRelease{r.Releases[0]}
+	fmt.Println(processOneChangelogTmpl(&r))
+}
+
 // GenerateChangelog will generate a new CHANGELOG.md
 func GenerateChangelog(r *Release) {
 	// load all unreleased Files
@@ -216,6 +229,23 @@ func processChangelogTmpl(r *Release) string {
 	}
 
 	tmpl, err := template.New("changelog").Parse(tmplStr)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var tmplOut bytes.Buffer
+
+	err = tmpl.Execute(&tmplOut, r)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return tmplOut.String()
+}
+
+// processOneChangelogTmpl templates the changelog entries for one specific release.
+func processOneChangelogTmpl(r *Release) string {
+	tmpl, err := template.New("one-changelog").Parse(defaultOneRelease)
 	if err != nil {
 		log.Fatal(err)
 	}
