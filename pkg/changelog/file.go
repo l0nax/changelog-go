@@ -17,7 +17,11 @@ import (
 func createReleaseDir(version string) error {
 	basePath := path.Join(internal.GitPath, viper.GetString("changelog.entryPath"))
 	releasedPath := path.Join(basePath, "released", version)
-	// unreleased := path.Join(basePath, "unreleased")
+	unreleased := path.Join(basePath, "unreleased")
+
+	if _, err := os.Stat(unreleased); !os.IsNotExist(err) {
+		return err
+	}
 
 	log.Debugf("New release path: '%s'\n", releasedPath)
 
