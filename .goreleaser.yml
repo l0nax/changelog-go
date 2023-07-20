@@ -79,10 +79,10 @@ brews:
       name: changelog-go
       branch: development
 
-      token: "{{ .Env.GITLAB_TOKEN }}"
+      token: "{{ .Env.GITLAB_COM_TOKEN }}"
 
       pull_request:
-        enabled: true
+        enabled: false
         draft: true
 
         base:
