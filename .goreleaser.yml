@@ -82,7 +82,7 @@ brews:
       token: "{{ .Env.GITLAB_COM_TOKEN }}"
 
       pull_request:
-        enabled: false
+        enabled: true
         draft: true
 
         base:
