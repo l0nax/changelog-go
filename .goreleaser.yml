@@ -21,14 +21,6 @@ builds:
   ldflags:
     - -X gitlab.com/l0nax/changelog-go/pkg/version.Version={{.Env.VERSION}} -X gitlab.com/l0nax/changelog-go/pkg/version.Hash={{.Commit}} -X gitlab.com/l0nax/changelog-go/pkg/version.BuildTime={{.Env.BUILD_DATE}} -X gitlab.com/l0nax/changelog-go/pkg/version.Environment={{.Env.BUILD_ENVIRONMENT}}
 
-archives:
-- replacements:
-    darwin: Darwin
-    linux: Linux
-    windows: Windows
-    386: i386
-    amd64: x86_64
-
 checksum:
   name_template: 'checksums.txt'
 
@@ -39,29 +31,29 @@ signs:
 - cmd: gpg2
   artifacts: all
 
-nfpms:
-- replacements:
-    386: x86_64
+    #nfpms:
+    #- replacements:
+    #    386: x86_64
+    #
+    #  vendor: l0nax
+    #  homepage: https://gitlab.com/l0nax
+    #
+    #  maintainer: Francesco Emanuel Bennici <benniciemanuel78@gmail.com>
+    #  description: Changelog management tool
+    #  license: MIT
+    #
+    #  formats:
+    #    - deb
+    #    - rpm
 
-  vendor: l0nax
-  homepage: https://gitlab.com/l0nax
-
-  maintainer: Francesco Emanuel Bennici <benniciemanuel78@gmail.com>
-  description: Changelog management tool
-  license: MIT
-
-  formats:
-    - deb
-    - rpm
-
-snapcrafts:
-- publish: true
-
-  summary: CLI to create and manage Changelog even on big projects
-  description: changelog is a CLI that helps a team/ person to keep track of all changes and also helps creating (and managing) a readable CHANGELOG.md
-
-  grade: stable
-  license: MIT
+    #snapcrafts:
+    #- publish: true
+    #
+    #  summary: CLI to create and manage Changelog even on big projects
+    #  description: changelog is a CLI that helps a team/ person to keep track of all changes and also helps creating (and managing) a readable CHANGELOG.md
+    #
+    #  grade: stable
+    #  license: MIT
 
 changelog:
   sort: asc
@@ -69,3 +61,31 @@ changelog:
     exclude:
     - '^docs:'
     - '^test:'
+
+brews:
+  - name: changelog-go
+    ids:
+      - default
+
+    caveats: "See README.md"
+    license: "MIT"
+    skip_upload: false
+
+    dependencies:
+      - name: git
+
+    repository:
+      owner: l0nax
+      name: changelog-go
+      branch: development
+
+      token: "{{ .Env.GITLAB_TOKEN }}"
+
+      pull_request:
+        enabled: true
+        draft: true
+
+        base:
+          owner: l0nax
+          name: changelog-go
+          branch: development
