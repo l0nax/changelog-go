@@ -59,6 +59,13 @@ You can also install `changelog-go` via a shell script:
 ~] curl https://gitlab.com/l0nax/changelog-go/raw/master/install.sh | bash
 ```
 
+### Homebrew
+
+```bash
+brew tap l0nax/changelog-go https://gitlab.com/l0nax/changelog-go 
+brew install changelog-go
+```
+
 ### RPM/ Deb
 
 ```bash
