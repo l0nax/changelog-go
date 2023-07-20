@@ -77,7 +77,7 @@ brews:
     repository:
       owner: l0nax
       name: changelog-go
-      branch: development
+      branch: develop
 
       token: "{{ .Env.GITLAB_COM_TOKEN }}"
 
@@ -88,4 +88,4 @@ brews:
         base:
           owner: l0nax
           name: changelog-go
-          branch: development
+          branch: develop
