@@ -7,15 +7,14 @@ import (
 
 	"github.com/pkg/errors"
 
-	"github.com/spf13/viper"
-
 	"gitlab.com/l0nax/changelog-go/internal"
+	"gitlab.com/l0nax/changelog-go/internal/config"
 )
 
 // createReleaseDir creates the needed directory structure for all Changelog
 // releases
 func createReleaseDir(version string) error {
-	basePath := path.Join(internal.GitPath, viper.GetString("changelog.entryPath"))
+	basePath := path.Join(internal.GitPath, config.C.Changelog.EntryPath)
 	releasedPath := path.Join(basePath, "released", version)
 	unreleased := path.Join(basePath, "unreleased")
 
@@ -42,7 +41,7 @@ func createReleaseDir(version string) error {
 // moveToReleaseFolder moves all unreleased changelog-entry files to the specifc
 // release directory.
 func moveToReleaseFolder(version string) error {
-	basePath := path.Join(internal.GitPath, viper.GetString("changelog.entryPath"))
+	basePath := path.Join(internal.GitPath, config.C.Changelog.EntryPath)
 	releasedPath := path.Join(basePath, "released", version)
 	unreleased := path.Join(basePath, "unreleased")
 

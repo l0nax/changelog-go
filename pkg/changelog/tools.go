@@ -8,9 +8,8 @@ import (
 	"path"
 	"path/filepath"
 
-	"github.com/spf13/viper"
-
 	"gitlab.com/l0nax/changelog-go/internal"
+	"gitlab.com/l0nax/changelog-go/internal/config"
 	"gitlab.com/l0nax/changelog-go/pkg/entry"
 	"gitlab.com/l0nax/changelog-go/pkg/tools"
 )
@@ -19,7 +18,7 @@ import (
 // if not it will create and initialize it.
 func CheckDir() {
 	// get Changelog data directory
-	dataDir := viper.GetString("changelog.entryPath")
+	dataDir := config.C.Changelog.EntryPath
 	if len(dataDir) == 0 {
 		panic("'changelog.entryPath' must be specified!")
 	}
@@ -53,7 +52,7 @@ func GetEntries(r *Release) error {
 	// First check if everything is ok
 	CheckDir()
 
-	unreleasedPath := path.Join(internal.GitPath, viper.GetString("changelog.entryPath"), "unreleased")
+	unreleasedPath := path.Join(internal.GitPath, config.C.Changelog.EntryPath, "unreleased")
 
 	files, err := ReadEntryFiles(unreleasedPath)
 	if err != nil {
@@ -71,7 +70,7 @@ func GetEntries(r *Release) error {
 
 // MoveEntries will move all unreleased Entries to 'released/{{ .Version }}'
 func MoveEntries(version string) error {
-	changelogPath := path.Join(internal.GitPath, viper.GetString("changelog.entryPath"))
+	changelogPath := path.Join(internal.GitPath, config.C.Changelog.EntryPath)
 	unreleasedPath := path.Join(changelogPath, "unreleased")
 	releasedPath := path.Join(changelogPath, "released")
 	verPath := path.Join(releasedPath, version)

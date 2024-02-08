@@ -25,14 +25,13 @@ import (
 	"fmt"
 	"os"
 	"path"
+	"path/filepath"
 
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 
 	"gitlab.com/l0nax/changelog-go/internal"
-
-	"github.com/mitchellh/go-homedir"
-	"github.com/spf13/viper"
+	"gitlab.com/l0nax/changelog-go/internal/config"
 )
 
 const cfgFileName = ".changelog-go.yaml"
@@ -92,29 +91,10 @@ func initConfig() {
 		os.Exit(1)
 	}
 
-	if cfgFile != "" {
-		// Use config file from the flag.
-		viper.SetConfigFile(cfgFile)
-	} else {
-		// Find home directory.
-		home, err := homedir.Dir()
-		if err != nil {
-			fmt.Println(err)
-			os.Exit(1)
-		}
-
-		viper.AddConfigPath(internal.GitPath)
-
-		// Search config in home directory with name ".changelog-go" (without extension).
-		viper.AddConfigPath(home)
-		viper.SetConfigName(".changelog-go")
-	}
-
-	viper.AutomaticEnv() // read in environment variables that match
-
-	// If a config file is found, read it in.
-	if err := viper.ReadInConfig(); err != nil {
-		fmt.Printf("Unable to read config: %+v\n", err)
+	err = config.Load(filepath.Join(internal.GitPath, ".changelog-go.yaml"))
+	if err != nil {
+		fmt.Printf("Unable to load the config. Did you forget to run 'changelog init'?\n")
+		fmt.Printf("%+v\n", err)
 		os.Exit(1)
 	}
 }

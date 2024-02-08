@@ -27,8 +27,8 @@ import (
 	"time"
 
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 
+	"gitlab.com/l0nax/changelog-go/internal/config"
 	"gitlab.com/l0nax/changelog-go/pkg/changelog"
 )
 
@@ -59,7 +59,7 @@ Folder.`,
 		var isPreRelrease bool
 
 		// check if Version is a pre-release
-		if viper.GetBool("preRelease.detect") {
+		if config.C.PreRelease.Detect {
 			// check if regex returned data
 			if len(newRelease.Info.Version) == 0 {
 				log.Info("NOTE: Automatically pre-release detection doesn't work with given version string.")

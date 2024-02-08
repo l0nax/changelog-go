@@ -55,22 +55,6 @@ func (e *EntryTypes) RegisterEntryType(et *entry.ChangeEntry) error {
 	return nil
 }
 
-func (e *EntryTypes) DeRegisterEntryType(et *entry.ChangeEntry) error {
-	// find Entry Type
-	for i := range e.entryTypes {
-		// Short Type Name
-		if ((*e.entryTypes[i]).GetShortTypeName() == (*et).GetShortTypeName()) &&
-			((*e.entryTypes[i]).GetTypeDescription() == (*et).GetTypeDescription()) &&
-			((*e.entryTypes[i]).GetTypeID() == (*et).GetTypeID()) {
-			e.entryTypes = append(e.entryTypes[:i], e.entryTypes[i+1:]...)
-			return nil
-		}
-	}
-
-	// TODO: Return custom Error
-	return nil
-}
-
 func (e *EntryTypes) SearchEntryType(se *SEntryType) (*entry.ChangeEntry, error) {
 	// find Entry Type
 	for i := range e.entryTypes {

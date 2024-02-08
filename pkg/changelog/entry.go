@@ -11,11 +11,11 @@ import (
 	"time"
 
 	"github.com/blang/semver/v4"
-	"github.com/spf13/viper"
 	git "gopkg.in/src-d/go-git.v4"
 	"gopkg.in/yaml.v2"
 
 	"gitlab.com/l0nax/changelog-go/internal"
+	"gitlab.com/l0nax/changelog-go/internal/config"
 	"gitlab.com/l0nax/changelog-go/pkg/entry"
 	"gitlab.com/l0nax/changelog-go/pkg/gut"
 	"gitlab.com/l0nax/changelog-go/pkg/tools"
@@ -41,7 +41,7 @@ func AddEntry(entry entry.Entry) {
 	// replace all '/' with '_'
 	branchName = strings.ReplaceAll(branchName, "/", "_")
 
-	_path := path.Join(internal.GitPath, viper.GetString("changelog.entryPath"))
+	_path := path.Join(internal.GitPath, config.C.Changelog.EntryPath)
 	_path = path.Join(_path, "unreleased")
 
 	// check if path exists
@@ -76,7 +76,7 @@ func AddEntry(entry entry.Entry) {
 func GetReleasedEntries(r *Release) error {
 	// we need to APPEND all new Release data!
 
-	basePath := filepath.Join(internal.GitPath, viper.GetString("changelog.entryPath"))
+	basePath := filepath.Join(internal.GitPath, config.C.Changelog.EntryPath)
 	releasedPath := filepath.Join(basePath, "released")
 
 	// get over all released Changelog-Releases and parse them
@@ -131,7 +131,7 @@ func GetReleasedEntries(r *Release) error {
 		// skip this release if its a pre-release and 'deletePreRelease'
 		// is set
 		if release.Info.IsPreRelease &&
-			viper.GetBool("preRelease.deletePreRelease") {
+			config.C.PreRelease.DeletePreRelease {
 			log.Debugf("Skipping pre-release '%s' because 'deletePreRelease' is set to 'true'\n",
 				release.Version)
 			return nil

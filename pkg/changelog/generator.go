@@ -12,10 +12,10 @@ import (
 
 	"github.com/kr/pretty"
 	"github.com/pkg/errors"
-	"github.com/spf13/viper"
 	"gopkg.in/yaml.v2"
 
 	"gitlab.com/l0nax/changelog-go/internal"
+	"gitlab.com/l0nax/changelog-go/internal/config"
 	"gitlab.com/l0nax/changelog-go/pkg/tools"
 )
 
@@ -163,7 +163,7 @@ func sortRawChangeLogEntries(r *TplEntries) {
 
 // prepareReleaseDir creates all needed files and directory for the release
 func prepareReleaseDir(info ReleaseInfo) error {
-	basePath := path.Join(internal.GitPath, viper.GetString("changelog.entryPath"))
+	basePath := path.Join(internal.GitPath, config.C.Changelog.EntryPath)
 	releasedPath := path.Join(basePath, "released", info.Version[0])
 
 	// create 'ReleaseInfo' file
@@ -214,8 +214,8 @@ func processChangelogTmpl(r *Release) string {
 	var tmplStr string
 
 	// use default changelog scheme/ template if `changelog.customScheme` is set to false
-	if viper.GetBool("changelog.customScheme") {
-		fp := viper.GetString("changelog.changelog")
+	if config.C.Changelog.CustomScheme {
+		fp := config.C.Changelog.Changelog
 		log.Infof("Custom CHANGELOG.md template has been enabled. File path: %s\n", fp)
 
 		f, err := ioutil.ReadFile(fp)

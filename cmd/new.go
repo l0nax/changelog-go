@@ -30,9 +30,9 @@ import (
 
 	"github.com/kr/pretty"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 
 	"gitlab.com/l0nax/changelog-go/internal"
+	"gitlab.com/l0nax/changelog-go/internal/config"
 	"gitlab.com/l0nax/changelog-go/pkg/changelog"
 	"gitlab.com/l0nax/changelog-go/pkg/entry"
 	"gitlab.com/l0nax/changelog-go/pkg/gut"
@@ -41,10 +41,9 @@ import (
 // newCmd represents the new command
 var newCmd = &cobra.Command{
 	Use:   "new <title>",
-	Short: "Create a new Changelog-Entry",
-	Long: `"new" creates a new Changelog-Entry so you can easily commit
-your entry.`,
-	Args: cobra.ExactArgs(1),
+	Short: "Create a new CHANGELOG entry",
+	Long:  `"new" creates a new CHANGELOG entry`,
+	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		// configuration is required
 		initConfig()
@@ -53,7 +52,7 @@ your entry.`,
 		title := args[0]
 
 		if len(title) == 0 {
-			log.Fatalln("The Title of your Change MUST be specified!")
+			log.Fatalln("Please describe the change")
 		}
 
 		// check if needed Directories exists
@@ -63,7 +62,7 @@ your entry.`,
 		var err error
 
 		// get Author if enabled in Config
-		if viper.GetBool("entry.author") {
+		if config.C.Entry.Author {
 			log.Debug("'entry.author' is enabled, so the Author will be grabbed and used.")
 
 			// get the Author
