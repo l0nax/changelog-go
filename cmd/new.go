@@ -1,6 +1,8 @@
 package cmd
 
 import (
+	"fmt"
+
 	"github.com/urfave/cli/v2"
 
 	"gitlab.com/l0nax/changelog-go/internal/tui/create"
@@ -26,7 +28,7 @@ func newAction(c *cli.Context) error {
 		return err
 	}
 
-	_ = input
+	fmt.Printf("* Got: %+v\n", input)
 
 	return nil
 }
