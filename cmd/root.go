@@ -56,6 +56,7 @@ file.`,
 		},
 		Commands: []*cli.Command{
 			newNewCmd(),
+			newInitCmd(),
 		},
 	}
 
