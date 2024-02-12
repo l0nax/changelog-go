@@ -6,6 +6,7 @@ import (
 
 	"github.com/knadh/koanf/parsers/yaml"
 	"github.com/knadh/koanf/providers/file"
+	"github.com/knadh/koanf/providers/structs"
 	"github.com/knadh/koanf/v2"
 	"github.com/pkg/errors"
 	"go.l0nax.org/typact"
@@ -51,7 +52,7 @@ type Config struct {
 	// Entry configures a single changelog entry.
 	Entry struct {
 		// Types are the different change types which are vailable.
-		Types []ChangeType
+		Types []ChangeType `koanf:"types"`
 	} `koanf:"entry"`
 }
 
@@ -103,7 +104,7 @@ var Default = Config{
 		FoldPreReleases:  false,
 	},
 	Entry: struct {
-		Types []ChangeType
+		Types []ChangeType "koanf:\"types\""
 	}{
 		Types: []ChangeType{
 			{
@@ -149,6 +150,10 @@ var Default = Config{
 // of [Default].
 func CreateDefault(path string) error {
 	k := koanf.New(".")
+
+	if err := k.Load(structs.Provider(Default, "koanf"), nil); err != nil {
+		return err
+	}
 
 	raw, err := k.Marshal(yaml.Parser())
 	if err != nil {

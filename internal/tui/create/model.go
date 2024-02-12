@@ -3,11 +3,11 @@ package create
 import (
 	"slices"
 
-	"gitlab.com/l0nax/changelog-go/internal/config"
-
 	"github.com/charmbracelet/bubbles/list"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
+
+	"gitlab.com/l0nax/changelog-go/internal/config"
 )
 
 type Entry struct {
@@ -59,7 +59,7 @@ func Run() (Entry, error) {
 	rawItems = slices.DeleteFunc(rawItems, func(tt config.ChangeType) bool {
 		return tt.Hidden
 	})
-	items := make([]item, len(rawItems))
+	items := make([]list.Item, len(rawItems))
 
 	for i := range rawItems {
 		items[i] = item{
@@ -73,10 +73,12 @@ func Run() (Entry, error) {
 	m.list.Title = "Select a change type"
 
 	p := tea.NewProgram(m, tea.WithAltScreen())
-	if err := p.Run(); err != nil {
+	if _, err := p.Run(); err != nil {
 		return Entry{}, err
 	}
 
 	// TODO: return real data
 	return Entry{}, nil
 }
+
+var _ list.Item = (*item)(nil)

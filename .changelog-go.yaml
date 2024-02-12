@@ -1,49 +1,46 @@
----
-# PLEASE DO NOT CHANGE THIS VALUE!
-# IT'S NEEDED TO PROVIDE BACKWARD-COMPATIBILITY!!
-version: "1"
+version: "2"
 
-preRelrease:
-        # if you set 'detect' to true, changelog-go will automatically detect
-        # if the released Version is an pre-release Version, so a User or CI/CD
-        # has not to manually set the pre-release Flag.
-        # To detect such pre-releases changelog-go is using the SemVer
-        # definition of a pre-release.
-        #
-        # Example:
-        #       1.0.0-alpha.1
-        #       1.0.0-beta
-        #       1.0.0-beta.2
-        #       1.0.0-rc.1
-        detect: true
+changelog_dir: .changelogs
 
-        # setting 'deletePreRelease' to true will cause changelog-go to delete
-        # the written Pre-Releases from the CHANGELOG.md file when releasing an
-        # non-pre-release Version (eg. "1.0.0").
-        deletePreRelease: false
-
-        # 'foldPreReleases' will "fold" the Pre-Release entries if you release
-        # an non pre-release.
-        # To get this Feature working changelog-go uses the HTML tag "<details>"
-        foldPreReleases: true
-
-# entry defines the Changelog Entry which will be written down to disk (the
-# single Changelog Entry File).
 entry:
-        # 'author' enables if changelog-go should grab the author and write it
-        # down to the Changelog-Entry.
-        # This can be (later) used to generate statics.
-        author: true
+    types:
+        - description: "null"
+          group_title: Added
+          hidden: false
+          id: new_feat
+          title: New Feature
+        - description: "null"
+          group_title: Fixed
+          hidden: false
+          id: bug_fix
+          title: Bug Fixed
+        - description: "null"
+          group_title: Changed
+          hidden: false
+          id: feat_change
+          title: Feature change
+        - description: "null"
+          group_title: Deprecated
+          hidden: false
+          id: deprecate
+          title: Deprecation
+        - description: "null"
+          group_title: Removed
+          hidden: false
+          id: rem_feat
+          title: Feature removal
+        - description: "null"
+          group_title: Security
+          hidden: false
+          id: security
+          title: Security fix
+        - description: "null"
+          group_title: Other
+          hidden: false
+          id: other
+          title: Other
 
-
-# changelog represents the general Configuration about the resulting
-# CHANGELOG.md.
-changelog:
-        # entryPath sets the Path where changelog-go saves and searches the
-        # Changelog Entries.
-        # The Path is an relative path and the beginning is $GOROOT
-        # If the directory does not exists, changelog-go will create it.
-        entryPath: ".changelogs"
-
-        # set the Path where the Changelog Output will be stored.
-        changelog: "CHANGELOG.md"
+preRelease:
+    deletePreRelease: false
+    detect: true
+    foldPreReleases: false

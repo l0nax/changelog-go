@@ -17,6 +17,10 @@ func newNewCmd() *cli.Command {
 }
 
 func newAction(c *cli.Context) error {
+	if err := loadConfig(); err != nil {
+		return err
+	}
+
 	input, err := create.Run()
 	if err != nil {
 		return err
