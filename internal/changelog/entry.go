@@ -1,6 +1,13 @@
 package changelog
 
-import "go.l0nax.org/typact"
+import (
+	"os"
+
+	"github.com/knadh/koanf/parsers/yaml"
+	"github.com/knadh/koanf/providers/structs"
+	"github.com/knadh/koanf/v2"
+	"go.l0nax.org/typact"
+)
 
 // Entry is a single change entry.
 type Entry struct {
@@ -11,4 +18,31 @@ type Entry struct {
 	Title  string `koanf:"title"`
 	// Author is the author, if defined
 	Author typact.Option[string] `koanf:"author"`
+}
+
+// SaveToFile saves e to the given path.
+func (e Entry) SaveToFile(path string) error {
+	file, err := os.OpenFile(path, os.O_RDWR|os.O_CREATE|os.O_EXCL, 0666)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	k := koanf.New(".")
+
+	if err = k.Load(structs.Provider(e, "koanf"), nil); err != nil {
+		return err
+	}
+
+	raw, err := k.Marshal(yaml.Parser())
+	if err != nil {
+		return err
+	}
+
+	_, err = file.Write(raw)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

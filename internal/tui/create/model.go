@@ -1,6 +1,7 @@
 package create
 
 import (
+	"log/slog"
 	"slices"
 	"strings"
 
@@ -72,6 +73,8 @@ func (m model) handleEnter() (tea.Model, tea.Cmd) {
 
 		entry := m.entryList.SelectedItem().(entryItem)
 		m.selectedType = entry.ct
+
+		slog.Debug("Selected change type", slog.Any("change_type", m.selectedType))
 
 		return m, tea.Quit
 	}

@@ -1,10 +1,17 @@
 package cmd
 
 import (
-	"fmt"
+	"log/slog"
+	"os"
+	"path/filepath"
+	"strconv"
+	"time"
 
 	"github.com/urfave/cli/v2"
+	"go.l0nax.org/typact"
 
+	"gitlab.com/l0nax/changelog-go/internal/changelog"
+	"gitlab.com/l0nax/changelog-go/internal/config"
 	"gitlab.com/l0nax/changelog-go/internal/tui/create"
 )
 
@@ -28,7 +35,23 @@ func newAction(c *cli.Context) error {
 		return err
 	}
 
-	fmt.Printf("* Got: %+v\n", input)
+	entry := changelog.Entry{
+		ChangeTypeID: input.Type.ID,
+		Title:        c.Args().First(),
+		Author:       typact.None[string](), // TODO: Support author
+	}
+
+	dir := filepath.Join(config.C.ChangelogDir, "unreleased")
+	if err = os.MkdirAll(dir, 0777); err != nil {
+		return err
+	}
+
+	path := filepath.Join(dir, strconv.FormatInt(time.Now().UnixMilli(), 10))
+	slog.Debug("Saving new entry in file", slog.String("file_path", path))
+
+	if err = entry.SaveToFile(path); err != nil {
+		return err
+	}
 
 	return nil
 }
