@@ -6,13 +6,16 @@ require (
 	github.com/charmbracelet/bubbles v0.18.0
 	github.com/charmbracelet/bubbletea v0.25.0
 	github.com/charmbracelet/lipgloss v0.9.1
+	github.com/davecgh/go-spew v1.1.1
 	github.com/knadh/koanf/parsers/yaml v0.1.0
 	github.com/knadh/koanf/providers/file v0.1.0
 	github.com/knadh/koanf/providers/structs v0.1.0
 	github.com/knadh/koanf/v2 v2.1.0
+	github.com/lmittmann/tint v1.0.4
+	github.com/mattn/go-isatty v0.0.18
 	github.com/pkg/errors v0.9.1
 	github.com/urfave/cli/v2 v2.27.1
-	go.l0nax.org/typact v0.1.0
+	go.l0nax.org/typact v0.1.1-0.20240216162844-3087c9cdfdbe
 )
 
 require (
@@ -25,7 +28,6 @@ require (
 	github.com/go-viper/mapstructure/v2 v2.0.0-alpha.1 // indirect
 	github.com/knadh/koanf/maps v0.1.1 // indirect
 	github.com/lucasb-eyer/go-colorful v1.2.0 // indirect
-	github.com/mattn/go-isatty v0.0.18 // indirect
 	github.com/mattn/go-localereader v0.0.1 // indirect
 	github.com/mattn/go-runewidth v0.0.15 // indirect
 	github.com/mitchellh/copystructure v1.2.0 // indirect

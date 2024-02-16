@@ -1,6 +1,7 @@
 package changelog
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/knadh/koanf/parsers/yaml"
@@ -24,7 +25,7 @@ type Entry struct {
 	// the resulting changelog.
 	Title  string `koanf:"title"`
 	// Author is the author, if defined
-	Author typact.Option[string] `koanf:"author"`
+	Author typact.Option[string] `koanf:"author,omitempty"`
 }
 
 // SaveToFile saves e to the given path.
@@ -52,4 +53,21 @@ func (e Entry) SaveToFile(path string) error {
 	}
 
 	return nil
+}
+
+// LoadChangeType loads the change type information into the ChangeType
+// based on ChangeTypeID.
+// An error is returned if the defined change type could not be found.
+func (e *Entry) LoadChangeType() error {
+	for _, ct := range config.C.Entry.Types {
+		if ct.ID != e.ChangeTypeID {
+			continue
+		}
+
+		e.ChangeType = ct
+
+		return nil
+	}
+
+	return fmt.Errorf("unknown change type ID %q", e.ChangeTypeID)
 }

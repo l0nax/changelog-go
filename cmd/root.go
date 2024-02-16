@@ -7,6 +7,8 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/lmittmann/tint"
+	"github.com/mattn/go-isatty"
 	"github.com/urfave/cli/v2"
 
 	"gitlab.com/l0nax/changelog-go/internal/config"
@@ -34,6 +36,11 @@ file.`,
 				Aliases: []string{"log-level", "l"},
 				Value:   "info",
 			},
+			&cli.BoolFlag{
+				Name:  "no-color",
+				Usage: "Disables color output",
+				Value: false,
+			},
 		},
 		Before: func(c *cli.Context) error {
 			var lvl slog.Level
@@ -50,8 +57,11 @@ file.`,
 				return fmt.Errorf("unknown log level %q", c.String("level"))
 			}
 
-			logger := slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{
-				Level: lvl,
+			noColor := !isatty.IsTerminal(os.Stdout.Fd()) || c.Bool("no-color")
+
+			logger := slog.New(tint.NewHandler(os.Stdout, &tint.Options{
+				Level:   lvl,
+				NoColor: noColor,
 			}))
 			slog.SetDefault(logger)
 
@@ -60,11 +70,12 @@ file.`,
 		Commands: []*cli.Command{
 			newNewCmd(),
 			newInitCmd(),
+			newReleaseCmd(),
 		},
 	}
 
 	if err := app.Run(os.Args); err != nil {
-		slog.Error("An error occurred", err)
+		slog.Error("An error occurred", slog.Any("error", err))
 		os.Exit(1)
 	}
 }
