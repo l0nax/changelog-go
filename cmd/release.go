@@ -19,6 +19,8 @@ func newReleaseCmd() *cli.Command {
 func releaseAction(c *cli.Context) error {
 	if err := loadConfig(); err != nil {
 		return err
+	} else if err = checkVersion(); err != nil {
+		return err
 	}
 
 	released, err := changelog.ParseReleased()

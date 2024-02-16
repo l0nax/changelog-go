@@ -30,7 +30,7 @@ type Entry struct {
 
 // SaveToFile saves e to the given path.
 func (e Entry) SaveToFile(path string) error {
-	file, err := os.OpenFile(path, os.O_RDWR|os.O_CREATE|os.O_EXCL, 0666)
+	file, err := os.OpenFile(path, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0666)
 	if err != nil {
 		return err
 	}

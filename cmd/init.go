@@ -14,7 +14,13 @@ func newInitCmd() *cli.Command {
 	return &cli.Command{
 		Name:      "init",
 		UsageText: "Initializes changelog-go at the current CWD",
-		Action:    initAction,
+		Flags: []cli.Flag{
+			&cli.BoolFlag{
+				Name:  "force",
+				Usage: "Forces the creation of a new config file",
+			},
+		},
+		Action: initAction,
 	}
 }
 
@@ -32,5 +38,5 @@ func initAction(c *cli.Context) error {
 		return nil
 	}
 
-	return config.CreateDefault(filePath)
+	return config.CreateDefault(filePath, c.Bool("force"))
 }

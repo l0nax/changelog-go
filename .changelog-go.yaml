@@ -1,7 +1,4 @@
-version: "2"
-
 changelog_dir: .changelogs
-
 entry:
     types:
         - description: "null"
@@ -39,8 +36,9 @@ entry:
           hidden: false
           id: other
           title: Other
-
+output_path: "null"
 preRelease:
     deletePreRelease: false
     detect: true
     foldPreReleases: false
+version: "2"

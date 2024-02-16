@@ -148,7 +148,7 @@ var Default = Config{
 
 // CreateDefault creates a file at path with the contents
 // of [Default].
-func CreateDefault(path string) error {
+func CreateDefault(path string, force bool) error {
 	k := koanf.New(".")
 
 	if err := k.Load(structs.Provider(Default, "koanf"), nil); err != nil {
@@ -158,6 +158,10 @@ func CreateDefault(path string) error {
 	raw, err := k.Marshal(yaml.Parser())
 	if err != nil {
 		return err
+	}
+
+	if force {
+		_ = os.Remove(path)
 	}
 
 	fd, err := os.OpenFile(path, os.O_RDWR|os.O_CREATE|os.O_EXCL, 0666)

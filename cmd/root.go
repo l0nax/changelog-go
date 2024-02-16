@@ -71,6 +71,7 @@ file.`,
 			newNewCmd(),
 			newInitCmd(),
 			newReleaseCmd(),
+			newMigrateCmd(),
 		},
 	}
 
@@ -133,4 +134,12 @@ func findConfig() (string, error) {
 	}
 
 	return "", fmt.Errorf("unable to find config: did you forget to run `changelog-go init`?")
+}
+
+func checkVersion() error {
+	if !config.C.Version.IsValid() {
+		return nil
+	}
+
+	return fmt.Errorf("project is not migrated to v2. Please execute 'changelog migrate'")
 }
