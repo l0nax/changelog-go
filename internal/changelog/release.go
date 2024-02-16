@@ -11,3 +11,16 @@ type ReleaseInfo struct {
 	// or not.
 	IsPreRelease bool `koanf:"prerelease"`
 }
+
+// Release represents a single release.
+type Release struct {
+	// Info holds all the meta informations about the release.
+	Info ReleaseInfo
+	// Entries holds all the change entries.
+	Entries []Entry
+	// Collapse defines whether the release should be collapsed
+	// in the generated file or not.
+	//
+	// It is set to true based on the project configuration.
+	Collapse bool
+}
