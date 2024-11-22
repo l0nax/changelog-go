@@ -37,11 +37,6 @@ func releaseAction(c *cli.Context) error {
 		return err
 	}
 
-	released, err := changelog.ParseReleased()
-	if err != nil {
-		return err
-	}
-
 	rawVersion := c.Args().First()
 	if rawVersion == "" {
 		return errors.New("No version specified")
@@ -89,6 +84,18 @@ func releaseAction(c *cli.Context) error {
 	}
 
 	if err := release.Create(); err != nil {
+		return err
+	}
+
+	released, err := changelog.ParseReleased()
+	if err != nil {
+		return err
+	}
+
+	outputFile := config.C.OutputPath.UnwrapOr("CHANGELOG.md")
+
+	err = released.SaveToFile(outputFile)
+	if err != nil {
 		return err
 	}
 

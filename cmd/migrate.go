@@ -7,8 +7,11 @@ import (
 	"log/slog"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
+	"time"
 
+	"github.com/pkg/errors"
 	"github.com/urfave/cli/v2"
 	"go.l0nax.org/typact"
 
@@ -125,8 +128,17 @@ func migrateOldReleasedEntry(path string) error {
 		if entry.IsDir() {
 			continue
 		} else if entry.Name() == changelog.ReleaseInfoFileName {
+			infoPath := filepath.Join(path, entry.Name())
+
+			err = migrateReleaseInfoFile(infoPath)
+			if err != nil {
+				return errors.Wrapf(err, "unable to migrate ReleaseInfo file at %q", infoPath)
+			}
+
 			continue
 		}
+
+		fmt.Printf("-> %q\n", entry.Name())
 
 		if err := migrateOldChangeEntry(filepath.Join(path, entry.Name())); err != nil {
 			return err
@@ -137,6 +149,65 @@ func migrateOldReleasedEntry(path string) error {
 		slog.String("release_dir_name", filepath.Base(path)))
 
 	return nil
+}
+
+func migrateReleaseInfoFile(path string) error {
+	slog.Debug("Migrating release info file", slog.String("path", path))
+
+	oldRaw, err := os.ReadFile(path)
+	if err != nil {
+		return err
+	}
+
+	file, err := os.OpenFile(path, os.O_RDWR|os.O_TRUNC, 0666)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	var entry changelog.ReleaseInfo
+
+	scanner := bufio.NewScanner(bytes.NewReader(oldRaw))
+	for scanner.Scan() {
+		line := scanner.Text()
+
+		switch {
+		case strings.HasPrefix(line, "releasedate: "):
+			rawStr := strings.TrimPrefix(line, "releasedate: ")
+			rawStr = strings.TrimSpace(rawStr)
+			rawStr = strings.Trim(rawStr, `"`)
+
+			oldDate, err := time.Parse("2006-01-02", rawStr)
+			if err != nil {
+				return errors.Wrapf(err, "unable to parse 'releasedate': %q", rawStr)
+			}
+
+			entry.ReleaseDate = oldDate
+
+		case strings.HasPrefix(line, "isprerelease: "):
+			rawStr := strings.TrimPrefix(line, "isprerelease: ")
+			rawStr = strings.TrimSpace(rawStr)
+
+			bl, err := strconv.ParseBool(rawStr)
+			if err != nil {
+				return errors.Wrapf(err, "unable to parse 'isprerelease': %q", rawStr)
+			}
+
+			entry.IsPreRelease = bl
+
+		default:
+			slog.Warn("Release Info entry has unknown line",
+				slog.String("entry_path", path), slog.String("line", line))
+		}
+	}
+
+	version := filepath.Join(path, "..")
+	version = filepath.Base(version)
+
+	entry.Version = version
+
+	return entry.SaveToFile(path)
+
 }
 
 func migrateOldChangeEntry(path string) error {

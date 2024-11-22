@@ -19,7 +19,7 @@ type ReleaseInfo struct {
 	ReleaseDate time.Time `toml:"date"`
 	// IsPreRelease defines whether the release is a pre-release
 	// or not.
-	IsPreRelease bool `toml:"prerelease"`
+	IsPreRelease bool `toml:"pre_release"`
 }
 
 func (r ReleaseInfo) SaveToFile(path string) error {
@@ -39,12 +39,29 @@ func (r ReleaseInfo) SaveToFile(path string) error {
 	return err
 }
 
+type GrouppedEntries struct {
+	// ChangeType holds the change type information.
+	// It can be used in the CHANGELOG template.
+	ChangeType config.ChangeType
+
+	Entries []Entry
+}
+
 // Release represents a single release.
 type Release struct {
 	// Info holds all the meta informations about the release.
 	Info ReleaseInfo
+
 	// Entries holds all the change entries.
 	Entries []Entry
+
+	// GrouppedEntries is a meta field containing a
+	// groupped and sorted list of all entries
+	// from the Entries field.
+	//
+	// This means that this field needs to be manually filled!
+	GrouppedEntries []GrouppedEntries
+
 	// Collapse defines whether the release should be collapsed
 	// in the generated file or not.
 	//

@@ -3,17 +3,17 @@ package changelog
 const defaultOneRelease = `
 {{ with .Releases -}}
 {{ range . }}
-## {{ .Version }} ({{ .Info.ReleaseDate }})
+## {{ .Info.Version }} ({{ formatTime .Info.ReleaseDate }})
 
 {{- /* Collapse if PreRelease */ -}}
 {{- if .Collapse -}}<details>{{- end -}}
 {{- if .Collapse -}}<summary>This is a Pre-Release, Click to see details.</summary>{{- end }}
 
-{{ range .Entries -}}
-### {{ .ShortTypeName }} ({{ .NumString }})
+{{ range .GrouppedEntries -}}
+### {{ .ChangeType.GroupTitle }} ({{ len .Entries }} {{ template "numChanges" .Entries }})
 
-{{- range .Changes }}
-- {{ .ChangeTitle -}}
+{{- range .Entries }}
+- {{ .Title -}}
 {{ end }}
 
 {{ end }}
@@ -32,7 +32,13 @@ const defaultChangelogScheme = `# Changelog
 
 All notable changes to this project will be documented in this file.
 
-The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
+and adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+{{- define "numChanges" }}
+{{- $totalChanges := len . }}
+{{- if gt $totalChanges 1 }}changes
+{{- else }}change{{end -}}
+{{- end -}}
 
 ` + defaultOneRelease
-

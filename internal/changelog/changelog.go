@@ -2,17 +2,20 @@ package changelog
 
 import (
 	"bytes"
+	"cmp"
+	"fmt"
 	"log/slog"
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 	"text/template"
 
-	"github.com/davecgh/go-spew/spew"
-	"github.com/knadh/koanf/parsers/yaml"
-	"github.com/knadh/koanf/providers/file"
-	"github.com/knadh/koanf/v2"
+	"github.com/blang/semver/v4"
+	"github.com/pelletier/go-toml/v2"
+	"github.com/pkg/errors"
 	"go.l0nax.org/typact"
+	"gopkg.in/yaml.v3"
 
 	"gitlab.com/l0nax/changelog-go/internal/config"
 )
@@ -34,9 +37,15 @@ type Changelog struct {
 }
 
 // SaveToFile generates a new changelog and saves it to path.
-func (c Changelog) SaveToFile(path string) error {
+func (c *Changelog) SaveToFile(path string) error {
+	c.sortReleaseEntries()
+
 	// TODO: Allow overriding the default
-	tmpl, err := template.New("changelog-tmpl").Parse(defaultChangelogScheme)
+	tmpl, err := template.New("changelog-tmpl").
+		Funcs(template.FuncMap{
+			"formatTime": formatTime,
+		}).
+		Parse(defaultChangelogScheme)
 	if err != nil {
 		return err
 	}
@@ -58,6 +67,59 @@ func (c Changelog) SaveToFile(path string) error {
 	_, err = file.Write(out.Bytes())
 	if err != nil {
 		return err
+	}
+
+	return nil
+}
+
+func (c *Changelog) sortReleaseEntries() error {
+	// first we sort all releases
+	slices.SortStableFunc(c.Releases, func(a, b Release) int {
+		aVer, _ := semver.Make(a.Info.Version)
+		bVer, _ := semver.Make(b.Info.Version)
+
+		return bVer.Compare(aVer)
+	})
+
+	// now we sort all changelog entries
+	for i, release := range c.Releases {
+		grouped := groupBy(release.Entries, func(item Entry) string {
+			return item.ChangeTypeID
+		})
+
+		groupedEntries := make([]GrouppedEntries, 0, len(grouped))
+
+		for typeID, entries := range grouped {
+			changeType, ok := resolveChangeTypeID(typeID)
+			if !ok {
+				panic(fmt.Sprintf("Unable to resolve already parsed and validated changelog type ID %q", typeID))
+			}
+
+			// sort the entries
+			slices.SortStableFunc(entries, func(a, b Entry) int {
+				return cmp.Compare(a.Title, b.Title)
+			})
+
+			for _, ent := range entries {
+				err := ent.LoadChangeType()
+				if err != nil {
+					return errors.Wrapf(err, "unknown change type with ID %q at %v", ent.ChangeTypeID, ent.EntryPath)
+				}
+			}
+
+			groupedEntries = append(groupedEntries, GrouppedEntries{
+				ChangeType: changeType,
+				Entries:    entries,
+			})
+		}
+
+		// now we can sort all the entries
+		slices.SortStableFunc(groupedEntries, func(a, b GrouppedEntries) int {
+			return cmp.Compare(a.ChangeType.ID, b.ChangeType.ID)
+		})
+
+		release.GrouppedEntries = groupedEntries
+		c.Releases[i] = release
 	}
 
 	return nil
@@ -126,9 +188,7 @@ func ParseReleased() (*Changelog, error) {
 		cl.Releases = append(cl.Releases, *rel)
 	}
 
-	spew.Dump(cl)
-
-	panic("TODO")
+	return cl, nil
 }
 
 func parseReleaseDirectory(path string) (*Release, error) {
@@ -144,37 +204,28 @@ func parseReleaseDirectory(path string) (*Release, error) {
 			continue
 		}
 
-		k := koanf.New(".")
 		entryPath := filepath.Join(path, entry.Name())
 
 		slog.Debug("Parsing change entry", slog.String("entry_path", entryPath))
 
-		err = k.Load(file.Provider(entryPath), yaml.Parser())
+		change, err := parseChangelogEntry(entryPath)
 		if err != nil {
-			return nil, err
-		}
-
-		var change Entry
-
-		if err = k.Unmarshal("", &change); err != nil {
-			return nil, err
-		}
-
-		// load all relevant information
-		if err = change.LoadChangeType(); err != nil {
 			return nil, err
 		}
 
 		rel.Entries = append(rel.Entries, change)
 	}
 
-	k := koanf.New(".")
-	if err = k.Load(file.Provider(filepath.Join(path, ReleaseInfoFileName)), yaml.Parser()); err != nil {
-		return nil, err
+	releaseInfoPath := filepath.Join(path, ReleaseInfoFileName)
+
+	raw, err := os.ReadFile(releaseInfoPath)
+	if err != nil {
+		return nil, errors.Wrapf(err, "unable to read release info file %q", releaseInfoPath)
 	}
 
-	if err = k.Unmarshal("", &rel.Info); err != nil {
-		return nil, err
+	err = toml.Unmarshal(raw, &rel.Info)
+	if err != nil {
+		return nil, errors.Wrapf(err, "unable to parse release info file %q", releaseInfoPath)
 	}
 
 	// TODO: Validate whether it is a PreRelease and set Collapse accordingly
@@ -184,24 +235,18 @@ func parseReleaseDirectory(path string) (*Release, error) {
 
 // parseChangelogEntry parses a changelog [Entry] at the given path.
 func parseChangelogEntry(path string) (Entry, error) {
-	k := koanf.New(".")
-
 	slog.Debug("Parsing change entry", slog.String("entry_path", path))
 
-	err := k.Load(file.Provider(path), yaml.Parser())
+	raw, err := os.ReadFile(path)
 	if err != nil {
-		return Entry{}, err
+		return Entry{}, errors.Wrapf(err, "unable to read %q entry", path)
 	}
 
 	var change Entry
 
-	if err = k.Unmarshal("", &change); err != nil {
-		return Entry{}, err
-	}
-
-	// load all relevant information
-	if err = change.LoadChangeType(); err != nil {
-		return Entry{}, err
+	err = yaml.Unmarshal(raw, &change)
+	if err != nil {
+		return Entry{}, errors.Wrapf(err, "unable to parse %q entry", path)
 	}
 
 	change.EntryPath = typact.Some(path)

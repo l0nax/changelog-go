@@ -76,7 +76,7 @@ file.`,
 	}
 
 	if err := app.Run(os.Args); err != nil {
-		slog.Error("An error occurred", slog.Any("error", err))
+		slog.Error(err.Error())
 		os.Exit(1)
 	}
 }
@@ -137,9 +137,9 @@ func findConfig() (string, error) {
 }
 
 func checkVersion() error {
-	if !config.C.Version.IsValid() {
+	if config.C.Version.IsValid() {
 		return nil
 	}
 
-	return fmt.Errorf("project is not migrated to v2. Please execute 'changelog migrate'")
+	return fmt.Errorf("project is not migrated to v2 (got %q). Please execute 'changelog migrate'", config.C.Version)
 }
