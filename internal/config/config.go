@@ -23,7 +23,9 @@ type ChangeType struct {
 	// GroupTitle is the title which is used in the CHANGELOG.md
 	GroupTitle string `koanf:"group_title"`
 
-	// Hidden hides the type of the selection input.
+	// Hidden hides the type in the selection input.
+	// This can be used if the type has been deprecated and should
+	// not be used anymore.
 	Hidden bool `koanf:"hidden"`
 }
 
@@ -90,60 +92,57 @@ func Load(path string) error {
 
 const DefaultOutputPath = "CHANGELOG.md"
 
-var Default = Config{
-	Version:      "2",
-	ChangelogDir: ".changelogs",
-	OutputPath:   typact.Some("CHANGELOG.md"),
-	PreRelease: struct {
-		Detect           bool "koanf:\"detect\""
-		DeletePreRelease bool "koanf:\"deletePreRelease\""
-		FoldPreReleases  bool "koanf:\"foldPreReleases\""
-	}{
-		Detect:           true,
-		DeletePreRelease: false,
-		FoldPreReleases:  false,
-	},
-	Entry: struct {
-		Types []ChangeType "koanf:\"types\""
-	}{
-		Types: []ChangeType{
-			{
-				ID:         "new_feat",
-				Title:      "New Feature",
-				GroupTitle: "Added",
-			},
-			{
-				ID:         "bug_fix",
-				Title:      "Bug Fixed",
-				GroupTitle: "Fixed",
-			},
-			{
-				ID:         "feat_change",
-				Title:      "Feature change",
-				GroupTitle: "Changed",
-			},
-			{
-				ID:         "deprecate",
-				Title:      "Deprecation",
-				GroupTitle: "Deprecated",
-			},
-			{
-				ID:         "rem_feat",
-				Title:      "Feature removal",
-				GroupTitle: "Removed",
-			},
-			{
-				ID:         "security",
-				Title:      "Security fix",
-				GroupTitle: "Security",
-			},
-			{
-				ID:         "other",
-				Title:      "Other",
-				GroupTitle: "Other",
-			},
+// GetDefault returns the default config.
+func GetDefault() Config {
+	cfg := Config{
+		Version:      "2",
+		ChangelogDir: ".changelogs",
+		OutputPath:   typact.Some("CHANGELOG.md"),
+	}
+
+	cfg.PreRelease.Detect = true
+	cfg.PreRelease.DeletePreRelease = false
+	cfg.PreRelease.FoldPreReleases = false
+
+	cfg.Entry.Types = []ChangeType{
+		{
+			ID:         "new_feat",
+			Title:      "New Feature",
+			GroupTitle: "Added",
 		},
-	},
+		{
+			ID:         "bug_fix",
+			Title:      "Bug Fixed",
+			GroupTitle: "Fixed",
+		},
+		{
+			ID:         "feat_change",
+			Title:      "Feature change",
+			GroupTitle: "Changed",
+		},
+		{
+			ID:         "deprecate",
+			Title:      "Deprecation",
+			GroupTitle: "Deprecated",
+		},
+		{
+			ID:         "rem_feat",
+			Title:      "Feature removal",
+			GroupTitle: "Removed",
+		},
+		{
+			ID:         "security",
+			Title:      "Security fix",
+			GroupTitle: "Security",
+		},
+		{
+			ID:         "other",
+			Title:      "Other",
+			GroupTitle: "Other",
+		},
+	}
+
+	return cfg
 }
 
 // CreateDefault creates a file at path with the contents
@@ -151,7 +150,7 @@ var Default = Config{
 func CreateDefault(path string, force bool) error {
 	k := koanf.New(".")
 
-	if err := k.Load(structs.Provider(Default, "koanf"), nil); err != nil {
+	if err := k.Load(structs.Provider(GetDefault(), "koanf"), nil); err != nil {
 		return err
 	}
 
