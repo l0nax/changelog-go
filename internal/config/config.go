@@ -4,9 +4,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/knadh/koanf/parsers/yaml"
+	"github.com/knadh/koanf/parsers/toml/v2"
 	"github.com/knadh/koanf/providers/file"
-	"github.com/knadh/koanf/providers/structs"
 	"github.com/knadh/koanf/v2"
 	"github.com/pkg/errors"
 	"go.l0nax.org/typact"
@@ -79,7 +78,7 @@ var C Config
 func Load(path string) error {
 	k := koanf.New(".")
 
-	if err := k.Load(file.Provider(path), yaml.Parser()); err != nil {
+	if err := k.Load(file.Provider(path), toml.Parser()); err != nil {
 		return errors.Wrap(err, "unable to load file from path")
 	}
 
@@ -103,73 +102,56 @@ const (
 	DefaultEntrySecurityID      = "security"
 )
 
-// GetDefault returns the default config.
-func GetDefault() Config {
-	cfg := Config{
-		Version:      "2",
-		ChangelogDir: ".changelogs",
-		OutputPath:   typact.Some("CHANGELOG.md"),
-	}
+const defaultConfig = `
+changelog_dir = '.changelogs'
+output_path = 'null'
+version = '2'
 
-	cfg.PreRelease.Detect = true
-	cfg.PreRelease.DeletePreRelease = false
-	cfg.PreRelease.FoldPreReleases = false
+[entry]
+  [[entry.types]]
+  id = 'new_feat'
+  group_title = 'Added'
+  title = 'New Feature'
 
-	cfg.Entry.Types = []ChangeType{
-		{
-			ID:         "new_feat",
-			Title:      "New Feature",
-			GroupTitle: "Added",
-		},
-		{
-			ID:         "bug_fix",
-			Title:      "Bug Fixed",
-			GroupTitle: "Fixed",
-		},
-		{
-			ID:         "feat_change",
-			Title:      "Feature change",
-			GroupTitle: "Changed",
-		},
-		{
-			ID:         "deprecate",
-			Title:      "Deprecation",
-			GroupTitle: "Deprecated",
-		},
-		{
-			ID:         "rem_feat",
-			Title:      "Feature removal",
-			GroupTitle: "Removed",
-		},
-		{
-			ID:         "security",
-			Title:      "Security fix",
-			GroupTitle: "Security",
-		},
-		{
-			ID:         "other",
-			Title:      "Other",
-			GroupTitle: "Other",
-		},
-	}
+  [[entry.types]]
+  id = 'bug_fix'
+  group_title = 'Fixed'
+  title = 'Bug Fixed'
 
-	return cfg
-}
+  [[entry.types]]
+  id = 'feat_change'
+  group_title = 'Changed'
+  title = 'Feature change'
+
+  [[entry.types]]
+  id = 'deprecate'
+  group_title = 'Deprecated'
+  title = 'Deprecation'
+
+  [[entry.types]]
+  id = 'rem_feat'
+  group_title = 'Removed'
+  title = 'Feature removal'
+
+  [[entry.types]]
+  id = 'security'
+  group_title = 'Security'
+  title = 'Security fix'
+
+  [[entry.types]]
+  id = 'other'
+  group_title = 'Other'
+  title = 'Other'
+
+[preRelease]
+deletePreRelease = false
+detect = true
+foldPreReleases = false
+`
 
 // CreateDefault creates a file at path with the contents
 // of [Default].
 func CreateDefault(path string, force bool) error {
-	k := koanf.New(".")
-
-	if err := k.Load(structs.Provider(GetDefault(), "koanf"), nil); err != nil {
-		return err
-	}
-
-	raw, err := k.Marshal(yaml.Parser())
-	if err != nil {
-		return err
-	}
-
 	if force {
 		_ = os.Remove(path)
 	}
@@ -180,7 +162,7 @@ func CreateDefault(path string, force bool) error {
 	}
 	defer fd.Close()
 
-	_, err = fd.Write(raw)
+	_, err = fd.Write([]byte(defaultConfig))
 	if err != nil {
 		return err
 	}

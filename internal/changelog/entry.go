@@ -4,10 +4,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/knadh/koanf/parsers/yaml"
-	"github.com/knadh/koanf/providers/structs"
-	"github.com/knadh/koanf/v2"
 	"go.l0nax.org/typact"
+	"gopkg.in/yaml.v3"
 
 	"gitlab.com/l0nax/changelog-go/internal/config"
 )
@@ -15,17 +13,18 @@ import (
 // Entry is a single change entry.
 type Entry struct {
 	// ChangeTypeID is the ID identifying the type of the change.
-	ChangeTypeID string `koanf:"change_type_id"`
+	ChangeTypeID string `yaml:"change_type_id"`
 
 	// ChangeType holds the change type information.
 	// It can be used in the CHANGELOG template.
-	ChangeType config.ChangeType `koanf:"-"`
+	ChangeType config.ChangeType `yaml:"-"`
 
 	// Title is the title describing the change, which will be used in
 	// the resulting changelog.
-	Title  string `koanf:"title"`
+	Title string `yaml:"title"`
+
 	// Author is the author, if defined
-	Author typact.Option[string] `koanf:"author,omitempty"`
+	Author typact.Option[string] `yaml:"author,omitempty"`
 }
 
 // SaveToFile saves e to the given path.
@@ -36,13 +35,7 @@ func (e Entry) SaveToFile(path string) error {
 	}
 	defer file.Close()
 
-	k := koanf.New(".")
-
-	if err = k.Load(structs.Provider(e, "koanf"), nil); err != nil {
-		return err
-	}
-
-	raw, err := k.Marshal(yaml.Parser())
+	raw, err := yaml.Marshal(e)
 	if err != nil {
 		return err
 	}

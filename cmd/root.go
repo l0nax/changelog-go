@@ -97,7 +97,7 @@ func findConfig() (string, error) {
 	}
 
 	check := func(p string) (string, bool, error) {
-		full := filepath.Join(p, ".changelog-go.yaml")
+		full := filepath.Join(p, ".changelog-go.toml")
 		slog.Debug("Checking existence of config", slog.String("path", full))
 
 		info, err := os.Stat(full)

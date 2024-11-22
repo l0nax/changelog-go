@@ -45,7 +45,9 @@ func migrateCmd(c *cli.Context) error {
 		return err
 	}
 
-	filePath := filepath.Join(wd, ".changelog-go.yaml")
+	_ = os.Remove(filepath.Join(wd, ".changelog-go.yaml"))
+
+	filePath := filepath.Join(wd, ".changelog-go.toml")
 	if err = config.CreateDefault(filePath, true); err != nil {
 		return err
 	}

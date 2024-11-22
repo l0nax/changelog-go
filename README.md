@@ -62,7 +62,7 @@ You can also install `changelog-go` via a shell script:
 ### Homebrew
 
 ```bash
-brew tap l0nax/changelog-go https://gitlab.com/l0nax/changelog-go 
+brew tap l0nax/changelog-go https://gitlab.com/l0nax/changelog-go
 brew install changelog-go
 ```
 
@@ -90,7 +90,7 @@ generate/ create a Changelog(-Entry)_
 
 ### Initialize directory
 
-1. Run `changelog init` and edit the config file (`.changelog-go.yaml`)
+1. Run `changelog init` and edit the config file (`.changelog-go.toml`)
 
 ### Create a new change entry
 
@@ -99,10 +99,10 @@ is the best fit.
 2. Add and commit the new Changelog File
 
 Example:
-```bash   
+```bash
 ## (1) create changelog entry
 ~] changelog new "Fix 'go pos'-Parser Bug"
-Using config file: /root/.go/src/gitlab.com/l0nax/test/.changelog-go.yaml
+Using config file: /root/.go/src/gitlab.com/l0nax/test/.changelog-go.toml
 [0] New Feature          (Added)
 [1] Bug Fix              (Fixed)
 [2] Feature change       (Changed)
@@ -127,7 +127,7 @@ Releasing a new Version is as simple as creating a new changelog entry:
 2. Add and Commit the new `CHANGELOG.md` and changed files under `.changelogs`
 
 Example:
-```bash   
+```bash
 ## (1) generate new changelog
 ~] changelog release 2.0.0
 

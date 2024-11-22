@@ -31,7 +31,7 @@ func initAction(c *cli.Context) error {
 		return err
 	}
 
-	filePath := filepath.Join(wd, ".changelog-go.yaml")
+	filePath := filepath.Join(wd, ".changelog-go.toml")
 	if _, err := os.Stat(filePath); err == nil {
 		slog.Error("A config file already exists!")
 
