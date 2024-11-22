@@ -72,7 +72,8 @@ func (c *Changelog) SaveToFile(path string) error {
 	return nil
 }
 
-func (c *Changelog) sortReleaseEntries() error {
+// SortByRelease sorts the releases by their version in descending order.
+func (c *Changelog) SortByRelease() {
 	// first we sort all releases
 	slices.SortStableFunc(c.Releases, func(a, b Release) int {
 		aVer, _ := semver.Make(a.Info.Version)
@@ -80,6 +81,10 @@ func (c *Changelog) sortReleaseEntries() error {
 
 		return bVer.Compare(aVer)
 	})
+}
+
+func (c *Changelog) sortReleaseEntries() error {
+	c.SortByRelease()
 
 	// now we sort all changelog entries
 	for i, release := range c.Releases {
@@ -158,6 +163,7 @@ func LoadUnreleasedEntries() ([]Entry, error) {
 	return entries, nil
 }
 
+// ParseReleased parses all released versions.
 func ParseReleased() (*Changelog, error) {
 	dir := filepath.Join(config.C.ChangelogDir, ReleasedDir)
 
