@@ -20,6 +20,9 @@ const (
 	// ReleasedDir is the name of the directory holding the released
 	// versions.
 	ReleasedDir = "released"
+	// UnreleasedDir is the name of the directory holding the unreleased
+	// entries.
+	UnreleasedDir = "unreleased"
 	// ReleaseInfoFileName is the name of the "ReleaseInfo" filename.
 	ReleaseInfoFileName = "ReleaseInfo"
 )

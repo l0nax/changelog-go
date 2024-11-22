@@ -92,6 +92,17 @@ func Load(path string) error {
 
 const DefaultOutputPath = "CHANGELOG.md"
 
+// The default entry type IDs.
+const (
+	DefaultEntryNewFeatureID    = "new_feat"
+	DefaultEntryBugFixID        = "bug_fix"
+	DefaultEntryOtherID         = "other"
+	DefaultEntryFeatureChangeID = "feat_change"
+	DefaultEntryDeprecateID     = "deprecate"
+	DefaultEntryRemovalID       = "rem_feat"
+	DefaultEntrySecurityID      = "security"
+)
+
 // GetDefault returns the default config.
 func GetDefault() Config {
 	cfg := Config{
