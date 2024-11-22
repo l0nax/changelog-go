@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"errors"
 	"log/slog"
 	"os"
 	"path/filepath"
@@ -18,7 +19,7 @@ import (
 func newNewCmd() *cli.Command {
 	return &cli.Command{
 		Name:      "new",
-		UsageText: "creates a new Changelog-Entry so you can easily commit your entry",
+		UsageText: "Creates a new Changelog-Entry so you can easily commit your entry",
 		ArgsUsage: "<title>",
 		Args:      true,
 		Action:    newAction,
@@ -30,14 +31,27 @@ func newAction(c *cli.Context) error {
 		return err
 	}
 
-	input, err := create.Run()
+	askTitle := c.Args().First() == ""
+
+	input, err := create.Run(askTitle)
 	if err != nil {
+		if errors.Is(err, create.ErrCanceled) {
+			slog.Info("Operation canceled")
+
+			return nil
+		}
+
 		return err
+	}
+
+	title := c.Args().First()
+	if title == "" {
+		title = input.Title
 	}
 
 	entry := changelog.Entry{
 		ChangeTypeID: input.Type.ID,
-		Title:        c.Args().First(),
+		Title:        title,
 		Author:       typact.None[string](), // TODO: Support author
 	}
 
