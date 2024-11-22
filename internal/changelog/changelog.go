@@ -12,6 +12,7 @@ import (
 	"github.com/knadh/koanf/parsers/yaml"
 	"github.com/knadh/koanf/providers/file"
 	"github.com/knadh/koanf/v2"
+	"go.l0nax.org/typact"
 
 	"gitlab.com/l0nax/changelog-go/internal/config"
 )
@@ -60,6 +61,39 @@ func (c Changelog) SaveToFile(path string) error {
 	}
 
 	return nil
+}
+
+// LoadUnreleasedEntries loads all unreleased entries.
+func LoadUnreleasedEntries() ([]Entry, error) {
+	dir := filepath.Join(config.C.ChangelogDir, UnreleasedDir)
+
+	dirEntries, err := os.ReadDir(dir)
+	if err != nil {
+		return nil, err
+	}
+
+	entries := make([]Entry, 0, len(dirEntries))
+
+	for _, entry := range dirEntries {
+		if entry.IsDir() {
+			continue
+		} else if strings.HasPrefix(entry.Name(), ".") {
+			// hidden files are ignored
+			continue
+		}
+
+		slog.Debug("Processing unreleased changelog entry in directory",
+			slog.String("root_dir", dir), slog.String("entry_name", entry.Name()))
+
+		entry, err := parseChangelogEntry(filepath.Join(dir, entry.Name()))
+		if err != nil {
+			return nil, err
+		}
+
+		entries = append(entries, entry)
+	}
+
+	return entries, nil
 }
 
 func ParseReleased() (*Changelog, error) {
@@ -146,4 +180,31 @@ func parseReleaseDirectory(path string) (*Release, error) {
 	// TODO: Validate whether it is a PreRelease and set Collapse accordingly
 
 	return rel, nil
+}
+
+// parseChangelogEntry parses a changelog [Entry] at the given path.
+func parseChangelogEntry(path string) (Entry, error) {
+	k := koanf.New(".")
+
+	slog.Debug("Parsing change entry", slog.String("entry_path", path))
+
+	err := k.Load(file.Provider(path), yaml.Parser())
+	if err != nil {
+		return Entry{}, err
+	}
+
+	var change Entry
+
+	if err = k.Unmarshal("", &change); err != nil {
+		return Entry{}, err
+	}
+
+	// load all relevant information
+	if err = change.LoadChangeType(); err != nil {
+		return Entry{}, err
+	}
+
+	change.EntryPath = typact.Some(path)
+
+	return change, nil
 }

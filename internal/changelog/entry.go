@@ -25,6 +25,9 @@ type Entry struct {
 
 	// Author is the author, if defined
 	Author typact.Option[string] `yaml:"author,omitempty"`
+
+	// EntryPath is the path where the changelog entry is stored.
+	EntryPath typact.Option[string] `yaml:"-"`
 }
 
 // SaveToFile saves e to the given path.
