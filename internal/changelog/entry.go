@@ -25,7 +25,7 @@ type Entry struct {
 	Title string `toml:"title"`
 
 	// Author is the author, if defined
-	Author typact.Option[string] `toml:"author,omitempty"`
+	Author typact.Option[string] `toml:"author,omitzero"`
 
 	// EntryPath is the path where the changelog entry is stored.
 	EntryPath typact.Option[string] `toml:"-"`
