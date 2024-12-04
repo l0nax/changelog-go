@@ -1,2 +1,2 @@
-title: Add custom CHANGELOG.md file template
-type: 0
+change_type_id = "new_feat"
+title = "Add custom CHANGELOG.md file template"

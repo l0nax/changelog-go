@@ -1,2 +1,2 @@
-title: Add sentry crash reporter
-type: 6
+change_type_id = "feat_change"
+title = "Add sentry crash reporter"

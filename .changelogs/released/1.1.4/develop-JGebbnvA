@@ -1,2 +1,2 @@
-title: Fix incorrect representation of the 'Number of Changes' in the CHANGELOG.md
-type: 1
+change_type_id = "bug_fix"
+title = "Fix incorrect representation of the 'Number of Changes' in the CHANGELOG.md"

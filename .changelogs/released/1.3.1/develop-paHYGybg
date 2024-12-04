@@ -1,2 +1,2 @@
-title: Fix glibc problems with snap installation
-type: 1
+change_type_id = "bug_fix"
+title = "Fix glibc problems with snap installation"

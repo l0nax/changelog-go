@@ -1,2 +1,2 @@
-title: Add `ci-get` command to render only latest release
-type: 0
+change_type_id = "new_feat"
+title = "Add `ci-get` command to render only latest release"

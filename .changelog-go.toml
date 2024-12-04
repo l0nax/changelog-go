@@ -1,0 +1,46 @@
+
+changelog_dir = '.changelogs'
+output_path = 'CHANGELOG.md'
+version = '2'
+
+[entry]
+  [[entry.types]]
+  id = 'new_feat'
+  group_title = 'Added'
+  title = 'New Feature'
+  effect = 'minor'
+
+  [[entry.types]]
+  id = 'bug_fix'
+  group_title = 'Fixed'
+  title = 'Bug Fixed'
+  effect = 'patch'
+
+  [[entry.types]]
+  id = 'feat_change'
+  group_title = 'Changed'
+  title = 'Feature change'
+  effect = 'minor'
+
+  [[entry.types]]
+  id = 'deprecate'
+  group_title = 'Deprecated'
+  title = 'Deprecation'
+  effect = 'minor'
+
+  [[entry.types]]
+  id = 'rem_feat'
+  group_title = 'Removed'
+  title = 'Feature removal'
+  effect = 'major'
+
+  [[entry.types]]
+  id = 'security'
+  group_title = 'Security'
+  title = 'Security fix'
+  effect = 'patch'
+
+[preRelease]
+deletePreRelease = false
+detect = true
+foldPreReleases = false
