@@ -1,0 +1,2 @@
+change_type_id = "new_feat"
+title = "Add `migrate` command to automatically migrate to the new v2 structure"
