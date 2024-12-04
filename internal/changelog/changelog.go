@@ -12,10 +12,9 @@ import (
 	"text/template"
 
 	"github.com/blang/semver/v4"
-	"github.com/pelletier/go-toml/v2"
 	"github.com/pkg/errors"
+	"gitlab.com/fabmation-gmbh/toml"
 	"go.l0nax.org/typact"
-	"gopkg.in/yaml.v3"
 
 	"gitlab.com/l0nax/changelog-go/internal/config"
 )
@@ -169,7 +168,7 @@ func ParseReleased() (*Changelog, error) {
 
 	dirs, err := os.ReadDir(dir)
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrapf(err, "unable to read directory %q", dir)
 	}
 
 	cl := new(Changelog)
@@ -250,9 +249,13 @@ func parseChangelogEntry(path string) (Entry, error) {
 
 	var change Entry
 
-	err = yaml.Unmarshal(raw, &change)
+	err = toml.Unmarshal(raw, &change)
 	if err != nil {
 		return Entry{}, errors.Wrapf(err, "unable to parse %q entry", path)
+	}
+
+	if err := change.LoadChangeType(); err != nil {
+		return Entry{}, err
 	}
 
 	change.EntryPath = typact.Some(path)

@@ -4,57 +4,108 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/knadh/koanf/parsers/toml/v2"
-	"github.com/knadh/koanf/providers/file"
-	"github.com/knadh/koanf/v2"
 	"github.com/pkg/errors"
+	"gitlab.com/fabmation-gmbh/toml"
 	"go.l0nax.org/typact"
 )
+
+// VersionEffect is the effect a [ChangeType] has on the next version.
+type VersionEffect uint8
+
+func (v VersionEffect) IsValid() bool {
+	return v == VersionEffectMajor || v == VersionEffectMinor || v == VersionEffectPatch
+}
+
+const (
+	VersionEffectMajor VersionEffect = iota + 1
+	VersionEffectMinor
+	VersionEffectPatch
+)
+
+func (v VersionEffect) String() string {
+	switch v {
+	case VersionEffectMajor:
+		return "major"
+	case VersionEffectMinor:
+		return "minor"
+	case VersionEffectPatch:
+		return "patch"
+	default:
+		panic(fmt.Sprintf("unknown version effect %d", v))
+	}
+}
+
+func (v *VersionEffect) UnmarshalText(b []byte) error {
+	switch string(b) {
+	case "major":
+		*v = VersionEffectMajor
+	case "minor":
+		*v = VersionEffectMinor
+	case "patch":
+		*v = VersionEffectPatch
+
+	default:
+		return errors.New("unknown version effect")
+	}
+
+	return nil
+}
 
 // ChangeType is a single change type.
 type ChangeType struct {
 	// ID is the unique identifier of the type.
-	ID string `koanf:"id"`
+	ID string `toml:"id"`
 	// Title is the title of the type.
-	Title string `koanf:"title"`
+	Title string `toml:"title"`
 	// Description is the optional description of the type.
-	Description typact.Option[string] `koanf:"description"`
+	Description typact.Option[string] `toml:"description"`
 	// GroupTitle is the title which is used in the CHANGELOG.md
-	GroupTitle string `koanf:"group_title"`
+	GroupTitle string `toml:"group_title"`
+
+	// Effect is the version effect the type has on the next version.
+	Effect VersionEffect `toml:"effect"`
 
 	// Hidden hides the type in the selection input.
 	// This can be used if the type has been deprecated and should
 	// not be used anymore.
-	Hidden bool `koanf:"hidden"`
+	Hidden bool `toml:"hidden"`
+}
+
+func (c ChangeType) Validate() error {
+	if !c.Effect.IsValid() {
+		return errors.New("unknown version effect")
+	}
+
+	return nil
 }
 
 // Config is the configuration structure.
 type Config struct {
 	// Version holds the config version.
-	Version Version `koanf:"version"`
+	Version Version `toml:"version"`
 
 	// ChangelogDir is the relative path to the config file
 	// where all the changelog files are stored.
-	ChangelogDir string `koanf:"changelog_dir"`
+	ChangelogDir string `toml:"changelog_dir"`
 
 	// OutputPath is the path to the file where the resulting
 	// file should be stored.
 	//
 	// Defaults to "CHANGELOG.md".
-	OutputPath typact.Option[string] `koanf:"output_path"`
+	OutputPath typact.Option[string] `toml:"output_path"`
 
 	PreRelease struct {
 		// detect pre-releases or not
-		Detect           bool `koanf:"detect"`
-		DeletePreRelease bool `koanf:"deletePreRelease"` // if true the pre-releases would be deleted on an non pre-release
-		FoldPreReleases  bool `koanf:"foldPreReleases"`
-	} `koanf:"preRelease"`
+		Detect           bool `toml:"detect"`
+		DeletePreRelease bool `toml:"deletePreRelease"` // if true the pre-releases would be deleted on an non pre-release
+		FoldPreReleases  bool `toml:"foldPreReleases"`
+	} `toml:"preRelease"`
 
 	// Entry configures a single changelog entry.
 	Entry struct {
 		// Types are the different change types which are vailable.
-		Types []ChangeType `koanf:"types"`
-	} `koanf:"entry"`
+		Types []ChangeType `toml:"types"`
+	} `toml:"entry"`
 }
 
 func (c Config) Validate() error {
@@ -63,6 +114,10 @@ func (c Config) Validate() error {
 		_, ok := knownTypes[typ.ID]
 		if ok {
 			return fmt.Errorf("changelog type with ID %q already defined", typ.ID)
+		}
+
+		if err := typ.Validate(); err != nil {
+			return errors.Wrapf(err, "error while validating type %q", typ.ID)
 		}
 
 		knownTypes[typ.ID] = struct{}{}
@@ -76,14 +131,13 @@ var C Config
 
 // Load loads the config into C.
 func Load(path string) error {
-	k := koanf.New(".")
-
-	if err := k.Load(file.Provider(path), toml.Parser()); err != nil {
-		return errors.Wrap(err, "unable to load file from path")
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return errors.Wrap(err, "unable to read config file")
 	}
 
-	if err := k.Unmarshal("", &C); err != nil {
-		return errors.Wrap(err, "unable to parse configuration file")
+	if err := toml.Unmarshal(data, &C); err != nil {
+		return errors.Wrap(err, "unable to parse config file")
 	}
 
 	return C.Validate()
@@ -95,7 +149,6 @@ const DefaultOutputPath = "CHANGELOG.md"
 const (
 	DefaultEntryNewFeatureID    = "new_feat"
 	DefaultEntryBugFixID        = "bug_fix"
-	DefaultEntryOtherID         = "other"
 	DefaultEntryFeatureChangeID = "feat_change"
 	DefaultEntryDeprecateID     = "deprecate"
 	DefaultEntryRemovalID       = "rem_feat"
@@ -104,7 +157,7 @@ const (
 
 const defaultConfig = `
 changelog_dir = '.changelogs'
-output_path = 'null'
+output_path = 'CHANGELOG.md'
 version = '2'
 
 [entry]
@@ -112,36 +165,37 @@ version = '2'
   id = 'new_feat'
   group_title = 'Added'
   title = 'New Feature'
+  effect = 'minor'
 
   [[entry.types]]
   id = 'bug_fix'
   group_title = 'Fixed'
   title = 'Bug Fixed'
+  effect = 'patch'
 
   [[entry.types]]
   id = 'feat_change'
   group_title = 'Changed'
   title = 'Feature change'
+  effect = 'minor'
 
   [[entry.types]]
   id = 'deprecate'
   group_title = 'Deprecated'
   title = 'Deprecation'
+  effect = 'minor'
 
   [[entry.types]]
   id = 'rem_feat'
   group_title = 'Removed'
   title = 'Feature removal'
+  effect = 'major'
 
   [[entry.types]]
   id = 'security'
   group_title = 'Security'
   title = 'Security fix'
-
-  [[entry.types]]
-  id = 'other'
-  group_title = 'Other'
-  title = 'Other'
+  effect = 'patch'
 
 [preRelease]
 deletePreRelease = false

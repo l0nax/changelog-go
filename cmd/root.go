@@ -72,6 +72,8 @@ file.`,
 			newInitCmd(),
 			newReleaseCmd(),
 			newMigrateCmd(),
+			newNextCmd(),
+			newLatestCmd(),
 		},
 	}
 

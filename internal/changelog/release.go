@@ -6,8 +6,8 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/pelletier/go-toml/v2"
 	"github.com/pkg/errors"
+	"gitlab.com/fabmation-gmbh/toml"
 
 	"gitlab.com/l0nax/changelog-go/internal/config"
 )
@@ -67,6 +67,23 @@ type Release struct {
 	//
 	// It is set to true based on the project configuration.
 	Collapse bool
+}
+
+// VersionEffect returns the version effect of the release
+// by scanning all entries.
+func (r Release) VersionEffect() config.VersionEffect {
+	// The effect is sorted by:
+	//   major > minor > patch
+	//
+	// Since [config.VersionEffect] is in ascending order,
+	// we can simply use [min]
+	eff := config.VersionEffectPatch
+
+	for _, entry := range r.Entries {
+		eff = min(eff, entry.ChangeType.Effect)
+	}
+
+	return eff
 }
 
 // Create creates the release, i.e. it does not exist yet

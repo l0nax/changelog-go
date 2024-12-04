@@ -5,7 +5,8 @@ import (
 	"os"
 
 	"go.l0nax.org/typact"
-	"gopkg.in/yaml.v3"
+
+	"gitlab.com/fabmation-gmbh/toml"
 
 	"gitlab.com/l0nax/changelog-go/internal/config"
 )
@@ -13,21 +14,21 @@ import (
 // Entry is a single change entry.
 type Entry struct {
 	// ChangeTypeID is the ID identifying the type of the change.
-	ChangeTypeID string `yaml:"change_type_id"`
+	ChangeTypeID string `toml:"change_type_id"`
 
 	// ChangeType holds the change type information.
 	// It can be used in the CHANGELOG template.
-	ChangeType config.ChangeType `yaml:"-"`
+	ChangeType config.ChangeType `toml:"-"`
 
 	// Title is the title describing the change, which will be used in
 	// the resulting changelog.
-	Title string `yaml:"title"`
+	Title string `toml:"title"`
 
 	// Author is the author, if defined
-	Author typact.Option[string] `yaml:"author,omitempty"`
+	Author typact.Option[string] `toml:"author,omitempty"`
 
 	// EntryPath is the path where the changelog entry is stored.
-	EntryPath typact.Option[string] `yaml:"-"`
+	EntryPath typact.Option[string] `toml:"-"`
 }
 
 // SaveToFile saves e to the given path.
@@ -38,7 +39,7 @@ func (e Entry) SaveToFile(path string) error {
 	}
 	defer file.Close()
 
-	raw, err := yaml.Marshal(e)
+	raw, err := toml.Marshal(e)
 	if err != nil {
 		return err
 	}

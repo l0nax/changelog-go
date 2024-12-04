@@ -138,8 +138,6 @@ func migrateOldReleasedEntry(path string) error {
 			continue
 		}
 
-		fmt.Printf("-> %q\n", entry.Name())
-
 		if err := migrateOldChangeEntry(filepath.Join(path, entry.Name())); err != nil {
 			return err
 		}
@@ -250,7 +248,8 @@ func migrateOldChangeEntry(path string) error {
 			case "5":
 				entry.ChangeTypeID = config.DefaultEntrySecurityID
 			case "6":
-				entry.ChangeTypeID = config.DefaultEntryOtherID
+				// map it as feature change
+				entry.ChangeTypeID = config.DefaultEntryFeatureChangeID
 			default:
 				slog.Error("Unknown change type: please migrate manually",
 					slog.String("entry_path", path), slog.String("line", line))
