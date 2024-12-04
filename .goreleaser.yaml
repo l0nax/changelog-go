@@ -1,0 +1,67 @@
+# This is an example .goreleaser.yml file with some sensible defaults.
+# Make sure to check the documentation at https://goreleaser.com
+
+# The lines below are called `modelines`. See `:help modeline`
+# Feel free to remove those if you don't want/need to use them.
+# yaml-language-server: $schema=https://goreleaser.com/static/schema.json
+# vim: set ts=2 sw=2 tw=0 fo=cnqoj
+
+version: 2
+
+before:
+  hooks:
+    - go mod tidy
+
+builds:
+  - id: "default"
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - windows
+      - darwin
+
+    goarch:
+      - amd64
+      - arm64
+
+    ldflags:
+      - -X gitlab.com/l0nax/changelog-go/pkg/version.Version={{ .Version }}
+      - -X gitlab.com/l0nax/changelog-go/pkg/version.Hash={{ .Commit }}
+      - -X gitlab.com/l0nax/changelog-go/pkg/version.BuildTime={{ .Date }}
+
+archives:
+  - format: tar.gz
+    # this name template makes the OS and Arch compatible with the results of `uname`.
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+
+    # use zip for windows archives
+    format_overrides:
+      - goos: windows
+        format: zip
+
+changelog:
+  disable: true
+
+release:
+  gitlab:
+    owner: l0nax
+    name: changelog-go
+
+  ids:
+    - default
+
+  name_template: "v{{.Version}}"
+
+  disable: false
+
+  # What to do with the release notes in case there the release already exists.
+  #
+  # Valid options are:
+  # - `keep-existing`: keep the existing notes
+  # - `append`: append the current release notes to the existing notes
+  # - `prepend`: prepend the current release notes to the existing notes
+  # - `replace`: replace existing notes
+  #
+  # Default: 'keep-existing'.
+  mode: keep-existing
