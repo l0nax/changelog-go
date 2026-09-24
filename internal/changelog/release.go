@@ -66,6 +66,12 @@ type Release struct {
 	// NOTE: [Changelog.Render] fills this field.
 	DisplayVersion string
 
+	// DisplayDate is the release date as it should be rendered. It is empty
+	// for the pending set, which has no date yet.
+	//
+	// This means that this field needs to be manually filled!
+	DisplayDate string
+
 	// Collapse renders the release inside a collapsed "<details>" block.
 	Collapse bool
 }

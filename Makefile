@@ -1,16 +1,21 @@
-VERSION := $(shell git describe --long --dirty --tags)
-DATE := $(date)
-COMMIT := $(shell git rev-parse HEAD)
-LDFLAGS := -ldflags "-X 'gitlab.com/l0nax/changelog-go/pkg/version.Version=$(VERSION)' -X 'gitlab.com/l0nax/changelog-go/pkg/version.BuildTime=$(DATE)' -X 'gitlab.com/l0nax/changelog-go/pkg/version.Hash=$(COMMIT)'"
+# The build carries no -ldflags stamps: the Go toolchain records the version,
+# commit and dirtiness on its own, and internal/version reads them back.
 
 .PHONY: all
 all: build-dev
 
 .PHONY: build-dev
 build-dev:
-	go build $(LDFLAGS) -o changelog-go
+	go build -o changelog-go
+
+.PHONY: test
+test:
+	go test ./...
+
+.PHONY: lint
+lint:
+	golangci-lint run ./...
 
 .PHONY: release
 release:
 	goreleaser release
-	godownloader --repo=l0nax/changelog-go > install.sh

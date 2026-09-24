@@ -21,6 +21,10 @@ type Entry struct {
 	// Title describes the change and is what the changelog lists.
 	Title string `toml:"title"`
 
+	// Body is the optional long-form description of the change, rendered
+	// underneath the title.
+	Body typact.Option[string] `toml:"body,omitzero"`
+
 	// Author is the author of the change, if recorded.
 	Author typact.Option[string] `toml:"author,omitzero"`
 
@@ -28,18 +32,23 @@ type Entry struct {
 	EntryPath typact.Option[string] `toml:"-"`
 }
 
+// Marshal renders e as the contents of a changelog entry file.
+func (e Entry) Marshal() ([]byte, error) {
+	return toml.Marshal(e)
+}
+
 // SaveToFile writes e to path.
 func (e Entry) SaveToFile(path string) error {
+	raw, err := e.Marshal()
+	if err != nil {
+		return err
+	}
+
 	file, err := os.OpenFile(path, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0666)
 	if err != nil {
 		return err
 	}
 	defer file.Close()
-
-	raw, err := toml.Marshal(e)
-	if err != nil {
-		return err
-	}
 
 	_, err = file.Write(raw)
 

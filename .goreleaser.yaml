@@ -25,10 +25,16 @@ builds:
       - amd64
       - arm64
 
+    # No -X stamps: the toolchain records the version, commit and dirtiness in
+    # the build info by itself, and internal/version reads them back. Set
+    # explicitly so that GoReleaser does not fall back to its default
+    # "-X main.version=..." flags, which this binary has nowhere to put.
+    #
+    # Stripping is safe here: the build info lives in its own section and
+    # survives -s -w.
     ldflags:
-      - -X gitlab.com/l0nax/changelog-go/pkg/version.Version={{ .Version }}
-      - -X gitlab.com/l0nax/changelog-go/pkg/version.Hash={{ .Commit }}
-      - -X gitlab.com/l0nax/changelog-go/pkg/version.BuildTime={{ .Date }}
+      - -s
+      - -w
 
 archives:
   - format: tar.gz

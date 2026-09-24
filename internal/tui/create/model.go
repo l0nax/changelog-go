@@ -11,6 +11,7 @@ import (
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
+	"go.l0nax.org/typact"
 
 	"gitlab.com/l0nax/changelog-go/internal/config"
 	"gitlab.com/l0nax/changelog-go/internal/tui/common"
@@ -63,6 +64,12 @@ type model struct {
 }
 
 func (m model) Init() tea.Cmd {
+	// Starting straight on the title prompt means the cursor has to blink
+	// without a type selection having happened first.
+	if m.typeSelected && m.askTitle {
+		return textinput.Blink
+	}
+
 	return nil
 }
 
@@ -164,11 +171,23 @@ func (m model) Canceled() bool {
 	return m.canceled
 }
 
-// Run shows the TUI and returns the change type the user selected. If askTitle
-// is set, the user is also asked for a non-empty title.
+// Options configures what the TUI asks for.
+type Options struct {
+	// PreselectedType skips the type selection, which is what happens when
+	// the caller already passed --type.
+	PreselectedType typact.Option[config.ChangeType]
+
+	// AskTitle prompts for a non-empty title.
+	AskTitle bool
+}
+
+// Run shows the TUI and returns the change type the user selected. Only what
+// opts leaves open is prompted for.
 //
 // It returns [ErrCanceled] if the user canceled.
-func Run(cfg config.Config, askTitle bool) (Entry, error) {
+func Run(cfg config.Config, opts Options) (Entry, error) {
+	askTitle := opts.AskTitle
+
 	// cloned because the filtering below would otherwise alter the config
 	rawItems := slices.Clone(cfg.Entry.Types)
 	rawItems = slices.DeleteFunc(rawItems, func(tt config.ChangeType) bool {
@@ -187,6 +206,11 @@ func Run(cfg config.Config, askTitle bool) (Entry, error) {
 		askTitle:  askTitle,
 	}
 	m.entryList.Title = "Please select a change type"
+
+	if changeType, ok := opts.PreselectedType.Deconstruct(); ok {
+		m.typeSelected = true
+		m.selectedType = changeType
+	}
 
 	if askTitle {
 		m.titleInput = textinput.New()

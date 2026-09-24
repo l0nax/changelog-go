@@ -33,7 +33,7 @@ The "auto" modes parses all unreleased entries and chooses the most appropriate 
 }
 
 func nextAction(c *cli.Context) error {
-	project, err := loadProject()
+	project, err := loadProject(c)
 	if err != nil {
 		return err
 	}

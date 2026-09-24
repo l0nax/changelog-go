@@ -66,3 +66,61 @@ func (p *Project) OutputPath() string {
 func (p *Project) DisplayVersion(version string) string {
 	return ApplyVersionPrefix(p.cfg.VersionPrefix, version)
 }
+
+// ReleaseChangelog returns a changelog holding only the named release.
+//
+// The version is matched semantically, so the caller may pass it with or
+// without the configured prefix -- which is what makes
+// "changelog show $(changelog latest)" work.
+func (p *Project) ReleaseChangelog(version string) (*Changelog, error) {
+	want, err := ParseVersion(version)
+	if err != nil {
+		return nil, err
+	}
+
+	released, err := p.ParseReleased()
+	if err != nil {
+		return nil, err
+	}
+
+	for i := range released.Releases {
+		got, err := ParseVersion(released.Releases[i].Info.Version)
+		if err != nil {
+			return nil, err
+		}
+
+		if !got.EQ(want) {
+			continue
+		}
+
+		return &Changelog{
+			VersionPrefix: p.cfg.VersionPrefix,
+			Releases:      []Release{released.Releases[i]},
+		}, nil
+	}
+
+	return nil, &VersionNotFoundError{Version: version}
+}
+
+// UnreleasedChangelog returns a changelog holding the pending entries as a
+// single, versionless release.
+func (p *Project) UnreleasedChangelog() (*Changelog, error) {
+	entries, err := p.LoadUnreleasedEntries()
+	if err != nil {
+		return nil, err
+	}
+
+	return &Changelog{
+		VersionPrefix: p.cfg.VersionPrefix,
+		Releases:      []Release{{Entries: entries}},
+	}, nil
+}
+
+// VersionNotFoundError reports that a version has not been released.
+type VersionNotFoundError struct {
+	Version string
+}
+
+func (e *VersionNotFoundError) Error() string {
+	return "no release found for version " + e.Version
+}

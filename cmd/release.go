@@ -2,8 +2,11 @@ package cmd
 
 import (
 	"errors"
+	"fmt"
 	"log/slog"
+	"path/filepath"
 	"regexp"
+	"strings"
 	"time"
 
 	"github.com/urfave/cli/v2"
@@ -23,6 +26,15 @@ func newReleaseCmd() *cli.Command {
 				Name:  "pre-release",
 				Usage: "If set to true, it will treat the version as a pre-release",
 			},
+			&cli.BoolFlag{
+				Name:    "dry-run",
+				Usage:   "Prints the release notes that would be written, changing nothing on disk",
+				Aliases: []string{"d"},
+			},
+			&cli.BoolFlag{
+				Name:  "allow-empty",
+				Usage: "Releases even though there are no unreleased entries",
+			},
 		},
 	}
 }
@@ -30,7 +42,7 @@ func newReleaseCmd() *cli.Command {
 var semverRegex = regexp.MustCompile(`^(?P<major>0|[1-9]\d*)\.(?P<minor>0|[1-9]\d*)\.(?P<patch>0|[1-9]\d*)(?:-(?P<prerelease>(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+(?P<buildmetadata>[0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$`)
 
 func releaseAction(c *cli.Context) error {
-	project, err := loadMigratedProject()
+	project, err := loadMigratedProject(c)
 	if err != nil {
 		return err
 	}
@@ -68,6 +80,14 @@ func releaseAction(c *cli.Context) error {
 		return err
 	}
 
+	// Releasing nothing is nearly always a mistake -- the wrong branch, or
+	// entries a previous release already consumed.
+	if len(entries) == 0 && !c.Bool("allow-empty") {
+		return nothingToDoError(
+			"no unreleased entries found, so %q would be an empty release. Pass --allow-empty to release anyway",
+			rawVersion)
+	}
+
 	slog.Info("Releasing new version",
 		slog.String("version", rawVersion), slog.Bool("is_pre_release", isPreRelease),
 		slog.Int("num_entries", len(entries)))
@@ -80,6 +100,10 @@ func releaseAction(c *cli.Context) error {
 			IsPreRelease: isPreRelease,
 		},
 		Entries: entries,
+	}
+
+	if c.Bool("dry-run") {
+		return printDryRunRelease(project, release)
 	}
 
 	if err := project.CreateRelease(release); err != nil {
@@ -99,4 +123,26 @@ func releaseAction(c *cli.Context) error {
 	}
 
 	return released.SaveToFile(project.OutputPath())
+}
+
+// printDryRunRelease prints the notes the release would get, without touching
+// the project.
+func printDryRunRelease(project *changelog.Project, release changelog.Release) error {
+	cl := &changelog.Changelog{
+		VersionPrefix: project.Config().VersionPrefix,
+		Releases:      []changelog.Release{release},
+	}
+
+	out, err := cl.RenderReleases(true)
+	if err != nil {
+		return err
+	}
+
+	slog.Info("Dry run, nothing was written",
+		slog.String("release_dir", filepath.Join(project.ReleasedDir(), release.Info.Version)),
+		slog.String("output_file", project.OutputPath()))
+
+	fmt.Println(strings.TrimSpace(string(out)))
+
+	return nil
 }

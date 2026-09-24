@@ -1,9 +1,12 @@
 package cmd
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/urfave/cli/v2"
+
+	"gitlab.com/l0nax/changelog-go/internal/changelog"
 )
 
 func newLatestCmd() *cli.Command {
@@ -25,13 +28,18 @@ func newLatestCmd() *cli.Command {
 }
 
 func latestAction(c *cli.Context) error {
-	project, err := loadProject()
+	project, err := loadProject(c)
 	if err != nil {
 		return err
 	}
 
 	release, err := project.LatestRelease(c.Bool("skip-prereleases"))
 	if err != nil {
+		var notFound *changelog.NoReleasesError
+		if errors.As(err, &notFound) {
+			return notFoundError("%s", err)
+		}
+
 		return err
 	}
 

@@ -28,6 +28,10 @@ const (
 	// ReleaseInfoFileName is the name of the file holding a release's
 	// metadata.
 	ReleaseInfoFileName = "ReleaseInfo"
+
+	// UnreleasedHeading is the heading rendered for the pending entries,
+	// which have no version of their own yet.
+	UnreleasedHeading = "Unreleased"
 )
 
 // Changelog is the set of releases rendered into the changelog file.
@@ -38,8 +42,30 @@ type Changelog struct {
 	Releases []Release
 }
 
-// Render returns the rendered changelog.
+// renderData is what the templates are executed against.
+//
+// It carries the render-time options that are not part of the changelog
+// itself, so the same release template serves the changelog file and
+// "changelog show".
+type renderData struct {
+	*Changelog
+
+	// ShowHeading renders the "## v1.2.3 (date)" line above each release.
+	ShowHeading bool
+}
+
+// Render returns the rendered changelog, preamble included.
 func (c *Changelog) Render() ([]byte, error) {
+	return c.render(defaultChangelogScheme, true)
+}
+
+// RenderReleases renders just the release blocks, without the changelog
+// preamble. This is what a forge publishes as the release notes.
+func (c *Changelog) RenderReleases(showHeading bool) ([]byte, error) {
+	return c.render(defaultReleaseScheme, showHeading)
+}
+
+func (c *Changelog) render(scheme string, showHeading bool) ([]byte, error) {
 	if err := c.prepare(); err != nil {
 		return nil, err
 	}
@@ -47,9 +73,9 @@ func (c *Changelog) Render() ([]byte, error) {
 	// TODO: Allow overriding the default
 	tmpl, err := template.New("changelog-tmpl").
 		Funcs(template.FuncMap{
-			"formatTime": formatTime,
+			"indentBody": indentBody,
 		}).
-		Parse(defaultChangelogScheme)
+		Parse(scheme)
 	if err != nil {
 		return nil, err
 	}
@@ -57,7 +83,8 @@ func (c *Changelog) Render() ([]byte, error) {
 	var out bytes.Buffer
 	out.Grow(1024 * 1024) // 1 MB
 
-	if err := tmpl.Execute(&out, c); err != nil {
+	data := renderData{Changelog: c, ShowHeading: showHeading}
+	if err := tmpl.Execute(&out, data); err != nil {
 		return nil, err
 	}
 
@@ -92,7 +119,18 @@ func (c *Changelog) prepare() error {
 	for i := range c.Releases {
 		release := &c.Releases[i]
 
-		release.DisplayVersion = ApplyVersionPrefix(c.VersionPrefix, release.Info.Version)
+		// The pending set has neither a version nor a release date yet.
+		if release.Info.Version == "" {
+			release.DisplayVersion = UnreleasedHeading
+		} else {
+			release.DisplayVersion = ApplyVersionPrefix(c.VersionPrefix, release.Info.Version)
+		}
+
+		release.DisplayDate = ""
+		if !release.Info.ReleaseDate.IsZero() {
+			release.DisplayDate = formatTime(release.Info.ReleaseDate)
+		}
+
 		release.GrouppedEntries = groupEntries(release.Entries)
 	}
 
@@ -104,7 +142,15 @@ func (c *Changelog) SortByRelease() error {
 	// Parsed up front because a comparison function cannot report an error.
 	versions := make(map[string]semver.Version, len(c.Releases))
 
-	for _, release := range c.Releases {
+	for i := range c.Releases {
+		release := &c.Releases[i]
+
+		if release.Info.Version == "" {
+			// the pending set sorts above everything, which is where it
+			// belongs and where the zero value already puts it
+			continue
+		}
+
 		version, err := ParseVersion(release.Info.Version)
 		if err != nil {
 			return err
@@ -238,7 +284,9 @@ func (p *Project) markSupersededPreReleases(cl *Changelog) error {
 
 	finalized := make(map[string]struct{}, len(cl.Releases))
 
-	for _, release := range cl.Releases {
+	for i := range cl.Releases {
+		release := &cl.Releases[i]
+
 		if release.Info.IsPreRelease {
 			continue
 		}

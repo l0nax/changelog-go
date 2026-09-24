@@ -151,17 +151,29 @@ func (p *Project) LatestRelease(skipPreReleases bool) (Release, error) {
 		return Release{}, err
 	}
 
-	for _, release := range released.Releases {
-		if skipPreReleases && release.Info.IsPreRelease {
+	for i := range released.Releases {
+		if skipPreReleases && released.Releases[i].Info.IsPreRelease {
 			continue
 		}
 
-		return release, nil
+		return released.Releases[i], nil
 	}
 
-	if skipPreReleases {
-		return Release{}, errors.New("no released versions found (excluding pre-releases)")
+	return Release{}, &NoReleasesError{SkippedPreReleases: skipPreReleases}
+}
+
+// NoReleasesError reports that the project has nothing to return a latest
+// release from.
+type NoReleasesError struct {
+	// SkippedPreReleases records whether pre-releases were excluded, which
+	// changes what the user has to do about it.
+	SkippedPreReleases bool
+}
+
+func (e *NoReleasesError) Error() string {
+	if e.SkippedPreReleases {
+		return "no released versions found (excluding pre-releases)"
 	}
 
-	return Release{}, errors.New("no released versions found")
+	return "no released versions found"
 }

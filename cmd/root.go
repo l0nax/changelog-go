@@ -2,6 +2,7 @@
 package cmd
 
 import (
+	"errors"
 	"fmt"
 	"log/slog"
 	"os"
@@ -47,6 +48,17 @@ file.`,
 				Usage: "Disables color output",
 				Value: false,
 			},
+			&cli.StringFlag{
+				Name:    "config",
+				Usage:   "Path to the config file, skipping the upward search",
+				Aliases: []string{"c"},
+				EnvVars: []string{"CHANGELOG_CONFIG"},
+			},
+			&cli.StringFlag{
+				Name:    "changelog-dir",
+				Usage:   "Overrides the configured changelog directory",
+				EnvVars: []string{"CHANGELOG_DIR"},
+			},
 		},
 		Before: func(c *cli.Context) error {
 			var lvl slog.Level
@@ -83,20 +95,42 @@ file.`,
 			newMigrateCmd(),
 			newNextCmd(),
 			newLatestCmd(),
+			newShowCmd(),
+			newVersionCmd(),
 		},
+		// Errors are reported here so that every command exits through the
+		// documented codes in exit.go.
+		ExitErrHandler: func(_ *cli.Context, err error) {},
 	}
 
 	if err := app.Run(os.Args); err != nil {
 		slog.Error(err.Error())
-		os.Exit(1)
+		os.Exit(exitCodeOf(err))
 	}
 }
 
+// exitCodeOf returns the documented exit code err asks for, defaulting to
+// [ExitError].
+func exitCodeOf(err error) int {
+	var coder cli.ExitCoder
+	if errors.As(err, &coder) {
+		return coder.ExitCode()
+	}
+
+	return ExitError
+}
+
 // loadProject returns the project described by the nearest config file.
-func loadProject() (*changelog.Project, error) {
-	path, err := findConfig()
-	if err != nil {
-		return nil, err
+func loadProject(c *cli.Context) (*changelog.Project, error) {
+	path := c.String("config")
+
+	if path == "" {
+		found, err := findConfig()
+		if err != nil {
+			return nil, err
+		}
+
+		path = found
 	}
 
 	cfg, err := config.Load(path)
@@ -104,13 +138,26 @@ func loadProject() (*changelog.Project, error) {
 		return nil, err
 	}
 
-	return changelog.NewProject(cfg, filepath.Dir(path)), nil
+	rootDir := filepath.Dir(path)
+
+	// An explicit --changelog-dir is what the user typed, so it is relative to
+	// the working directory rather than to the config file.
+	if override := c.String("changelog-dir"); override != "" {
+		abs, err := filepath.Abs(override)
+		if err != nil {
+			return nil, err
+		}
+
+		cfg.ChangelogDir = abs
+	}
+
+	return changelog.NewProject(cfg, rootDir), nil
 }
 
 // loadMigratedProject returns the project, or an error if it still uses the v1
 // layout.
-func loadMigratedProject() (*changelog.Project, error) {
-	project, err := loadProject()
+func loadMigratedProject(c *cli.Context) (*changelog.Project, error) {
+	project, err := loadProject(c)
 	if err != nil {
 		return nil, err
 	}

@@ -16,6 +16,10 @@ and adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Added (1 change)
 - Add the apparatus
 
+  Explains why the apparatus exists and what it replaces.
+
+  Second paragraph of the body.
+
 ### retired_type (1 change)
 - Something from a retired type
 
