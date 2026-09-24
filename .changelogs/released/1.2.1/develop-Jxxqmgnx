@@ -1,2 +1,2 @@
-title: Disable error message for update check
-type: 1
+change_type_id = "bug_fix"
+title = "Disable error message for update check"

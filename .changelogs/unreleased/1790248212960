@@ -1,0 +1,2 @@
+change_type_id = 'feat_change'
+title = 'Reject unknown keys in the config and in entry files, naming the offending line'

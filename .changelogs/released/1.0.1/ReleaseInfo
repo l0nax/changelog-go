@@ -1,2 +1,3 @@
-isprerelease: false
-releasedate: "2020-01-02"
+version = "1.0.1"
+date = 2020-01-02T00:00:00Z
+pre_release = false

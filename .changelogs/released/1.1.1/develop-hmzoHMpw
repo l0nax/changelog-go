@@ -1,2 +1,2 @@
-title: Fix 'error on number conversion' on Windows platform
-type: 1
+change_type_id = "bug_fix"
+title = "Fix 'error on number conversion' on Windows platform"

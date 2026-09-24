@@ -1,2 +1,2 @@
-title: Add auto-updater
-type: 0
+change_type_id = "new_feat"
+title = "Add auto-updater"

@@ -1,2 +1,2 @@
-title: Search config file by going the file-system up stopping at '/' instead of relying on the git library
-type: 2
+change_type_id = "feat_change"
+title = "Search config file by going the file-system up stopping at '/' instead of relying on the git library"

@@ -1,2 +1,2 @@
-title: Fix bug where existing `ReleaseInfo` file of a release isn't processed by `changelog-go`
-type: 1
+change_type_id = "bug_fix"
+title = "Fix bug where existing `ReleaseInfo` file of a release isn't processed by `changelog-go`"

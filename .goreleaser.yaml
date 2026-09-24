@@ -1,0 +1,116 @@
+# yaml-language-server: $schema=https://goreleaser.com/static/schema.json
+# vim: set ts=2 sw=2 tw=0 fo=cnqoj
+
+version: 2
+
+# The command is "changelog", as it was in v1. The repository and the Go module
+# are still changelog-go; only the binary, the archives and the formula use the
+# short name, so that scripts written against v1 keep working.
+project_name: changelog
+
+before:
+  hooks:
+    - go mod tidy
+
+builds:
+  - id: "default"
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - windows
+      - darwin
+
+    goarch:
+      - amd64
+      - arm64
+
+    # No -X stamps: the toolchain records the version, commit and dirtiness in
+    # the build info by itself, and internal/version reads them back. Set
+    # explicitly so that GoReleaser does not fall back to its default
+    # "-X main.version=..." flags, which this binary has nowhere to put.
+    #
+    # Stripping is safe here: the build info lives in its own section and
+    # survives -s -w.
+    ldflags:
+      - -s
+      - -w
+
+archives:
+  - format: tar.gz
+    # this name template makes the OS and Arch compatible with the results of `uname`.
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+
+    # use zip for windows archives
+    format_overrides:
+      - goos: windows
+        format: zip
+
+# The notes come from this tool's own changelog, not from the commit log:
+# CI writes them with "changelog show" and passes --release-notes.
+changelog:
+  disable: true
+
+# The release is created with the pipeline's own CI_JOB_TOKEN, so no personal
+# or project token has to exist. The job sets GITLAB_TOKEN to it.
+gitlab_urls:
+  use_job_token: true
+
+brews:
+  - name: changelog
+
+    # The tap is this repository, with the formula at its root:
+    #   brew tap l0nax/changelog-go https://gitlab.com/l0nax/changelog-go
+    repository:
+      owner: l0nax
+      name: changelog-go
+
+    homepage: "https://gitlab.com/l0nax/changelog-go"
+    description: "Keep a changelog without merge conflicts, one entry file per change"
+    license: "MIT"
+
+    dependencies:
+      - name: git
+
+    # Published by hand, on purpose: pushing the formula would need a token
+    # with project API access, which CI_JOB_TOKEN does not have. GoReleaser
+    # writes the formula to dist/ and stops there.
+    #
+    # After a release the formula has to be committed by hand; see
+    # RELEASING.md. It carries the version and the archive checksums, so it is
+    # wrong until that happens -- which is how the v1 formula sat at 1.4.1 for
+    # three years.
+    skip_upload: true
+
+    install: |
+      bin.install "changelog"
+
+    test: |
+      system "#{bin}/changelog", "version"
+
+release:
+  gitlab:
+    owner: l0nax
+    name: changelog-go
+
+  ids:
+    - default
+
+  name_template: "v{{.Version}}"
+
+  disable: false
+
+  # Mark a release built from a pre-release tag as such, instead of presenting
+  # an rc as the current version.
+  prerelease: auto
+
+  # What to do with the release notes in case there the release already exists.
+  #
+  # Valid options are:
+  # - `keep-existing`: keep the existing notes
+  # - `append`: append the current release notes to the existing notes
+  # - `prepend`: prepend the current release notes to the existing notes
+  # - `replace`: replace existing notes
+  #
+  # Default: 'keep-existing'.
+  mode: keep-existing

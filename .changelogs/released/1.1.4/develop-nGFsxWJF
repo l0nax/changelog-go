@@ -1,2 +1,2 @@
-title: Fix bug in 'update avail.' checker
-type: 1
+change_type_id = "bug_fix"
+title = "Fix bug in 'update avail.' checker"

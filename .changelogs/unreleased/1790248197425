@@ -1,0 +1,2 @@
+change_type_id = 'new_feat'
+title = 'Add `check` command to enforce a changelog entry per merge request'

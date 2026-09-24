@@ -1,2 +1,2 @@
-title: Add 'update' command
-type: 0
+change_type_id = "new_feat"
+title = "Add 'update' command"

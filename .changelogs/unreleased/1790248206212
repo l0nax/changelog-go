@@ -1,0 +1,2 @@
+change_type_id = 'bug_fix'
+title = 'Fix `latest` never loading the config, so the command always failed'

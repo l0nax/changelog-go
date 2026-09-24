@@ -1,2 +1,2 @@
-title: Sort change-entries per Change-Type in resulting CHANGELOG.md
-type: 0
+change_type_id = "new_feat"
+title = "Sort change-entries per Change-Type in resulting CHANGELOG.md"

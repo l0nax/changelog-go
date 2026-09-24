@@ -1,125 +1,206 @@
-/*
-Copyright © 2019 Emanuel Bennici <eb@fabmation.de>
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
-*/
 package cmd
 
 import (
-	"bufio"
+	"errors"
 	"fmt"
+	"log/slog"
 	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
+	"time"
 
-	"github.com/kr/pretty"
-	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
+	"github.com/mattn/go-isatty"
+	"github.com/urfave/cli/v2"
+	"go.l0nax.org/typact"
 
-	"gitlab.com/l0nax/changelog-go/internal"
-	"gitlab.com/l0nax/changelog-go/pkg/changelog"
-	"gitlab.com/l0nax/changelog-go/pkg/entry"
-	"gitlab.com/l0nax/changelog-go/pkg/gut"
+	"gitlab.com/l0nax/changelog-go/internal/changelog"
+	"gitlab.com/l0nax/changelog-go/internal/config"
+	"gitlab.com/l0nax/changelog-go/internal/tui/create"
 )
 
-// newCmd represents the new command
-var newCmd = &cobra.Command{
-	Use:   "new <title>",
-	Short: "Create a new Changelog-Entry",
-	Long: `"new" creates a new Changelog-Entry so you can easily commit
-your entry.`,
-	Args: cobra.ExactArgs(1),
-	Run: func(cmd *cobra.Command, args []string) {
-		// configuration is required
-		initConfig()
+func newNewCmd() *cli.Command {
+	return &cli.Command{
+		Name: "new",
+		UsageText: `New creates a changelog entry so you can commit it alongside your change.
 
-		// check if first Argument is set
-		title := args[0]
+Given both --type and --title it runs without any terminal interaction, which is
+what makes it usable from CI, a git hook or an editor plugin:
 
-		if len(title) == 0 {
-			log.Fatalln("The Title of your Change MUST be specified!")
-		}
-
-		// check if needed Directories exists
-		changelog.CheckDir()
-
-		var author string
-		var err error
-
-		// get Author if enabled in Config
-		if viper.GetBool("entry.author") {
-			log.Debug("'entry.author' is enabled, so the Author will be grabbed and used.")
-
-			// get the Author
-			author, err = gut.GetAuthorName()
-			if err != nil {
-				os.Exit(1)
-			}
-		}
-
-		// create Entry
-		changelogEntry := entry.Entry{
-			ChangeTitle: title,
-			Author:      author,
-		}
-
-		// get all available Entry Types
-		for i, entryType := range internal.EntryT.ListAvailableTypes() {
-			fmt.Printf("[%d] %- 20s (%s)\n", i,
-				(*entryType).GetTypeDescription(),
-				(*entryType).GetShortTypeName())
-		}
-
-		reader := bufio.NewReader(os.Stdin)
-		fmt.Print(">> ")
-
-		// ask User about Entry Type
-		text, err := reader.ReadString('\n')
-		if err != nil {
-			log.WithError(err).Fatalln("could not read input")
-		}
-
-		// convert CRLF to LF
-		text = strings.Replace(text, "\n", "", -1)
-		text = strings.Replace(text, "\r", "", -1)
-
-		// convert input to Number
-		var choosenType int
-
-		if choosenType, err = strconv.Atoi(text); err != nil {
-			log.WithError(err).Fatalln("Please enter only VALID numbers (error while converting)!")
-		}
-
-		// check if Number does exists in our Entry Types List
-		if choosenType >= len(internal.EntryT.ListAvailableTypes()) {
-			log.Debugln(len(internal.EntryT.ListAvailableTypes()))
-			log.Debugf("%# v\n", pretty.Formatter(internal.EntryT.ListAvailableTypes()))
-
-			log.Fatalln("Please choose a VALID number!")
-		}
-
-		// create Entry
-		changelogEntry.Type = internal.EntryT.ListAvailableTypes()[choosenType]
-		changelog.AddEntry(changelogEntry)
-	},
+    changelog new -t bug_fix --title "Fix the sprocket"`,
+		ArgsUsage: "<title>",
+		Args:      true,
+		Action:    newAction,
+		Flags: []cli.Flag{
+			&cli.StringFlag{
+				Name:    "type",
+				Usage:   "ID of the change type, as configured under [[entry.types]]",
+				Aliases: []string{"t"},
+			},
+			&cli.StringFlag{
+				Name:  "title",
+				Usage: "Title of the entry, taking precedence over the positional argument",
+			},
+			&cli.StringFlag{
+				Name:    "body",
+				Usage:   "Optional long-form description, rendered underneath the title",
+				Aliases: []string{"b"},
+			},
+			&cli.StringFlag{
+				Name:  "author",
+				Usage: "Author to record on the entry",
+			},
+			&cli.BoolFlag{
+				Name:    "dry-run",
+				Usage:   "Prints the entry that would be written, without writing it",
+				Aliases: []string{"d"},
+			},
+			&cli.BoolFlag{
+				Name:    "interactive",
+				Usage:   "Prompts for anything not given as a flag (defaults to false when stdin is not a TTY)",
+				Aliases: []string{"i"},
+				Value:   true,
+			},
+		},
+	}
 }
 
-func init() {
-	rootCmd.AddCommand(newCmd)
+func newAction(c *cli.Context) error {
+	project, err := loadProject(c)
+	if err != nil {
+		return err
+	}
+
+	cfg := project.Config()
+
+	title := c.String("title")
+	if title == "" {
+		title = c.Args().First()
+	}
+
+	changeType, err := selectedChangeType(c, cfg)
+	if err != nil {
+		return err
+	}
+
+	// Prompt only for what is still missing, and only if we may.
+	if changeType.IsNone() || title == "" {
+		if !isInteractive(c) {
+			return usageError("%s. Pass them as flags or run interactively",
+				strings.Join(missingInputs(changeType, title), " and "))
+		}
+
+		input, err := create.Run(cfg, create.Options{
+			PreselectedType: changeType,
+			AskTitle:        title == "",
+		})
+		if err != nil {
+			if errors.Is(err, create.ErrCanceled) {
+				slog.Info("Operation canceled")
+
+				return nil
+			}
+
+			return err
+		}
+
+		changeType = typact.Some(input.Type)
+
+		if title == "" {
+			title = input.Title
+		}
+	}
+
+	entry := changelog.Entry{
+		ChangeTypeID: changeType.UnwrapOrZero().ID,
+		Title:        title,
+		Body:         optionalFlag(c, "body"),
+		Author:       optionalFlag(c, "author"),
+	}
+
+	dir := project.UnreleasedDir()
+	path := filepath.Join(dir, strconv.FormatInt(time.Now().UnixMilli(), 10))
+
+	if c.Bool("dry-run") {
+		raw, err := entry.Marshal()
+		if err != nil {
+			return err
+		}
+
+		slog.Info("Would write changelog entry", slog.String("file_path", path))
+		fmt.Print(string(raw))
+
+		return nil
+	}
+
+	if err := os.MkdirAll(dir, 0o755); err != nil {
+		return err
+	}
+
+	slog.Debug("Saving new entry in file", slog.String("file_path", path))
+
+	return entry.SaveToFile(path)
+}
+
+// selectedChangeType resolves --type against the configured types.
+func selectedChangeType(c *cli.Context, cfg config.Config) (typact.Option[config.ChangeType], error) {
+	id := c.String("type")
+	if id == "" {
+		return typact.None[config.ChangeType](), nil
+	}
+
+	changeType, ok := cfg.ResolveType(id)
+	if !ok {
+		return typact.None[config.ChangeType](),
+			usageError("unknown change type %q. Configured types: %s", id, configuredTypeIDs(cfg))
+	}
+
+	return typact.Some(changeType), nil
+}
+
+// configuredTypeIDs lists the type IDs an entry may use.
+func configuredTypeIDs(cfg config.Config) string {
+	ids := make([]string, 0, len(cfg.Entry.Types))
+	for _, typ := range cfg.Entry.Types {
+		ids = append(ids, typ.ID)
+	}
+
+	return strings.Join(ids, ", ")
+}
+
+// missingInputs names what the caller still has to supply.
+func missingInputs(changeType typact.Option[config.ChangeType], title string) []string {
+	var missing []string
+
+	if changeType.IsNone() {
+		missing = append(missing, "no change type given (--type)")
+	}
+
+	if title == "" {
+		missing = append(missing, "no title given (--title)")
+	}
+
+	return missing
+}
+
+// isInteractive reports whether the command may prompt.
+//
+// Prompting is off whenever stdin is not a terminal, so that a CI job, a git
+// hook or a test never hangs waiting for input it cannot give. An explicit
+// --interactive overrides the detection.
+func isInteractive(c *cli.Context) bool {
+	if c.IsSet("interactive") {
+		return c.Bool("interactive")
+	}
+
+	return isatty.IsTerminal(os.Stdin.Fd()) || isatty.IsCygwinTerminal(os.Stdin.Fd())
+}
+
+// optionalFlag returns the flag value as an option, absent when unset.
+func optionalFlag(c *cli.Context, name string) typact.Option[string] {
+	if value := c.String(name); value != "" {
+		return typact.Some(value)
+	}
+
+	return typact.None[string]()
 }

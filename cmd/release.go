@@ -1,108 +1,188 @@
-/*
-Copyright © 2019 Emanuel Bennici <eb@fabmation.de>
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
-*/
 package cmd
 
 import (
+	"errors"
+	"fmt"
+	"log/slog"
+	"path/filepath"
 	"regexp"
 	"strings"
 	"time"
 
-	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
+	"github.com/urfave/cli/v2"
 
-	"gitlab.com/l0nax/changelog-go/pkg/changelog"
+	"gitlab.com/l0nax/changelog-go/internal/changelog"
 )
 
-// releaseCmd represents the release command
-var releaseCmd = &cobra.Command{
-	Use:   "release <version>",
-	Short: "This Command will generate the CHANGELOG.md file.",
-	Long: `The CHANGELOG.md will be generated and – depending on
-the configuration and flags – the Entry files will be moved to the 'released'
-Folder.`,
-	Example: `  release 1.0.0`,
-	Args:    cobra.ExactArgs(1),
-	Run: func(cmd *cobra.Command, args []string) {
-		// configuration is required
-		initConfig()
+func newReleaseCmd() *cli.Command {
+	return &cli.Command{
+		Name: "release",
+		UsageText: `Releases a new version and regenerates the changelog file.
 
-		newRelease := changelog.Release{}
-		newRelease.Info = &changelog.ReleaseInfo{}
+Pass the version, or let the pending entries decide it:
 
-		// remove 'v' to prevent bugs like #4, but only from the start
-		// of the version string.
-		versionString := strings.TrimPrefix(args[0], "v")
-
-		r := regexp.MustCompile(`^(?P<major>0|[1-9]\d*)\.(?P<minor>0|[1-9]\d*)\.(?P<patch>0|[1-9]\d*)(?:-(?P<prerelease>(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+(?P<buildmetadata>[0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$`)
-		newRelease.Info.Version = r.FindStringSubmatch(versionString)
-
-		// this Variable describes if the current release is a Pre-Release
-		var isPreRelrease bool
-
-		// check if Version is a pre-release
-		if viper.GetBool("preRelease.detect") {
-			// check if regex returned data
-			if len(newRelease.Info.Version) == 0 {
-				log.Info("NOTE: Automatically pre-release detection doesn't work with given version string.")
-			} else {
-				// check if Version is a pre-release
-				for i, group := range r.SubexpNames() {
-					if group == "prerelease" {
-						if newRelease.Info.Version[i] != "" {
-							isPreRelrease = true
-						}
-
-						break
-					}
-				}
-			}
-		}
-
-		log.Debugf("Releasing version '%#v'\n", newRelease.Info.Version)
-
-		fIsPreRelease, err := cmd.Flags().GetBool("pre-release")
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		if isPreRelrease || fIsPreRelease {
-			newRelease.Info.IsPreRelease = true
-			log.Debugln("Current release is a Pre-Release!")
-		}
-
-		newRelease.Info.ReleaseDate, err = cmd.Flags().GetString("release-date")
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		// generate CHANGELOG.md
-		changelog.GenerateChangelog(&newRelease)
-	},
+    changelog release 1.4.0
+    changelog release --auto`,
+		ArgsUsage: "[version]",
+		Args:      true,
+		Action:    releaseAction,
+		Flags: []cli.Flag{
+			&cli.BoolFlag{
+				Name:  "auto",
+				Usage: "Derives the version from the pending entries, as `next auto` does",
+			},
+			&cli.BoolFlag{
+				Name:  "pre-release",
+				Usage: "If set to true, it will treat the version as a pre-release",
+			},
+			&cli.BoolFlag{
+				Name:    "dry-run",
+				Usage:   "Prints the release notes that would be written, changing nothing on disk",
+				Aliases: []string{"d"},
+			},
+			&cli.BoolFlag{
+				Name:  "allow-empty",
+				Usage: "Releases even though there are no unreleased entries",
+			},
+		},
+	}
 }
 
-func init() {
-	rootCmd.AddCommand(releaseCmd)
+var semverRegex = regexp.MustCompile(`^(?P<major>0|[1-9]\d*)\.(?P<minor>0|[1-9]\d*)\.(?P<patch>0|[1-9]\d*)(?:-(?P<prerelease>(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+(?P<buildmetadata>[0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$`)
 
-	releaseCmd.Flags().StringP("release-date", "d", time.Now().Format("2006-01-02"), "set the release date, defaults to today")
-	releaseCmd.Flags().BoolP("pre-release", "p", false, `Mark this Release as pre-release in the CHANGELOG.md.
-The Output and how the Application reacts depends on your Configuration.`)
+// releaseVersion returns the version to release, either the one given or the
+// one the pending entries imply.
+func releaseVersion(c *cli.Context, project *changelog.Project) (string, error) {
+	given := c.Args().First()
+
+	if !c.Bool("auto") {
+		if given == "" {
+			return "", usageError("no version specified: pass one, or use --auto to derive it from the pending entries")
+		}
+
+		return given, nil
+	}
+
+	if given != "" {
+		return "", usageError("--auto derives the version from the pending entries, so do not also pass %q", given)
+	}
+
+	proposed, err := project.NextVersion(changelog.VersionModeAuto)
+	if err != nil {
+		return "", err
+	}
+
+	slog.Info("Derived version from the pending entries",
+		slog.String("version", project.DisplayVersion(proposed.Version)),
+		slog.String("effect", proposed.VersionType.String()))
+
+	// the bare form: the directory is named by what is passed here, and the
+	// prefix belongs to rendering
+	return proposed.Version, nil
+}
+
+func releaseAction(c *cli.Context) error {
+	project, err := loadMigratedProject(c)
+	if err != nil {
+		return err
+	}
+
+	cfg := project.Config()
+
+	rawVersion, err := releaseVersion(c, project)
+	if err != nil {
+		return err
+	}
+
+	versionMatch := semverRegex.FindStringSubmatch(rawVersion)
+
+	isPreRelease := c.Bool("pre-release")
+	if !isPreRelease && cfg.PreRelease.Detect { // only try detection if not manually defined
+		if len(versionMatch) == 0 {
+			return errors.New("pre-release detection is enabled but the version is not valid SemVer")
+		}
+
+		for i, group := range semverRegex.SubexpNames() {
+			if group == "prerelease" {
+				if versionMatch[i] != "" {
+					isPreRelease = true
+				}
+
+				break
+			}
+		}
+	}
+
+	slog.Debug("Loading unreleased changelog entries")
+
+	entries, err := project.LoadUnreleasedEntries()
+	if err != nil {
+		return err
+	}
+
+	// Releasing nothing is nearly always a mistake -- the wrong branch, or
+	// entries a previous release already consumed.
+	if len(entries) == 0 && !c.Bool("allow-empty") {
+		return nothingToDoError(
+			"no unreleased entries found, so %q would be an empty release. Pass --allow-empty to release anyway",
+			rawVersion)
+	}
+
+	slog.Info("Releasing new version",
+		slog.String("version", rawVersion), slog.Bool("is_pre_release", isPreRelease),
+		slog.Int("num_entries", len(entries)))
+
+	release := changelog.Release{
+		Info: changelog.ReleaseInfo{
+			Version: rawVersion,
+			// truncated: the timestamp lands in a committed file
+			ReleaseDate:  time.Now().Truncate(time.Second),
+			IsPreRelease: isPreRelease,
+		},
+		Entries: entries,
+	}
+
+	if c.Bool("dry-run") {
+		return printDryRunRelease(project, release)
+	}
+
+	if err := project.CreateRelease(release); err != nil {
+		return err
+	}
+
+	// before rendering, which is what gives deletion precedence over folding
+	if !isPreRelease && cfg.PreRelease.DeletePreRelease {
+		if err := project.RemoveSupersededPreReleases(rawVersion); err != nil {
+			return err
+		}
+	}
+
+	released, err := project.ParseReleased()
+	if err != nil {
+		return err
+	}
+
+	return released.SaveToFile(project.OutputPath())
+}
+
+// printDryRunRelease prints the notes the release would get, without touching
+// the project.
+func printDryRunRelease(project *changelog.Project, release changelog.Release) error {
+	cl := &changelog.Changelog{
+		VersionPrefix: project.Config().VersionPrefix,
+		Releases:      []changelog.Release{release},
+	}
+
+	out, err := cl.RenderReleases(true)
+	if err != nil {
+		return err
+	}
+
+	slog.Info("Dry run, nothing was written",
+		slog.String("release_dir", filepath.Join(project.ReleasedDir(), release.Info.Version)),
+		slog.String("output_file", project.OutputPath()))
+
+	fmt.Println(strings.TrimSpace(string(out)))
+
+	return nil
 }

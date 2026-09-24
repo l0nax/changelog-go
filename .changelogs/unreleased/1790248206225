@@ -1,0 +1,2 @@
+change_type_id = 'bug_fix'
+title = 'Fix `next auto` deriving the version from the previous release instead of the pending entries'

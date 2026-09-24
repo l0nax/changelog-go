@@ -1,0 +1,6 @@
+change_type_id = 'new_feat'
+title = 'Add the apparatus'
+body = '''
+Explains why the apparatus exists and what it replaces.
+
+Second paragraph of the body.'''

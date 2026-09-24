@@ -1,2 +1,2 @@
-title: Deprecate 'gut' package
-type: 3
+change_type_id = "deprecate"
+title = "Deprecate 'gut' package"

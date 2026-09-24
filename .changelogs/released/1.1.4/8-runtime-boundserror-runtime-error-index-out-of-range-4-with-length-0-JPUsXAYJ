@@ -1,2 +1,2 @@
-title: Fix runtime.errorString in CheckUpdate algo ([#9](https://gitlab.com/l0nax/changelog-go/-/issues/9))
-type: 1
+change_type_id = "bug_fix"
+title = "Fix runtime.errorString in CheckUpdate algo ([#9](https://gitlab.com/l0nax/changelog-go/-/issues/9))"

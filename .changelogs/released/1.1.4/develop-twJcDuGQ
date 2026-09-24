@@ -1,3 +1,2 @@
-title: Fix that no stacktrace will be send to Sentry. It also improves how the messages
-  are stacked and send.
-type: 1
+change_type_id = "bug_fix"
+title = "Fix that no stacktrace will be send to Sentry. It also improves how the messages"
