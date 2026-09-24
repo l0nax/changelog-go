@@ -36,10 +36,17 @@ builds:
       - -s
       - -w
 
+# Semver build metadata ("+1") is dropped from every artifact name. GitLab
+# rejects a release asset filepath containing "+" ("Filepath is in an invalid
+# format"), and in a URL "+" means a space anyway. Build metadata is ignored for
+# version precedence, so nothing is lost by leaving it out of the filename.
+checksum:
+  name_template: "{{ .ProjectName }}_{{ .Major }}.{{ .Minor }}.{{ .Patch }}{{ with .Prerelease }}-{{ . }}{{ end }}_checksums.txt"
+
 archives:
   - formats: [tar.gz]
     # this name template makes the OS and Arch compatible with the results of `uname`.
-    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    name_template: "{{ .ProjectName }}_{{ .Major }}.{{ .Minor }}.{{ .Patch }}{{ with .Prerelease }}-{{ . }}{{ end }}_{{ .Os }}_{{ .Arch }}"
 
     # use zip for windows archives
     format_overrides:
