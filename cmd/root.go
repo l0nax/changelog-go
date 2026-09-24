@@ -97,7 +97,12 @@ file.`,
 			newLatestCmd(),
 			newShowCmd(),
 			newVersionCmd(),
+			newCheckCmd(),
+			newValidateCmd(),
+			newCompletionCmd(),
+			newManCmd(),
 		},
+		EnableBashCompletion: true,
 		// Errors are reported here so that every command exits through the
 		// documented codes in exit.go.
 		ExitErrHandler: func(_ *cli.Context, err error) {},

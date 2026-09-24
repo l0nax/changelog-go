@@ -119,6 +119,16 @@ type PreRelease struct {
 	FoldPreReleases bool `toml:"fold_pre_releases"`
 }
 
+// Check configures "changelog check".
+type Check struct {
+	// BaseBranch is the ref a branch is compared against when looking for a
+	// new changelog entry.
+	//
+	// Empty means the base branch is detected from the repository, which is
+	// what keeps the shipped default config portable.
+	BaseBranch string `toml:"base_branch"`
+}
+
 // Config is the project configuration.
 type Config struct {
 	// Version holds the config version.
@@ -139,6 +149,8 @@ type Config struct {
 	VersionPrefix string `toml:"version_prefix"`
 
 	PreRelease PreRelease `toml:"pre_release"`
+
+	Check Check `toml:"check"`
 
 	// Entry configures a single changelog entry.
 	Entry struct {
@@ -329,6 +341,11 @@ version_prefix = 'v'
 delete_pre_release = false
 detect = true
 fold_pre_releases = true
+
+[check]
+# The ref "changelog check" compares a branch against. Leave it empty to detect
+# the repository's default branch.
+base_branch = ''
 `
 
 // DefaultConfigFile returns the contents written by "changelog init".

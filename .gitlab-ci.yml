@@ -1,142 +1,102 @@
-image: golang:1.16
-
 variables:
-  GOCACHE: "/go/.build_cache"
+  GO_IMAGE: golang:1.27
+  GOLANGCI_LINT_VERSION: v2.13.2
+  GOTOOLCHAIN: local
+  GOPATH: $CI_PROJECT_DIR/.go
+  GOCACHE: $CI_PROJECT_DIR/.cache/go-build
+
+default:
+  image: $GO_IMAGE
+  cache:
+    key:
+      files:
+        - go.sum
+    paths:
+      - .go/pkg/mod
+      - .cache/go-build
 
 include:
-  - template: SAST.gitlab-ci.yml
-  - template: Dependency-Scanning.gitlab-ci.yml
-  - template: License-Scanning.gitlab-ci.yml
+  - template: Jobs/SAST.gitlab-ci.yml
+  - template: Jobs/Dependency-Scanning.gitlab-ci.yml
 
 stages:
-  - build
   - test
-  - deploy
-
-# this job creates all relevant files which are needed in the 'build' AND
-# 'release' job/ stage.
-go_prepare:
-  stage: .pre
-  script:
-  - export PATH=$PATH:$GOPATH/bin
-  # get new Version from `git-semver`
-  - go install -v github.com/mdomke/git-semver@master
-  - git-semver -prefix v > `pwd`/.version
-  # get build/ target environment
-  - export VERSION=$(cat `pwd`/.version)
-  - $(pwd)/.ci/scripts/setEnvironment.sh
-  - export BUILD_ENVIRONMENT=$(cat `pwd`/ENVIRONMENT)
-  - make build-dev
-  artifacts:
-    expire_in: 1 hour
-    paths:
-    - .version
-    - ENVIRONMENT
+  - build
+  - release
 
 build:
-  stage: build
+  stage: test
   script:
-  # install goreleaser
-  - curl -sfL https://install.goreleaser.com/github.com/goreleaser/goreleaser.sh | sh
-  # get build/ target environment and build date
-  - export VERSION=$(cat `pwd`/.version)
-  - export BUILD_ENVIRONMENT=$(cat `pwd`/ENVIRONMENT)
-  - export BUILD_DATE=$(date --utc +%Y-%m-%dT%H:%M:%S%Z)
-  - >-
-      echo "++ Build Date: \"${BUILD_DATE}\""
-  # execute goreleaser but without pushing, signing or validating – so we can
-  # use the artifacts ie. in Sentry
-  - ./bin/goreleaser release --skip-validate --skip-publish --skip-sign --config="`pwd`/.ci/.goreleaser.develop.yml"
-  # delete all archives from dist/
-  - rm -rf `pwd`/dist/*.tar.gz
-  cache:
-    paths:
-      - ${GOCACHE}
-      - /go/pkg/mod
-  except:
-    # there is a "release" job which runs only when we are creating a new release
-    - tags
-  artifacts:
-    expire_in: 1 hour
-    paths:
-    - dist/
-    - .version
-    - ENVIRONMENT
+    - go build ./...
 
-release:
-  stage: build
+test:
+  stage: test
   variables:
-    # Disable shallow cloning so that goreleaser can diff between tags to
-    # generate a changelog.
-    #
-    # TODO: Use custom CHANGELOG.md (stripped from previous releases)
+    # -race needs cgo, which the golang image has but which is worth pinning
+    # so the failure mode is never a confusing "-race requires cgo"
+    CGO_ENABLED: "1"
+  script:
+    - go test -race -coverprofile=coverage.out ./...
+    - go tool cover -func=coverage.out
+  coverage: '/^total:\s+\(statements\)\s+(\d+\.\d+)%/'
+  artifacts:
+    paths:
+      - coverage.out
+    expire_in: 1 week
+    when: always
+
+lint:
+  stage: test
+  # Pinned: the config uses the golangci-lint v2 schema, which v1 cannot read,
+  # and a linter that floats breaks the pipeline on somebody else's release.
+  image: golangci/golangci-lint:$GOLANGCI_LINT_VERSION
+  script:
+    - golangci-lint run ./...
+
+# The feature this project exists for: every merge request has to carry a
+# changelog entry. A release branch, which regenerates CHANGELOG.md instead of
+# adding an entry, is skipped by the command itself.
+changelog:
+  stage: test
+  variables:
+    # the check diffs against the target branch, which a shallow clone may not
+    # have fetched
     GIT_DEPTH: 0
   script:
-  # install goreleaser
-  - curl -sfL https://install.goreleaser.com/github.com/goreleaser/goreleaser.sh | sh
-  # get build/ target environment and build date
-  - export VERSION=$(cat `pwd`/.version)
-  - export BUILD_ENVIRONMENT=$(cat `pwd`/ENVIRONMENT)
-  - export BUILD_DATE=$(date --utc +%Y-%m-%dT%H:%M:%S%Z)
-  - >-
-      echo "++ Build Date: \"${BUILD_DATE}\""
-  # execute goreleaser but without pushing, signing or validating – so we can
-  # use the artifacts ie. in Sentry
-  - ./bin/goreleaser release --skip-validate --config="`pwd`/.ci/.goreleaser.release.yml"
-  # delete all archives from dist/
-  - rm -rf `pwd`/dist/*.tar.gz
-  cache:
-    paths:
-      - ${GOCACHE}
-      - /go/pkg/mod
-  only:
-    - tags
-  artifacts:
-    expire_in: 1 hour
-    paths:
-    - dist/
-    - .version
-    - ENVIRONMENT
+    - go run . validate
+    - go run . check --compare-with "origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME"
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
 
-sentry_deploy:
-  stage: deploy
-  image: getsentry/sentry-cli
-  only:
-    # run only on release build OR on develop branch (testing "deployments")
-    - tags
-    - develop
+goreleaser:
+  stage: build
+  image:
+    name: goreleaser/goreleaser:latest
+    entrypoint: [""]
+  variables:
+    # goreleaser diffs between tags, and the build stamps the version from the
+    # VCS state, so the full history has to be there
+    GIT_DEPTH: 0
   script:
-    - export VERSION="${PRJ}@$(cat `pwd`/.version)"
-    - export BUILD_ENVIRONMENT=$(cat `pwd`/ENVIRONMENT)
-    # create new release in sentry
-    - sentry-cli releases new -p ${SENTRY_PRJ} ${VERSION}
-    # add commits
-    - sentry-cli releases set-commits --commit "${SENTRY_GIT_REPO_NAME}" ${VERSION}
-    # upload artifacts
-    - export BINARIES=$(ls -d dist/*/* | grep -v prime)
-    - ls -d dist/*/* | grep -v prime
-    - sentry-cli upload-dif -p ${SENTRY_PRJ} --wait ${BINARIES}
-    # finalize sentry release
-    - sentry-cli releases finalize ${VERSION}
-    # mark release as deployed if environment is production or "staging"
-    - >-
-        if [ "$BUILD_ENVIRONMENT" == "production" ] || [ "$BUILD_ENVIRONMENT" == "staging" ]; then
-          sentry-cli releases deploys ${VERSION} new -e ${BUILD_ENVIRONMENT}
-        fi
-
-# upload new Version to GitLab Pages site
-pages:
-  stage: deploy
-  script:
-  # install go-selfupdate
-  - go get -u github.com/sanbornm/go-selfupdate/...
-  # generate content for 'public'
-  # TODO: filter all other 'goreleaser' files out
-  - ./.ci/getReleases.sh $(cat `pwd`/.version)
-  # move 'index.html' to public/
-  # TODO: create nice index.html
+    - goreleaser release --snapshot --clean
   artifacts:
     paths:
-    - public
-  only:
-  - tags
+      - dist/
+    expire_in: 1 day
+  rules:
+    - if: $CI_COMMIT_TAG
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+
+release:
+  stage: release
+  image:
+    name: goreleaser/goreleaser:latest
+    entrypoint: [""]
+  variables:
+    GIT_DEPTH: 0
+  script:
+    - goreleaser release --clean
+  rules:
+    - if: $CI_COMMIT_TAG
