@@ -5,7 +5,55 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## v2.0.0 (2026-09-24)
+
+### Fixed (13 changes)
+- Fix `delete_pre_release` never being read
+- Fix `fold_pre_releases` never taking effect
+- Fix `init` not creating the changelog directories, which broke `release` on a fresh project
+- Fix `latest` never loading the config, so the command always failed
+- Fix `next auto` deriving the version from the previous release instead of the pending entries
+- Fix `v`-prefixed versions sorting as 0.0.0, which misplaced them in the changelog
+- Fix a leaked file handle when copying entry files
+- Fix a missing blank line before the first version heading
+- Fix migration overwriting the config with stock defaults, losing the `other` change type
+- Fix panic on a `v`-prefixed latest version
+- Fix paths being resolved against the working directory, so commands now work from a subdirectory
+- Fix release timestamps being written with nanosecond precision
+- Fix removing a change type from the config breaking every past release
+
+### Changed (8 changes)
+- Refuse to release with no pending entries unless `--allow-empty` is given
+- Reject unknown keys in the config and in entry files, naming the offending line
+- Rename the pre-release config keys to snake_case; the old camelCase spellings are now rejected with the replacement named
+- Render a superseded pre-release collapsed instead of dropping its entries
+- Replace the deprecated TOML library with pelletier/go-toml/v2
+- Report the build version from the Go build info instead of linker stamps
+- Send logs to stderr so that stdout carries only the requested value
+- Switch to TOML as config language
+
+### Added (15 changes)
+- Add `--dry-run` and `--allow-empty` to `release`
+- Add `--remove-prefix` to `latest` and `next`, and `--skip-prereleases` to `latest`
+- Add `--type`, `--title`, `--body`, `--author` and `--dry-run` to `new`, so it runs without a terminal
+- Add `check` command to enforce a changelog entry per merge request
+- Add `latest` command
+- Add `migrate` command to automatically migrate to the new v2 structure
+- Add `next` command
+- Add `release --auto`, deriving the version from the pending entries
+- Add `show` command rendering a single release's notes
+- Add `validate` command reporting every problem in one pass
+- Add `version_prefix` config key, applied when rendering versions
+- Add `version` command
+- Add global `--config` and `--changelog-dir` overrides
+- Add optional entry bodies, rendered underneath the title
+- Add shell completions and a man page
+
+
 ## v2.0.0-rc.1 (2024-12-04)
+
+<details>
+<summary>This is a Pre-Release, Click to see details.</summary>
 
 ### Changed (1 change)
 - Switch to TOML as config language
@@ -14,6 +62,8 @@ and adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Add `latest` command
 - Add `migrate` command to automatically migrate to the new v2 structure
 - Add `next` command
+
+</details>
 
 
 ## v1.4.0 (2021-08-02)

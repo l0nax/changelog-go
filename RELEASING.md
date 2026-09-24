@@ -9,7 +9,7 @@ On the default branch, with everything merged:
 ```bash
 changelog validate
 changelog next auto                       # what the pending entries imply
-changelog release "$(changelog next --remove-prefix auto)"
+changelog release --auto
 ```
 Review the result, then commit:
 
