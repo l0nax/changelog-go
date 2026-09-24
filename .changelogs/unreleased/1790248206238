@@ -1,0 +1,2 @@
+change_type_id = 'bug_fix'
+title = 'Fix paths being resolved against the working directory, so commands now work from a subdirectory'

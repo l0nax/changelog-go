@@ -23,19 +23,19 @@ const ConfigFileName = ".changelog-go.toml"
 // Run executes the command line interface.
 func Run() {
 	app := &cli.App{
-		Name: "changelog-go",
+		Name: "changelog",
 		Authors: []*cli.Author{
 			{
 				Name:  "Emanuel Bennici",
 				Email: "emanuel@l0nax.org",
 			},
 		},
-		Usage: `changelog-go helps you to keep track of your
-Changelog (and changes) and its fully compatible with (eg) the Git Flow.
+		Usage: `Keep a changelog without merge conflicts.
 
-It extends your DevOps Workflow and gives other people
-the possibility to read a beautiful formatted CHANGELOG.md
-file.`,
+Every change gets its own file under .changelogs/unreleased/, committed on the
+branch that made it, so two branches never conflict over the changelog. On
+release these are collected into a CHANGELOG.md and filed under the version
+they shipped in.`,
 		Flags: []cli.Flag{
 			&cli.StringFlag{
 				Name:    "level",
@@ -220,5 +220,5 @@ func findConfig() (string, error) {
 		}
 	}
 
-	return "", fmt.Errorf("unable to find config: did you forget to run `changelog-go init`?")
+	return "", fmt.Errorf("unable to find config: did you forget to run `changelog init`?")
 }

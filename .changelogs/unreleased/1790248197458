@@ -1,0 +1,2 @@
+change_type_id = 'new_feat'
+title = 'Add `--type`, `--title`, `--body`, `--author` and `--dry-run` to `new`, so it runs without a terminal'

@@ -1,12 +1,12 @@
-# This is an example .goreleaser.yml file with some sensible defaults.
-# Make sure to check the documentation at https://goreleaser.com
-
-# The lines below are called `modelines`. See `:help modeline`
-# Feel free to remove those if you don't want/need to use them.
 # yaml-language-server: $schema=https://goreleaser.com/static/schema.json
 # vim: set ts=2 sw=2 tw=0 fo=cnqoj
 
 version: 2
+
+# The command is "changelog", as it was in v1. The repository and the Go module
+# are still changelog-go; only the binary, the archives and the formula use the
+# short name, so that scripts written against v1 keep working.
+project_name: changelog
 
 before:
   hooks:
@@ -46,8 +46,38 @@ archives:
       - goos: windows
         format: zip
 
+# The notes come from this tool's own changelog, not from the commit log:
+# CI writes them with "changelog show" and passes --release-notes.
 changelog:
   disable: true
+
+brews:
+  - name: changelog
+
+    # v1 served the tap out of this repository, with the formula at its root:
+    #   brew tap l0nax/changelog-go https://gitlab.com/l0nax/changelog-go
+    #
+    # Pushing here needs a token with write access to the repository.
+    repository:
+      owner: l0nax
+      name: changelog-go
+
+    homepage: "https://gitlab.com/l0nax/changelog-go"
+    description: "Keep a changelog without merge conflicts, one entry file per change"
+    license: "MIT"
+
+    dependencies:
+      - name: git
+
+    # A pre-release must not become what "brew install" hands everybody. With
+    # "auto" the formula is only published for a final release.
+    skip_upload: auto
+
+    install: |
+      bin.install "changelog"
+
+    test: |
+      system "#{bin}/changelog", "version"
 
 release:
   gitlab:
@@ -60,6 +90,10 @@ release:
   name_template: "v{{.Version}}"
 
   disable: false
+
+  # Mark a release built from a pre-release tag as such, instead of presenting
+  # an rc as the current version.
+  prerelease: auto
 
   # What to do with the release notes in case there the release already exists.
   #

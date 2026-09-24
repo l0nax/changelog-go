@@ -1,0 +1,2 @@
+change_type_id = 'bug_fix'
+title = 'Fix `v`-prefixed versions sorting as 0.0.0, which misplaced them in the changelog'

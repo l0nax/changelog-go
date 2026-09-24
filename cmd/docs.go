@@ -10,7 +10,7 @@ import (
 // with --generate-bash-completion, so the shell side is only the glue that
 // forwards the current words and prints the result.
 const (
-	bashCompletion = `_changelog_go_complete() {
+	bashCompletion = `_changelog_complete() {
     local cur opts base
     COMPREPLY=()
     cur="${COMP_WORDS[COMP_CWORD]}"
@@ -22,11 +22,11 @@ const (
     COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
     return 0
 }
-complete -o bashdefault -o default -o nospace -F _changelog_go_complete changelog-go
+complete -o bashdefault -o default -o nospace -F _changelog_complete changelog
 `
 
-	zshCompletion = `#compdef changelog-go
-_changelog_go_complete() {
+	zshCompletion = `#compdef changelog
+_changelog_complete() {
     local -a opts
     local cur
     cur=${words[-1]}
@@ -41,7 +41,7 @@ _changelog_go_complete() {
         _files
     fi
 }
-compdef _changelog_go_complete changelog-go
+compdef _changelog_complete changelog
 `
 )
 
@@ -50,8 +50,8 @@ func newCompletionCmd() *cli.Command {
 		Name: "completion",
 		UsageText: `Completion prints the shell completion script.
 
-    changelog-go completion bash > /etc/bash_completion.d/changelog-go
-    changelog-go completion zsh  > "${fpath[1]}/_changelog-go"`,
+    changelog completion bash > /etc/bash_completion.d/changelog
+    changelog completion zsh  > "${fpath[1]}/_changelog"`,
 		ArgsUsage: "<bash|zsh>",
 		Args:      true,
 		Action:    completionAction,
@@ -78,7 +78,7 @@ func newManCmd() *cli.Command {
 		Name: "man",
 		UsageText: `Man prints the man page in roff format.
 
-    changelog-go man > /usr/share/man/man1/changelog-go.1`,
+    changelog man > /usr/share/man/man1/changelog.1`,
 		Hidden: true,
 		Action: manAction,
 	}

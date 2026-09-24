@@ -1,0 +1,2 @@
+change_type_id = 'bug_fix'
+title = 'Fix `fold_pre_releases` never taking effect'

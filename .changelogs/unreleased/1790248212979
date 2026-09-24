@@ -1,0 +1,2 @@
+change_type_id = 'feat_change'
+title = 'Report the build version from the Go build info instead of linker stamps'

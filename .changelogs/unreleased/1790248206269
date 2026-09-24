@@ -1,0 +1,2 @@
+change_type_id = 'bug_fix'
+title = 'Fix migration overwriting the config with stock defaults, losing the `other` change type'

@@ -1,0 +1,2 @@
+change_type_id = 'bug_fix'
+title = 'Fix `delete_pre_release` never being read'

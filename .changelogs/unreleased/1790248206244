@@ -1,0 +1,2 @@
+change_type_id = 'bug_fix'
+title = 'Fix `init` not creating the changelog directories, which broke `release` on a fresh project'

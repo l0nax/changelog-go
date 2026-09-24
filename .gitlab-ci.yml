@@ -97,6 +97,10 @@ release:
   variables:
     GIT_DEPTH: 0
   script:
-    - goreleaser release --clean
+    # The release notes are this project's own changelog entries for the tag,
+    # not a dump of the commit log. --no-heading because the release page
+    # already carries the version and date as its title.
+    - go run . show --no-heading "$CI_COMMIT_TAG" > release-notes.md
+    - goreleaser release --clean --release-notes=release-notes.md
   rules:
     - if: $CI_COMMIT_TAG
