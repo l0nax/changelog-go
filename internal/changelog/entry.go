@@ -6,7 +6,7 @@ import (
 	"github.com/pelletier/go-toml/v2"
 	"go.l0nax.org/typact"
 
-	"gitlab.com/l0nax/changelog-go/internal/config"
+	"gitlab.com/l0nax/changelog-go/v2/internal/config"
 )
 
 // Entry is a single change entry.

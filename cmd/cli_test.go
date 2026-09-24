@@ -10,7 +10,7 @@ import (
 
 	"github.com/urfave/cli/v2"
 
-	"gitlab.com/l0nax/changelog-go/internal/config"
+	"gitlab.com/l0nax/changelog-go/v2/internal/config"
 )
 
 // result is the observable outcome of one command invocation.

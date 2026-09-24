@@ -16,8 +16,8 @@ import (
 	"go.l0nax.org/typact"
 	"gopkg.in/yaml.v3"
 
-	"gitlab.com/l0nax/changelog-go/internal/changelog"
-	"gitlab.com/l0nax/changelog-go/internal/config"
+	"gitlab.com/l0nax/changelog-go/v2/internal/changelog"
+	"gitlab.com/l0nax/changelog-go/v2/internal/config"
 )
 
 // LegacyConfigFileName is the name of the changelog-go v1 config file.

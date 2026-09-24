@@ -8,8 +8,8 @@ import (
 	"strings"
 	"testing"
 
-	"gitlab.com/l0nax/changelog-go/internal/config"
-	"gitlab.com/l0nax/changelog-go/internal/vcs"
+	"gitlab.com/l0nax/changelog-go/v2/internal/config"
+	"gitlab.com/l0nax/changelog-go/v2/internal/vcs"
 )
 
 // fakeGit answers the git commands [Project.Check] issues from a canned script,

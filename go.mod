@@ -1,4 +1,4 @@
-module gitlab.com/l0nax/changelog-go
+module gitlab.com/l0nax/changelog-go/v2
 
 go 1.23.3
 

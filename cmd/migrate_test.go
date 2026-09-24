@@ -6,8 +6,8 @@ import (
 	"strings"
 	"testing"
 
-	"gitlab.com/l0nax/changelog-go/internal/changelog"
-	"gitlab.com/l0nax/changelog-go/internal/config"
+	"gitlab.com/l0nax/changelog-go/v2/internal/changelog"
+	"gitlab.com/l0nax/changelog-go/v2/internal/config"
 )
 
 // the v1 config file, comments and all

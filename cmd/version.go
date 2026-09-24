@@ -5,7 +5,7 @@ import (
 
 	"github.com/urfave/cli/v2"
 
-	"gitlab.com/l0nax/changelog-go/internal/version"
+	"gitlab.com/l0nax/changelog-go/v2/internal/version"
 )
 
 func newVersionCmd() *cli.Command {

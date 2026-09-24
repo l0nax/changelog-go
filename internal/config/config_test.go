@@ -8,7 +8,7 @@ import (
 
 	"go.l0nax.org/typact"
 
-	"gitlab.com/l0nax/changelog-go/internal/tomlx"
+	"gitlab.com/l0nax/changelog-go/v2/internal/tomlx"
 )
 
 // writeConfig writes body to a scratch config file and returns its path.

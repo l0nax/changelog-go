@@ -84,6 +84,20 @@ them would break any link pointing at them.
 The regeneration happens on your next `changelog release`. Expect a large but
 mechanical diff once.
 
+## The Go module path gained a `/v2`
+
+Go requires a major version suffix on the module path from v2 onwards. Without
+it the module proxy refuses to serve any `v2.x` tag, and `go install
+gitlab.com/l0nax/changelog-go@latest` silently resolves to the newest v1 tag
+instead. So:
+
+```bash
+go install gitlab.com/l0nax/changelog-go/v2@latest
+```
+
+Nothing else moves: the repository URL, the release page and the Homebrew tap
+are unchanged.
+
 ## Things that changed in v2 regardless of migration
 
 - **`new` no longer needs a terminal.** `changelog new -t bug_fix --title "..."`

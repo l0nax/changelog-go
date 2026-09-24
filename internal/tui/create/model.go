@@ -13,8 +13,8 @@ import (
 	"github.com/charmbracelet/lipgloss"
 	"go.l0nax.org/typact"
 
-	"gitlab.com/l0nax/changelog-go/internal/config"
-	"gitlab.com/l0nax/changelog-go/internal/tui/common"
+	"gitlab.com/l0nax/changelog-go/v2/internal/config"
+	"gitlab.com/l0nax/changelog-go/v2/internal/tui/common"
 )
 
 // ErrCanceled is returned when the user canceled the operation.

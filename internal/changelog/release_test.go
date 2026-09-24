@@ -8,7 +8,7 @@ import (
 
 	"go.l0nax.org/typact"
 
-	"gitlab.com/l0nax/changelog-go/internal/config"
+	"gitlab.com/l0nax/changelog-go/v2/internal/config"
 )
 
 // pendingEntries writes count unreleased entries and returns them.

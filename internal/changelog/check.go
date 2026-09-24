@@ -6,7 +6,7 @@ import (
 
 	"github.com/pkg/errors"
 
-	"gitlab.com/l0nax/changelog-go/internal/vcs"
+	"gitlab.com/l0nax/changelog-go/v2/internal/vcs"
 )
 
 // baseRefCandidates are tried in order when neither the config nor the caller

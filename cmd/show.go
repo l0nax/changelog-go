@@ -7,7 +7,7 @@ import (
 
 	"github.com/urfave/cli/v2"
 
-	"gitlab.com/l0nax/changelog-go/internal/changelog"
+	"gitlab.com/l0nax/changelog-go/v2/internal/changelog"
 )
 
 // UnreleasedArg selects the pending entries instead of a released version.

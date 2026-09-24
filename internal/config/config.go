@@ -11,7 +11,7 @@ import (
 	"github.com/pkg/errors"
 	"go.l0nax.org/typact"
 
-	"gitlab.com/l0nax/changelog-go/internal/tomlx"
+	"gitlab.com/l0nax/changelog-go/v2/internal/tomlx"
 )
 
 // VersionEffect is the effect a [ChangeType] has on the next version.

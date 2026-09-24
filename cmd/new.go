@@ -14,9 +14,9 @@ import (
 	"github.com/urfave/cli/v2"
 	"go.l0nax.org/typact"
 
-	"gitlab.com/l0nax/changelog-go/internal/changelog"
-	"gitlab.com/l0nax/changelog-go/internal/config"
-	"gitlab.com/l0nax/changelog-go/internal/tui/create"
+	"gitlab.com/l0nax/changelog-go/v2/internal/changelog"
+	"gitlab.com/l0nax/changelog-go/v2/internal/config"
+	"gitlab.com/l0nax/changelog-go/v2/internal/tui/create"
 )
 
 func newNewCmd() *cli.Command {

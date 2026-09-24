@@ -3,7 +3,7 @@ package changelog
 import (
 	"path/filepath"
 
-	"gitlab.com/l0nax/changelog-go/internal/config"
+	"gitlab.com/l0nax/changelog-go/v2/internal/config"
 )
 
 // Project ties a loaded configuration to the directory it was loaded from.

@@ -7,8 +7,8 @@ import (
 
 	"github.com/urfave/cli/v2"
 
-	"gitlab.com/l0nax/changelog-go/internal/changelog"
-	"gitlab.com/l0nax/changelog-go/internal/config"
+	"gitlab.com/l0nax/changelog-go/v2/internal/changelog"
+	"gitlab.com/l0nax/changelog-go/v2/internal/config"
 )
 
 func newInitCmd() *cli.Command {

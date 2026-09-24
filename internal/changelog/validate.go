@@ -8,7 +8,7 @@ import (
 
 	"github.com/pkg/errors"
 
-	"gitlab.com/l0nax/changelog-go/internal/tomlx"
+	"gitlab.com/l0nax/changelog-go/v2/internal/tomlx"
 )
 
 // Problem is one thing wrong with the project.

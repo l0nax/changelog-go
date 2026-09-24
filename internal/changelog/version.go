@@ -6,7 +6,7 @@ import (
 	"github.com/blang/semver/v4"
 	"github.com/pkg/errors"
 
-	"gitlab.com/l0nax/changelog-go/internal/config"
+	"gitlab.com/l0nax/changelog-go/v2/internal/config"
 )
 
 // VersionFindMode selects how [Project.NextVersion] derives the next version.

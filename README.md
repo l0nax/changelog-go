@@ -1,6 +1,6 @@
 # changelog-go
 
-[![Go Report Card](https://goreportcard.com/badge/gitlab.com/l0nax/changelog-go)](https://goreportcard.com/report/gitlab.com/l0nax/changelog-go)
+[![Go Report Card](https://goreportcard.com/badge/gitlab.com/l0nax/changelog-go/v2)](https://goreportcard.com/report/gitlab.com/l0nax/changelog-go/v2)
 
 Keep a changelog without merge conflicts.
 
