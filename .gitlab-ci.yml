@@ -1,6 +1,10 @@
 variables:
   GO_IMAGE: golang:1.27
   GOLANGCI_LINT_VERSION: v2.13.2
+  # Pinned for the same reason as the linter: "latest" turned the brews ->
+  # homebrew_casks deprecation into something that would break a release
+  # without warning.
+  GORELEASER_VERSION: v2.18.2
   GOTOOLCHAIN: local
   GOPATH: $CI_PROJECT_DIR/.go
   GOCACHE: $CI_PROJECT_DIR/.cache/go-build
@@ -93,7 +97,7 @@ changelog:
 goreleaser:
   stage: build
   image:
-    name: goreleaser/goreleaser:latest
+    name: goreleaser/goreleaser:$GORELEASER_VERSION
     entrypoint: [""]
   variables:
     # goreleaser diffs between tags, and the build stamps the version from the
@@ -114,7 +118,7 @@ goreleaser:
 release:
   stage: release
   image:
-    name: goreleaser/goreleaser:latest
+    name: goreleaser/goreleaser:$GORELEASER_VERSION
     entrypoint: [""]
   variables:
     GIT_DEPTH: 0

@@ -24,11 +24,11 @@ put `changelog` on your `$PATH`.
 
 ```bash
 brew tap l0nax/changelog-go https://gitlab.com/l0nax/changelog-go
-brew install changelog
+brew install --cask changelog
 ```
 
-The formula is updated by hand after a release, so it may trail the latest
-version by a little.
+The cask is updated by hand after a release, so it may trail the latest version
+by a little.
 
 ## Getting started
 

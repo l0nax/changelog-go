@@ -37,14 +37,23 @@ builds:
       - -w
 
 archives:
-  - format: tar.gz
+  - formats: [tar.gz]
     # this name template makes the OS and Arch compatible with the results of `uname`.
     name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
 
     # use zip for windows archives
     format_overrides:
       - goos: windows
-        format: zip
+        formats: [zip]
+
+    # Listed explicitly. The default globs include "changelog*", which also
+    # matches a "changelog-go" binary left in the working tree by "make
+    # build-dev" -- that got an 8 MB stale binary bundled into every archive.
+    files:
+      - LICENSE
+      - README.md
+      - CHANGELOG.md
+      - MIGRATION.md
 
 # The notes come from this tool's own changelog, not from the commit log:
 # CI writes them with "changelog show" and passes --release-notes.
@@ -56,10 +65,13 @@ changelog:
 gitlab_urls:
   use_job_token: true
 
-brews:
+# "brews" is deprecated -- soft since GoReleaser v2.10, hard since v2.16 -- in
+# favour of casks, which install the pre-compiled binary properly instead of
+# through a synthesised formula.
+homebrew_casks:
   - name: changelog
 
-    # The tap is this repository, with the formula at its root:
+    # The tap is this repository:
     #   brew tap l0nax/changelog-go https://gitlab.com/l0nax/changelog-go
     repository:
       owner: l0nax
@@ -69,24 +81,28 @@ brews:
     description: "Keep a changelog without merge conflicts, one entry file per change"
     license: "MIT"
 
-    dependencies:
-      - name: git
+    binaries: [changelog]
 
-    # Published by hand, on purpose: pushing the formula would need a token
-    # with project API access, which CI_JOB_TOKEN does not have. GoReleaser
-    # writes the formula to dist/ and stops there.
-    #
-    # After a release the formula has to be committed by hand; see
-    # RELEASING.md. It carries the version and the archive checksums, so it is
-    # wrong until that happens -- which is how the v1 formula sat at 1.4.1 for
-    # three years.
+    dependencies:
+      - formula: git
+
+    # Published by hand; see RELEASING.md. The cask pins the version and the
+    # archive checksums, so it is wrong until that happens -- which is how the
+    # v1 formula sat at 1.4.1 for three years.
     skip_upload: true
 
-    install: |
-      bin.install "changelog"
-
-    test: |
-      system "#{bin}/changelog", "version"
+    hooks:
+      post:
+        # The binaries are not signed or notarized, so macOS quarantines them
+        # and reports the download as damaged. Stripping the attribute is what
+        # GoReleaser documents for unsigned casks; it does step around
+        # Gatekeeper, and Apple may close it off at some point. Signing and
+        # notarizing is the real fix, if it ever becomes worth the Developer ID.
+        install: |
+          if OS.mac?
+            system_command "/usr/bin/xattr",
+                           args: ["-dr", "com.apple.quarantine", "#{staged_path}/changelog"]
+          end
 
 release:
   gitlab:

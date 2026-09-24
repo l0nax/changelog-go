@@ -1,6 +1,6 @@
 # Releasing
 
-For maintainers. CI does the release; the Homebrew formula needs to be pushed manually.
+For maintainers. CI does the release; the Homebrew cask is pushed manually.
 
 ## 1. Cut the release
 
@@ -33,22 +33,30 @@ directory under `.changelogs/released/`.
 The `release` job then runs GoReleaser, which builds the archives and creates
 the GitLab release with those notes.
 
-## 3. Update the Homebrew formula
+## 3. Update the Homebrew cask
 
 This is not automated: `CI_JOB_TOKEN` cannot write to the repository.
 
 Download the `dist/` artifact from the `release` job, then:
 
 ```bash
-cp "$(find dist -name '*.rb')" changelog.rb
-git add changelog.rb
-git commit -m "Update Homebrew formula for v<version>"
+mkdir -p Casks
+cp "$(find dist -name '*.rb')" Casks/changelog.rb
+git add Casks/changelog.rb
+git commit -m "Update Homebrew cask for v<version>"
 git push
 ```
 
-The formula pins the version and the SHA256 of every archive, so it is wrong
-until this is done. Skipping it is how the v1 formula ended up stuck at 1.4.1
-for three years.
+The cask pins the version and the SHA256 of every archive, so it is wrong until
+this is done. Skipping it is how the v1 formula ended up stuck at 1.4.1 for
+three years.
+
+v1 shipped a *formula*, v2 ships a *cask*. To move existing users across
+automatically, add a `tap_migrations.json` to the tap:
+
+```json
+{ "changelog-go": "l0nax/changelog-go/changelog" }
+```
 
 ## Pre-releases
 
