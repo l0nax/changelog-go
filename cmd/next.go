@@ -24,30 +24,47 @@ The "auto" modes parses all unreleased entries and chooses the most appropriate 
 				Name:  "type-only",
 				Usage: "If set to true, only the version type is printed, instead of the version. This can be useful with semantic-release",
 			},
+			&cli.BoolFlag{
+				Name:  "remove-prefix",
+				Usage: "Prints the bare version, without the configured version prefix",
+			},
 		},
 	}
 }
 
 func nextAction(c *cli.Context) error {
-	if err := loadConfig(); err != nil {
+	project, err := loadProject()
+	if err != nil {
 		return err
 	}
 
 	rawArg := c.Args().First()
 	if rawArg != "auto" {
-		return errors.New("Please specify a valid mode")
+		return errors.New("please specify a valid mode")
 	}
 
-	res, err := changelog.NextVersion(changelog.VersionModeAuto)
+	res, err := project.NextVersion(changelog.VersionModeAuto)
 	if err != nil {
 		return err
 	}
 
 	if c.Bool("type-only") {
 		fmt.Println(res.VersionType.String())
-	} else {
-		fmt.Println(res.Version)
+
+		return nil
 	}
 
+	fmt.Println(printableVersion(project, res.Version, c.Bool("remove-prefix")))
+
 	return nil
+}
+
+// printableVersion returns version with the configured prefix applied, or bare
+// when removePrefix is set.
+func printableVersion(project *changelog.Project, version string, removePrefix bool) string {
+	if removePrefix {
+		return changelog.ApplyVersionPrefix("", version)
+	}
+
+	return project.DisplayVersion(version)
 }

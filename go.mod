@@ -10,10 +10,11 @@ require (
 	github.com/lmittmann/tint v1.0.5
 	github.com/mattn/go-isatty v0.0.20
 	github.com/muesli/termenv v0.15.2
+	github.com/pelletier/go-toml/v2 v2.4.3
 	github.com/pkg/errors v0.9.1
 	github.com/urfave/cli/v2 v2.27.5
-	gitlab.com/fabmation-gmbh/toml v0.0.0-20241204102844-f2202b1b541c
 	go.l0nax.org/typact v0.3.3-0.20241204093656-ceebb1f84d91
+	gopkg.in/yaml.v3 v3.0.1
 )
 
 require (

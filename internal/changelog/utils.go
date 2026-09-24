@@ -1,10 +1,6 @@
 package changelog
 
-import (
-	"gitlab.com/l0nax/changelog-go/internal/config"
-)
-
-// groupBy returns an object composed of keys generated from the results of running each element of collection through iteratee.
+// groupBy groups the elements of collection by the key iteratee returns for each.
 func groupBy[T any, U comparable, Slice ~[]T](collection Slice, iteratee func(item T) U) map[U]Slice {
 	result := map[U]Slice{}
 
@@ -15,14 +11,4 @@ func groupBy[T any, U comparable, Slice ~[]T](collection Slice, iteratee func(it
 	}
 
 	return result
-}
-
-func resolveChangeTypeID(id string) (config.ChangeType, bool) {
-	for _, entry := range config.C.Entry.Types {
-		if entry.ID == id {
-			return entry, true
-		}
-	}
-
-	return config.ChangeType{}, false
 }

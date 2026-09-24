@@ -9,7 +9,6 @@ import (
 	"github.com/urfave/cli/v2"
 
 	"gitlab.com/l0nax/changelog-go/internal/changelog"
-	"gitlab.com/l0nax/changelog-go/internal/config"
 )
 
 func newReleaseCmd() *cli.Command {
@@ -31,26 +30,26 @@ func newReleaseCmd() *cli.Command {
 var semverRegex = regexp.MustCompile(`^(?P<major>0|[1-9]\d*)\.(?P<minor>0|[1-9]\d*)\.(?P<patch>0|[1-9]\d*)(?:-(?P<prerelease>(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+(?P<buildmetadata>[0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$`)
 
 func releaseAction(c *cli.Context) error {
-	if err := loadConfig(); err != nil {
-		return err
-	} else if err = checkVersion(); err != nil {
+	project, err := loadMigratedProject()
+	if err != nil {
 		return err
 	}
 
+	cfg := project.Config()
+
 	rawVersion := c.Args().First()
 	if rawVersion == "" {
-		return errors.New("No version specified")
+		return errors.New("no version specified")
 	}
 
 	versionMatch := semverRegex.FindStringSubmatch(rawVersion)
 
 	isPreRelease := c.Bool("pre-release")
-	if !isPreRelease && config.C.PreRelease.Detect { // only try detection if not manually defined
+	if !isPreRelease && cfg.PreRelease.Detect { // only try detection if not manually defined
 		if len(versionMatch) == 0 {
-			return errors.New("Pre-Release detection is enabled but version is not a valid SemVer")
+			return errors.New("pre-release detection is enabled but the version is not valid SemVer")
 		}
 
-		// check if Version is a pre-release
 		for i, group := range semverRegex.SubexpNames() {
 			if group == "prerelease" {
 				if versionMatch[i] != "" {
@@ -64,7 +63,7 @@ func releaseAction(c *cli.Context) error {
 
 	slog.Debug("Loading unreleased changelog entries")
 
-	entries, err := changelog.LoadUnreleasedEntries()
+	entries, err := project.LoadUnreleasedEntries()
 	if err != nil {
 		return err
 	}
@@ -75,29 +74,29 @@ func releaseAction(c *cli.Context) error {
 
 	release := changelog.Release{
 		Info: changelog.ReleaseInfo{
-			Version:      rawVersion,
-			ReleaseDate:  time.Now(),
+			Version: rawVersion,
+			// truncated: the timestamp lands in a committed file
+			ReleaseDate:  time.Now().Truncate(time.Second),
 			IsPreRelease: isPreRelease,
 		},
-		Entries:  entries,
-		Collapse: config.C.PreRelease.FoldPreReleases,
+		Entries: entries,
 	}
 
-	if err := release.Create(); err != nil {
+	if err := project.CreateRelease(release); err != nil {
 		return err
 	}
 
-	released, err := changelog.ParseReleased()
+	// before rendering, which is what gives deletion precedence over folding
+	if !isPreRelease && cfg.PreRelease.DeletePreRelease {
+		if err := project.RemoveSupersededPreReleases(rawVersion); err != nil {
+			return err
+		}
+	}
+
+	released, err := project.ParseReleased()
 	if err != nil {
 		return err
 	}
 
-	outputFile := config.C.OutputPath.UnwrapOr("CHANGELOG.md")
-
-	err = released.SaveToFile(outputFile)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return released.SaveToFile(project.OutputPath())
 }

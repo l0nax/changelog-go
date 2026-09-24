@@ -1,3 +1,4 @@
+// Package create implements the terminal interface for creating an entry.
 package create
 
 import (
@@ -18,6 +19,7 @@ import (
 // ErrCanceled is returned when the user canceled the operation.
 var ErrCanceled = errors.New("canceled")
 
+// The prefixes marking the validation state of the title input.
 const (
 	DefaultValidateOkPrefix  = "✔"
 	DefaultValidateErrPrefix = "✘"
@@ -26,6 +28,7 @@ const (
 	ansiColorValidateErr = "1" // ansiColorValidateErr is the Error ANSI color (red)
 )
 
+// Entry is the change type and title the user selected.
 type Entry struct {
 	Title string
 	Type  config.ChangeType
@@ -33,7 +36,7 @@ type Entry struct {
 
 var docStyle = lipgloss.NewStyle().Margin(1, 2)
 
-// entryItem is wrapper, implementing [list.Item] of [config.ChangeType].
+// entryItem adapts a [config.ChangeType] to [list.Item].
 type entryItem struct {
 	ct config.ChangeType
 }
@@ -42,15 +45,14 @@ func (i entryItem) Title() string       { return i.ct.Title }
 func (i entryItem) Description() string { return i.ct.Description.UnwrapOrZero() }
 func (i entryItem) FilterValue() string { return i.ct.Title + i.Description() }
 
-// model is the TUI model of the create interface.
+// model is the state of the create interface.
 type model struct {
 	// entryList is the list of the available change type entries.
 	entryList list.Model
 
 	canceled bool
 
-	// typeSelected holds the state information whether the user selected
-	// a change type.
+	// typeSelected reports whether the user selected a change type.
 	typeSelected bool
 	selectedType config.ChangeType
 
@@ -84,14 +86,12 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	var cmd tea.Cmd
 
-	// only update if we're in the correct stage.
 	if !m.typeSelected {
 		m.entryList, cmd = m.entryList.Update(msg)
 	} else if m.askTitle {
 		m.titleInput, cmd = m.titleInput.Update(msg)
 		m.title = m.titleInput.Value()
 
-		// reset error once user enter something
 		m.showTitleError = m.title == ""
 	}
 
@@ -108,7 +108,6 @@ func (m model) handleEnter(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 
 		slog.Debug("Selected change type", slog.Any("change_type", m.selectedType))
 
-		// if we have to ask for the title, proceed
 		if m.askTitle && m.title == "" {
 			return m, textinput.Blink
 		}
@@ -116,7 +115,7 @@ func (m model) handleEnter(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 		return m, tea.Quit
 
 	case m.askTitle && msg.Type == tea.KeyEnter:
-		// only allow exit if it is non-empty
+		// a title is required before the user can leave this stage
 		if m.title != "" {
 			return m, tea.Quit
 		}
@@ -130,7 +129,6 @@ func (m model) handleEnter(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 func (m model) View() string {
 	switch {
 	case !m.typeSelected:
-		// let the user select the type
 		return docStyle.Render(m.entryList.View())
 
 	case m.askTitle:
@@ -161,19 +159,18 @@ func (m model) View() string {
 	return docStyle.Render(m.entryList.View())
 }
 
-// Canceled determine whether the operation is cancelled
+// Canceled reports whether the user canceled the operation.
 func (m model) Canceled() bool {
 	return m.canceled
 }
 
-// Run shows the TUI and returns the selected change type.
-// If askTitle is set to true, the user will be asked to enter
-// a non-empty title string.
+// Run shows the TUI and returns the change type the user selected. If askTitle
+// is set, the user is also asked for a non-empty title.
 //
-// The [ErrCanceled] is returned if the user canceled, i.e. hits Ctrl-C.
-func Run(askTitle bool) (Entry, error) {
-	// NOTE: We need to clone to not change config.C.Entry.Types
-	rawItems := slices.Clone(config.C.Entry.Types)
+// It returns [ErrCanceled] if the user canceled.
+func Run(cfg config.Config, askTitle bool) (Entry, error) {
+	// cloned because the filtering below would otherwise alter the config
+	rawItems := slices.Clone(cfg.Entry.Types)
 	rawItems = slices.DeleteFunc(rawItems, func(tt config.ChangeType) bool {
 		return tt.Hidden
 	})

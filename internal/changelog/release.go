@@ -2,26 +2,26 @@ package changelog
 
 import (
 	"io"
+	"log/slog"
 	"os"
 	"path/filepath"
 	"time"
 
+	"github.com/pelletier/go-toml/v2"
 	"github.com/pkg/errors"
-	"gitlab.com/fabmation-gmbh/toml"
 
 	"gitlab.com/l0nax/changelog-go/internal/config"
 )
 
-// ReleaseInfo represents a single release with all its
-// meta informations.
+// ReleaseInfo is the metadata of a single release.
 type ReleaseInfo struct {
 	Version     string    `toml:"version"`
 	ReleaseDate time.Time `toml:"date"`
-	// IsPreRelease defines whether the release is a pre-release
-	// or not.
+	// IsPreRelease reports whether the release is a pre-release.
 	IsPreRelease bool `toml:"pre_release"`
 }
 
+// SaveToFile writes r to path.
 func (r ReleaseInfo) SaveToFile(path string) error {
 	file, err := os.OpenFile(path, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0666)
 	if err != nil {
@@ -39,57 +39,47 @@ func (r ReleaseInfo) SaveToFile(path string) error {
 	return err
 }
 
+// GrouppedEntries are the entries of one release that share a change type.
 type GrouppedEntries struct {
-	// ChangeType holds the change type information.
-	// It can be used in the CHANGELOG template.
+	// ChangeType is the type the entries share.
 	ChangeType config.ChangeType
 
 	Entries []Entry
 }
 
-// Release represents a single release.
+// Release is a single release and its entries.
 type Release struct {
-	// Info holds all the meta informations about the release.
+	// Info is the metadata of the release.
 	Info ReleaseInfo
 
-	// Entries holds all the change entries.
+	// Entries are the change entries of the release.
 	Entries []Entry
 
-	// GrouppedEntries is a meta field containing a
-	// groupped and sorted list of all entries
-	// from the Entries field.
+	// GrouppedEntries holds the entries grouped by change type and sorted.
 	//
-	// This means that this field needs to be manually filled!
+	// NOTE: [Changelog.Render] fills this field.
 	GrouppedEntries []GrouppedEntries
 
-	// Collapse defines whether the release should be collapsed
-	// in the generated file or not.
+	// DisplayVersion is the version with the configured version prefix
+	// applied.
 	//
-	// It is set to true based on the project configuration.
+	// NOTE: [Changelog.Render] fills this field.
+	DisplayVersion string
+
+	// Collapse renders the release inside a collapsed "<details>" block.
 	Collapse bool
 }
 
-// VersionEffect returns the version effect of the release
-// by scanning all entries.
+// VersionEffect returns the strongest version effect across the entries of the
+// release.
 func (r Release) VersionEffect() config.VersionEffect {
-	// The effect is sorted by:
-	//   major > minor > patch
-	//
-	// Since [config.VersionEffect] is in ascending order,
-	// we can simply use [min]
-	eff := config.VersionEffectPatch
-
-	for _, entry := range r.Entries {
-		eff = min(eff, entry.ChangeType.Effect)
-	}
-
-	return eff
+	return versionEffect(r.Entries)
 }
 
-// Create creates the release, i.e. it does not exist yet
-// and moves all changelog entries to the new release directory.
-func (r Release) Create() error {
-	releaseDir := filepath.Join(config.C.ChangelogDir, ReleasedDir, r.Info.Version)
+// CreateRelease creates the directory of release r and moves the changelog
+// entries into it. It returns an error if the release already exists.
+func (p *Project) CreateRelease(r Release) error {
+	releaseDir := filepath.Join(p.ReleasedDir(), r.Info.Version)
 
 	// prevent overwriting if the release already exists
 	if _, err := os.Stat(releaseDir); err == nil {
@@ -106,11 +96,11 @@ func (r Release) Create() error {
 		return err
 	}
 
-	// NOTE: we always copy the files instead of renaming them.
-	//       The performance degredation shouldn't be much of a problem.
-	//       This saves us from having to implement a fallback (osRename -> cannot move because of FS)
-	//       If it ever becomes a problem, we can implement it.
-	for _, entry := range r.Entries {
+	// Copied rather than renamed: a rename across filesystems fails and
+	// would need a fallback.
+	for i := range r.Entries {
+		entry := &r.Entries[i]
+
 		srcPath, ok := entry.EntryPath.Deconstruct()
 		if !ok {
 			return errors.Errorf("missing entry path for entry %+v", entry)
@@ -122,7 +112,7 @@ func (r Release) Create() error {
 			return err
 		}
 
-		// we will not delete changlog entry files if it is a pre-release
+		// a pre-release keeps its fragments for the final release
 		if r.Info.IsPreRelease {
 			continue
 		}
@@ -135,22 +125,69 @@ func (r Release) Create() error {
 	return nil
 }
 
-func copyFile(srcPath, dstPath string) error {
-	dst, err := os.Create(dstPath)
+// RemoveSupersededPreReleases deletes the release directory of every
+// pre-release that version supersedes.
+func (p *Project) RemoveSupersededPreReleases(version string) error {
+	base, err := ParseVersion(version)
 	if err != nil {
-		return errors.Wrapf(err, "unable to open file %q", dstPath)
+		return err
 	}
-	defer dst.Close()
 
+	released, err := p.ParseReleased()
+	if err != nil {
+		return err
+	}
+
+	for i := range released.Releases {
+		release := &released.Releases[i]
+
+		if !release.Info.IsPreRelease {
+			continue
+		}
+
+		other, err := ParseVersion(release.Info.Version)
+		if err != nil {
+			return err
+		}
+
+		if !BaseVersion(other).EQ(BaseVersion(base)) {
+			continue
+		}
+
+		dir := filepath.Join(p.ReleasedDir(), release.Info.Version)
+
+		slog.Info("Removing superseded pre-release",
+			slog.String("version", release.Info.Version), slog.String("path", dir))
+
+		if err := os.RemoveAll(dir); err != nil {
+			return errors.Wrapf(err, "unable to remove pre-release directory %q", dir)
+		}
+	}
+
+	return nil
+}
+
+func copyFile(srcPath, dstPath string) error {
 	src, err := os.Open(srcPath)
 	if err != nil {
 		return errors.Wrapf(err, "unable to open file %q", srcPath)
 	}
-	defer dst.Close()
+	defer src.Close()
 
-	_, err = io.Copy(dst, src)
+	dst, err := os.Create(dstPath)
 	if err != nil {
+		return errors.Wrapf(err, "unable to open file %q", dstPath)
+	}
+
+	if _, err := io.Copy(dst, src); err != nil {
+		_ = dst.Close()
+
 		return errors.Wrapf(err, "unable to copy file from %q to %q", srcPath, dstPath)
+	}
+
+	// closed explicitly: a failure to flush would truncate the copy
+	if err := dst.Close(); err != nil {
+		return errors.Wrapf(err, "unable to close file %q", dstPath)
 	}
 
 	return nil

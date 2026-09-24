@@ -7,6 +7,7 @@ import (
 
 	"github.com/urfave/cli/v2"
 
+	"gitlab.com/l0nax/changelog-go/internal/changelog"
 	"gitlab.com/l0nax/changelog-go/internal/config"
 )
 
@@ -31,12 +32,33 @@ func initAction(c *cli.Context) error {
 		return err
 	}
 
-	filePath := filepath.Join(wd, ".changelog-go.toml")
-	if _, err := os.Stat(filePath); err == nil {
+	filePath := filepath.Join(wd, ConfigFileName)
+	if _, err := os.Stat(filePath); err == nil && !c.Bool("force") {
 		slog.Error("A config file already exists!")
 
 		return nil
 	}
 
-	return config.CreateDefault(filePath, c.Bool("force"))
+	if err := config.CreateDefault(filePath, c.Bool("force")); err != nil {
+		return err
+	}
+
+	cfg, err := config.Load(filePath)
+	if err != nil {
+		return err
+	}
+
+	project := changelog.NewProject(cfg, wd)
+
+	// created up front so that "release" and "next" work on a fresh project
+	for _, dir := range []string{project.ReleasedDir(), project.UnreleasedDir()} {
+		if err := os.MkdirAll(dir, 0755); err != nil {
+			return err
+		}
+	}
+
+	slog.Info("Initialized changelog-go",
+		slog.String("config", filePath), slog.String("changelog_dir", project.ChangelogDir()))
+
+	return nil
 }

@@ -1,3 +1,4 @@
+// Package cmd implements the changelog-go command line interface.
 package cmd
 
 import (
@@ -11,9 +12,14 @@ import (
 	"github.com/mattn/go-isatty"
 	"github.com/urfave/cli/v2"
 
+	"gitlab.com/l0nax/changelog-go/internal/changelog"
 	"gitlab.com/l0nax/changelog-go/internal/config"
 )
 
+// ConfigFileName is the name of the project configuration file.
+const ConfigFileName = ".changelog-go.toml"
+
+// Run executes the command line interface.
 func Run() {
 	app := &cli.App{
 		Name: "changelog-go",
@@ -44,6 +50,7 @@ file.`,
 		},
 		Before: func(c *cli.Context) error {
 			var lvl slog.Level
+
 			switch strings.ToLower(c.String("level")) {
 			case "error":
 				lvl = slog.LevelError
@@ -57,9 +64,11 @@ file.`,
 				return fmt.Errorf("unknown log level %q", c.String("level"))
 			}
 
-			noColor := !isatty.IsTerminal(os.Stdout.Fd()) || c.Bool("no-color")
+			// stderr keeps stdout free for the value a command prints,
+			// e.g. $(changelog latest)
+			noColor := !isatty.IsTerminal(os.Stderr.Fd()) || c.Bool("no-color")
 
-			logger := slog.New(tint.NewHandler(os.Stdout, &tint.Options{
+			logger := slog.New(tint.NewHandler(os.Stderr, &tint.Options{
 				Level:   lvl,
 				NoColor: noColor,
 			}))
@@ -83,15 +92,39 @@ file.`,
 	}
 }
 
-func loadConfig() error {
+// loadProject returns the project described by the nearest config file.
+func loadProject() (*changelog.Project, error) {
 	path, err := findConfig()
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	return config.Load(path)
+	cfg, err := config.Load(path)
+	if err != nil {
+		return nil, err
+	}
+
+	return changelog.NewProject(cfg, filepath.Dir(path)), nil
 }
 
+// loadMigratedProject returns the project, or an error if it still uses the v1
+// layout.
+func loadMigratedProject() (*changelog.Project, error) {
+	project, err := loadProject()
+	if err != nil {
+		return nil, err
+	}
+
+	if !project.Config().Version.IsValid() {
+		return nil, fmt.Errorf("project is not migrated to v2 (got %q). Please execute 'changelog migrate'",
+			project.Config().Version)
+	}
+
+	return project, nil
+}
+
+// findConfig returns the path of the nearest config file, walking up from the
+// working directory.
 func findConfig() (string, error) {
 	cwd, err := os.Getwd()
 	if err != nil {
@@ -99,7 +132,7 @@ func findConfig() (string, error) {
 	}
 
 	check := func(p string) (string, bool, error) {
-		full := filepath.Join(p, ".changelog-go.toml")
+		full := filepath.Join(p, ConfigFileName)
 		slog.Debug("Checking existence of config", slog.String("path", full))
 
 		info, err := os.Stat(full)
@@ -125,7 +158,7 @@ func findConfig() (string, error) {
 
 	for prevPath != cwd {
 		prevPath = cwd
-		cwd = filepath.Join(cwd, "../")
+		cwd = filepath.Dir(cwd)
 
 		path, c, err := check(cwd)
 		if err != nil {
@@ -136,12 +169,4 @@ func findConfig() (string, error) {
 	}
 
 	return "", fmt.Errorf("unable to find config: did you forget to run `changelog-go init`?")
-}
-
-func checkVersion() error {
-	if config.C.Version.IsValid() {
-		return nil
-	}
-
-	return fmt.Errorf("project is not migrated to v2 (got %q). Please execute 'changelog migrate'", config.C.Version)
 }

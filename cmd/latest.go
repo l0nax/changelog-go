@@ -1,12 +1,9 @@
 package cmd
 
 import (
-	"errors"
 	"fmt"
 
 	"github.com/urfave/cli/v2"
-
-	"gitlab.com/l0nax/changelog-go/internal/changelog"
 )
 
 func newLatestCmd() *cli.Command {
@@ -14,22 +11,31 @@ func newLatestCmd() *cli.Command {
 		Name:      "latest",
 		UsageText: "Latest returns the latest released version, i.e. the release with the highest number.",
 		Action:    latestAction,
+		Flags: []cli.Flag{
+			&cli.BoolFlag{
+				Name:  "remove-prefix",
+				Usage: "Prints the bare version, without the configured version prefix",
+			},
+			&cli.BoolFlag{
+				Name:  "skip-prereleases",
+				Usage: "Ignores pre-releases, returning the latest finalized version",
+			},
+		},
 	}
 }
 
 func latestAction(c *cli.Context) error {
-	releases, err := changelog.ParseReleased()
+	project, err := loadProject()
 	if err != nil {
 		return err
 	}
 
-	if len(releases.Releases) == 0 {
-		return errors.New("No released versions found")
+	release, err := project.LatestRelease(c.Bool("skip-prereleases"))
+	if err != nil {
+		return err
 	}
 
-	releases.SortByRelease()
-
-	fmt.Println(releases.Releases[0].Info.Version)
+	fmt.Println(printableVersion(project, release.Info.Version, c.Bool("remove-prefix")))
 
 	return nil
 }

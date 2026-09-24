@@ -12,7 +12,6 @@ import (
 	"go.l0nax.org/typact"
 
 	"gitlab.com/l0nax/changelog-go/internal/changelog"
-	"gitlab.com/l0nax/changelog-go/internal/config"
 	"gitlab.com/l0nax/changelog-go/internal/tui/create"
 )
 
@@ -27,13 +26,14 @@ func newNewCmd() *cli.Command {
 }
 
 func newAction(c *cli.Context) error {
-	if err := loadConfig(); err != nil {
+	project, err := loadProject()
+	if err != nil {
 		return err
 	}
 
 	askTitle := c.Args().First() == ""
 
-	input, err := create.Run(askTitle)
+	input, err := create.Run(project.Config(), askTitle)
 	if err != nil {
 		if errors.Is(err, create.ErrCanceled) {
 			slog.Info("Operation canceled")
@@ -55,15 +55,15 @@ func newAction(c *cli.Context) error {
 		Author:       typact.None[string](), // TODO: Support author
 	}
 
-	dir := filepath.Join(config.C.ChangelogDir, "unreleased")
-	if err = os.MkdirAll(dir, 0777); err != nil {
+	dir := project.UnreleasedDir()
+	if err := os.MkdirAll(dir, 0o755); err != nil {
 		return err
 	}
 
 	path := filepath.Join(dir, strconv.FormatInt(time.Now().UnixMilli(), 10))
 	slog.Debug("Saving new entry in file", slog.String("file_path", path))
 
-	if err = entry.SaveToFile(path); err != nil {
+	if err := entry.SaveToFile(path); err != nil {
 		return err
 	}
 

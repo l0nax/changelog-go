@@ -1,2 +1,2 @@
-// Package changelog holds the changelog types and functions.
+// Package changelog reads changelog fragments from disk and renders them.
 package changelog

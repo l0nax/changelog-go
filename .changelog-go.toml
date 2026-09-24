@@ -2,6 +2,7 @@
 changelog_dir = '.changelogs'
 output_path = 'CHANGELOG.md'
 version = '2'
+version_prefix = 'v'
 
 [entry]
   [[entry.types]]
@@ -40,7 +41,7 @@ version = '2'
   title = 'Security fix'
   effect = 'patch'
 
-[preRelease]
-deletePreRelease = false
+[pre_release]
+delete_pre_release = false
 detect = true
-foldPreReleases = false
+fold_pre_releases = true

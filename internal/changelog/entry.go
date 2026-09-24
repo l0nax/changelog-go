@@ -1,12 +1,10 @@
 package changelog
 
 import (
-	"fmt"
 	"os"
 
+	"github.com/pelletier/go-toml/v2"
 	"go.l0nax.org/typact"
-
-	"gitlab.com/fabmation-gmbh/toml"
 
 	"gitlab.com/l0nax/changelog-go/internal/config"
 )
@@ -16,22 +14,21 @@ type Entry struct {
 	// ChangeTypeID is the ID identifying the type of the change.
 	ChangeTypeID string `toml:"change_type_id"`
 
-	// ChangeType holds the change type information.
-	// It can be used in the CHANGELOG template.
+	// ChangeType is the resolved type named by ChangeTypeID, available to
+	// the CHANGELOG template.
 	ChangeType config.ChangeType `toml:"-"`
 
-	// Title is the title describing the change, which will be used in
-	// the resulting changelog.
+	// Title describes the change and is what the changelog lists.
 	Title string `toml:"title"`
 
-	// Author is the author, if defined
+	// Author is the author of the change, if recorded.
 	Author typact.Option[string] `toml:"author,omitzero"`
 
 	// EntryPath is the path where the changelog entry is stored.
 	EntryPath typact.Option[string] `toml:"-"`
 }
 
-// SaveToFile saves e to the given path.
+// SaveToFile writes e to path.
 func (e Entry) SaveToFile(path string) error {
 	file, err := os.OpenFile(path, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0666)
 	if err != nil {
@@ -45,26 +42,19 @@ func (e Entry) SaveToFile(path string) error {
 	}
 
 	_, err = file.Write(raw)
-	if err != nil {
-		return err
-	}
 
-	return nil
+	return err
 }
 
-// LoadChangeType loads the change type information into the ChangeType
-// based on ChangeTypeID.
-// An error is returned if the defined change type could not be found.
-func (e *Entry) LoadChangeType() error {
-	for _, ct := range config.C.Entry.Types {
-		if ct.ID != e.ChangeTypeID {
-			continue
-		}
-
-		e.ChangeType = ct
-
-		return nil
+// synthesizeChangeType returns a stand-in for a change type ID that the
+// configuration no longer defines. It renders under its raw ID and carries the
+// weakest version effect.
+func synthesizeChangeType(id string) config.ChangeType {
+	return config.ChangeType{
+		ID:         id,
+		Title:      id,
+		GroupTitle: id,
+		Effect:     config.VersionEffectPatch,
+		Hidden:     true,
 	}
-
-	return fmt.Errorf("unknown change type ID %q", e.ChangeTypeID)
 }
