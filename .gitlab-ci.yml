@@ -19,17 +19,38 @@ include:
   - template: Jobs/SAST.gitlab-ci.yml
   - template: Jobs/Dependency-Scanning.gitlab-ci.yml
 
+# Merge request pipelines, without the duplicate branch pipeline alongside
+# them. A branch with no open MR still gets a pipeline of its own.
+workflow:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS
+      when: never
+    - if: $CI_COMMIT_BRANCH
+    - if: $CI_COMMIT_TAG
+
+# A job with no rules of its own defaults to "branches and tags", which leaves
+# it out of merge request pipelines entirely. Everything that has to run on an
+# MR therefore has to say so.
+.always: &always
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH
+    - if: $CI_COMMIT_TAG
+
 stages:
   - test
   - build
   - release
 
 build:
+  <<: *always
   stage: test
   script:
     - go build ./...
 
 test:
+  <<: *always
   stage: test
   variables:
     # -race needs cgo, which the golang image has but which is worth pinning
@@ -46,6 +67,7 @@ test:
     when: always
 
 lint:
+  <<: *always
   stage: test
   # Pinned: the config uses the golangci-lint v2 schema, which v1 cannot read,
   # and a linter that floats breaks the pipeline on somebody else's release.
@@ -96,6 +118,18 @@ release:
     entrypoint: [""]
   variables:
     GIT_DEPTH: 0
+    # The pipeline's own token is enough to create the release; goreleaser is
+    # told to treat it as one via gitlab_urls.use_job_token. No personal or
+    # project token has to be configured anywhere.
+    #
+    # The Homebrew formula is NOT published from here -- CI_JOB_TOKEN has no
+    # project API access -- so .goreleaser.yaml sets skip_upload and the
+    # formula is committed by hand. It is in the dist/ artifact below.
+    GITLAB_TOKEN: $CI_JOB_TOKEN
+  artifacts:
+    paths:
+      - dist/
+    expire_in: 1 week
   script:
     # The release notes are this project's own changelog entries for the tag,
     # not a dump of the commit log. --no-heading because the release page

@@ -27,6 +27,9 @@ brew tap l0nax/changelog-go https://gitlab.com/l0nax/changelog-go
 brew install changelog
 ```
 
+The formula is updated by hand after a release, so it may trail the latest
+version by a little.
+
 ## Getting started
 
 ```bash
@@ -86,11 +89,12 @@ release nothing, so a wrong branch fails loudly; pass `--allow-empty` if a
 version really has no user-facing changes. `--dry-run` prints the notes and
 changes nothing.
 
-`next auto` proposes the version from the pending entries: a `rem_feat` entry
-makes it a major bump, `new_feat` a minor one, anything else a patch.
+`--auto` takes the version from the pending entries instead: a `rem_feat` entry
+makes it a major bump, `new_feat` a minor one, anything else a patch. `next auto`
+prints the same version without releasing it.
 
 ```bash
-changelog release "$(changelog next --remove-prefix auto)"
+changelog release --auto
 ```
 
 Pre-releases are detected from the version itself. A pre-release keeps its entry
@@ -188,6 +192,10 @@ CHANGELOG.md
 By default nothing is thrown away: the entries that made up a release stay next
 to it, which is what lets the changelog be regenerated from scratch at any time.
 (`delete_pre_release` is the one exception, and it is off unless you ask for it.)
+
+## Releasing
+
+Maintainers: see [RELEASING.md](RELEASING.md).
 
 ## Upgrading from v1
 

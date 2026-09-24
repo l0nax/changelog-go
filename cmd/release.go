@@ -16,12 +16,21 @@ import (
 
 func newReleaseCmd() *cli.Command {
 	return &cli.Command{
-		Name:      "release",
-		UsageText: "Releases a new version and regenerates the changelog file",
-		ArgsUsage: "<version>",
+		Name: "release",
+		UsageText: `Releases a new version and regenerates the changelog file.
+
+Pass the version, or let the pending entries decide it:
+
+    changelog release 1.4.0
+    changelog release --auto`,
+		ArgsUsage: "[version]",
 		Args:      true,
 		Action:    releaseAction,
 		Flags: []cli.Flag{
+			&cli.BoolFlag{
+				Name:  "auto",
+				Usage: "Derives the version from the pending entries, as `next auto` does",
+			},
 			&cli.BoolFlag{
 				Name:  "pre-release",
 				Usage: "If set to true, it will treat the version as a pre-release",
@@ -41,6 +50,37 @@ func newReleaseCmd() *cli.Command {
 
 var semverRegex = regexp.MustCompile(`^(?P<major>0|[1-9]\d*)\.(?P<minor>0|[1-9]\d*)\.(?P<patch>0|[1-9]\d*)(?:-(?P<prerelease>(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+(?P<buildmetadata>[0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$`)
 
+// releaseVersion returns the version to release, either the one given or the
+// one the pending entries imply.
+func releaseVersion(c *cli.Context, project *changelog.Project) (string, error) {
+	given := c.Args().First()
+
+	if !c.Bool("auto") {
+		if given == "" {
+			return "", usageError("no version specified: pass one, or use --auto to derive it from the pending entries")
+		}
+
+		return given, nil
+	}
+
+	if given != "" {
+		return "", usageError("--auto derives the version from the pending entries, so do not also pass %q", given)
+	}
+
+	proposed, err := project.NextVersion(changelog.VersionModeAuto)
+	if err != nil {
+		return "", err
+	}
+
+	slog.Info("Derived version from the pending entries",
+		slog.String("version", project.DisplayVersion(proposed.Version)),
+		slog.String("effect", proposed.VersionType.String()))
+
+	// the bare form: the directory is named by what is passed here, and the
+	// prefix belongs to rendering
+	return proposed.Version, nil
+}
+
 func releaseAction(c *cli.Context) error {
 	project, err := loadMigratedProject(c)
 	if err != nil {
@@ -49,9 +89,9 @@ func releaseAction(c *cli.Context) error {
 
 	cfg := project.Config()
 
-	rawVersion := c.Args().First()
-	if rawVersion == "" {
-		return errors.New("no version specified")
+	rawVersion, err := releaseVersion(c, project)
+	if err != nil {
+		return err
 	}
 
 	versionMatch := semverRegex.FindStringSubmatch(rawVersion)

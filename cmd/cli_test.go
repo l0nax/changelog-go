@@ -389,3 +389,85 @@ func TestExitCodeOfPlainError(t *testing.T) {
 		t.Errorf("exitCodeOf(plain) = %d, want %d", got, ExitError)
 	}
 }
+
+func TestReleaseAuto(t *testing.T) {
+	root := project(t, map[string]string{
+		"a": entryFile("new_feat", "Add the widget"),
+		"b": entryFile("bug_fix", "Fix the sprocket"),
+	})
+
+	// no releases yet, so the pending entries make it 0.1.0
+	if got := runCLI(t, root, "release", "--auto"); got.code != ExitOK {
+		t.Fatalf("release --auto exit = %d: %s", got.code, got.stdout)
+	}
+
+	latest := runCLI(t, root, "latest")
+	if strings.TrimSpace(latest.stdout) != "v0.1.0" {
+		t.Fatalf("latest = %q, want %q", strings.TrimSpace(latest.stdout), "v0.1.0")
+	}
+
+	// the directory is named by the bare version; the prefix is rendering
+	if _, err := os.Stat(filepath.Join(root, ".changelogs", "released", "0.1.0")); err != nil {
+		t.Errorf("expected a bare 0.1.0 release directory: %v", err)
+	}
+
+	// a removal is a major bump
+	writeFile(t, filepath.Join(root, ".changelogs", "unreleased", "c"),
+		entryFile("rem_feat", "Remove the doohickey"))
+
+	if got := runCLI(t, root, "release", "--auto"); got.code != ExitOK {
+		t.Fatalf("second release --auto exit = %d: %s", got.code, got.stdout)
+	}
+
+	latest = runCLI(t, root, "latest")
+	if strings.TrimSpace(latest.stdout) != "v1.0.0" {
+		t.Errorf("latest = %q, want %q", strings.TrimSpace(latest.stdout), "v1.0.0")
+	}
+}
+
+func TestReleaseAutoRejectsAVersionToo(t *testing.T) {
+	root := project(t, map[string]string{"a": entryFile("new_feat", "Add the widget")})
+
+	got := runCLI(t, root, "release", "--auto", "1.0.0")
+	if got.code != ExitUsage {
+		t.Fatalf("exit = %d, want %d", got.code, ExitUsage)
+	}
+
+	if _, err := os.Stat(filepath.Join(root, ".changelogs", "released")); !os.IsNotExist(err) {
+		t.Error("a release was created despite the bad invocation")
+	}
+}
+
+func TestReleaseWithoutAVersionOrAuto(t *testing.T) {
+	root := project(t, map[string]string{"a": entryFile("new_feat", "Add the widget")})
+
+	if got := runCLI(t, root, "release"); got.code != ExitUsage {
+		t.Fatalf("exit = %d, want %d", got.code, ExitUsage)
+	}
+}
+
+func TestReleaseAutoWithNothingPending(t *testing.T) {
+	root := project(t, nil)
+
+	// nothing to derive a version from
+	if got := runCLI(t, root, "release", "--auto"); got.code == ExitOK {
+		t.Fatal("expected release --auto to fail with no pending entries")
+	}
+}
+
+func TestReleaseAutoDryRunChangesNothing(t *testing.T) {
+	root := project(t, map[string]string{"a": entryFile("new_feat", "Add the widget")})
+
+	got := runCLI(t, root, "release", "--auto", "--dry-run")
+	if got.code != ExitOK {
+		t.Fatalf("exit = %d: %s", got.code, got.stdout)
+	}
+
+	if !strings.Contains(got.stdout, "## v0.1.0") {
+		t.Errorf("dry run did not render the derived version:\n%s", got.stdout)
+	}
+
+	if _, err := os.Stat(filepath.Join(root, ".changelogs", "released")); !os.IsNotExist(err) {
+		t.Error("--dry-run created a release")
+	}
+}
